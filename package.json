@@ -1,0 +1,28 @@
+{
+  "name": "GitDrive",
+  "version": "0.0.1",
+  "description": "A typescript Git cloud drive app",
+  "scripts": {
+    "build": "tsc",
+    "lint": "tslint -c tslint.json -p tsconfig.json",
+    "start": "npm run build && electron ./build/main.js"
+  },
+  "keywords": [
+    "Electron",
+    "git",
+    "drive",
+    "cloud",
+    "typescript"
+  ],
+  "author": "ysabri",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/mocha": "^2.2.44",
+    "@types/node": "^8.0.53",
+    "dugite": "^1.57.0",
+    "electron": "^1.7.11",
+    "tslint": "^5.9.1",
+    "typescript": "^2.6.2"
+  },
+  "dependencies": {}
+}
