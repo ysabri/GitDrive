@@ -1,7 +1,7 @@
 import { app, BrowserWindow } from "electron";
 import * as path from "path";
 import * as url from "url";
-import * as dispatcher from "./GitDrive/dispatcher";
+import {git} from "./GitDrive";
 
 // YS:The null here is for the sake of dereferencing the object when the window
 // is closed.
@@ -37,15 +37,17 @@ function createWindow() {
     // when you should delete the corresponding element.
     mainWindow = null;
   });
-  const res = dispatcher.git(["status"], "C:\Users\hacoo");
+  const result = git(["config", "--list"], path.join(__dirname, "./test"));
 
-  res.then(() => {
+  result.then((res) => {
+    // tslint:disable-next-line:no-console
+    // console.log(res.stdout);
     if (mainWindow) {
       mainWindow.setSize(500, 400);
     }
   }).catch((err) => {
     // tslint:disable-next-line:no-console
-    console.log("why did this get rejected " + err);
+    console.log("why did this got rejected: " + err);
   });
 }
 

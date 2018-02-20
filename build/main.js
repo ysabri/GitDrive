@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const electron_1 = require("electron");
 const path = require("path");
 const url = require("url");
-const dispatcher = require("./GitDrive/dispatcher");
+const dispatcher_1 = require("./GitDrive/dispatcher");
 // YS:The null here is for the sake of dereferencing the object when the window
 // is closed.
 let mainWindow = null;
@@ -33,14 +33,16 @@ function createWindow() {
         // when you should delete the corresponding element.
         mainWindow = null;
     });
-    const res = dispatcher.git(["status"], "C:\Users\hacoo");
-    res.then(() => {
+    const result = dispatcher_1.git(["config", "--list"], path.join(__dirname, "./test"));
+    result.then((res) => {
+        // tslint:disable-next-line:no-console
+        // console.log(res.stdout);
         if (mainWindow) {
             mainWindow.setSize(500, 400);
         }
     }).catch((err) => {
         // tslint:disable-next-line:no-console
-        console.log("why did this get rejected " + err);
+        console.log("why did this got rejected: " + err);
     });
 }
 // This method will be called when Electron has finished
