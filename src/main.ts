@@ -1,7 +1,7 @@
 import { app, BrowserWindow } from "electron";
 import * as path from "path";
 import * as url from "url";
-import {git} from "./GitDrive";
+import {git} from "./git-drive";
 
 // YS:The null here is for the sake of dereferencing the object when the window
 // is closed.
@@ -49,6 +49,7 @@ function createWindow() {
     // tslint:disable-next-line:no-console
     console.log("why did this got rejected: " + err);
   });
+
 }
 
 // This method will be called when Electron has finished

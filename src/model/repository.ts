@@ -4,6 +4,7 @@ import * as Path from "path";
  * An immutable object to keep track of local repos.
  * TODO: maybe include a uuid so that repos are guaranteed to be unique
  * for now the id method should suffice.
+ * The length of name should be less than 101 to adhere with GitHub standards.
  */
 export class Repository {
     /** Current repo path on the machine */
