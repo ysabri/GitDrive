@@ -1,10 +1,14 @@
+/**
+ * TODO: Add test for large amount of branches
+ * TODO: Add test for recognizing remote branch namespace
+ */
 import {expect} from "chai";
 import * as Path from "path";
 import {getBranches} from "../../src/git-drive/for-each-ref";
 import {Branch} from "../../src/model/branch";
 import {Repository} from "../../src/model/repository";
 
-// this method is from mocha, it find to call without importing cause
+// this method is from mocha, it fine to call without importing cause
 // mocha is in the global namespace, so is node for example.
 describe("Testing the for-each-ref command", () => {
     let twoBranchesRepo;
@@ -21,9 +25,9 @@ describe("Testing the for-each-ref command", () => {
     it("returns no branches for wrong and empty namespaces", async () => {
         let branches = await getBranches(twoBranchesRepo, "");
         expect(branches).to.have.lengthOf(0);
+        // this is an incomplete namespace, it should have refs
         branches = await getBranches(twoBranchesRepo, "heads");
-        // tslint:disable-next-line:no-console
-        console.log(branches);
+        expect(branches).to.have.lengthOf(0);
     });
     it("matches branch namespace and name", async () => {
         const branches = await getBranches(twoBranchesRepo, "refs/heads/one");

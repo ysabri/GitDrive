@@ -8,7 +8,10 @@ import { CommitterID } from "../model/committer-id";
 import { Repository } from "../model/repository";
 import { git } from "./core-git";
 
-/** Get all the branches. */
+/**
+ * Get all the branches.
+ * To get all the branches, call with just repository argument passed.
+ */
 export async function getBranches(
   repository: Repository,
   ...prefixes: string[],
@@ -41,6 +44,7 @@ export async function getBranches(
     ["for-each-ref", `--format=${format}`, ...prefixes],
     repository.path,
   );
+
   const names = result.stdout;
   const lines = names.split(delimiterString);
 
