@@ -1,11 +1,16 @@
 {
   "name": "GitDrive",
   "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ysabri/GitDrive"
+  },
   "description": "A typescript Git cloud drive app",
   "scripts": {
     "build": "tsc",
     "lint": "tslint -c tslint.json -p tsconfig.json",
-    "start": "npm run build && electron ./build/main.js"
+    "start": "npm run build && electron ./build/main.js",
+    "test": "mocha -r ts-node/register ./tests/**/*.ts ./tests/*.ts"
   },
   "keywords": [
     "Electron",
@@ -14,11 +19,17 @@
     "cloud",
     "typescript"
   ],
-  "author": "ysabri",
+  "author": {
+    "name": "Yazeed Sabri",
+    "email": "ysabri@wisc.edu",
+    "url": "https://github.com/ysabri"
+  },
   "license": "MIT",
   "devDependencies": {
     "@types/mocha": "^2.2.44",
     "@types/node": "^8.0.53",
+    "@types/chai": "^4.1.2",
+    "chai": "^4.1.2",
     "dugite": "^1.57.0",
     "electron": "^1.7.11",
     "tslint": "^5.9.1",
