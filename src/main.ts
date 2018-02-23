@@ -1,6 +1,6 @@
 import { app, BrowserWindow } from "electron";
-import * as path from "path";
-import * as url from "url";
+import {join} from "path";
+import {format} from "url";
 import {git} from "./git-drive";
 
 // YS:The null here is for the sake of dereferencing the object when the window
@@ -21,8 +21,8 @@ function createWindow() {
   mainWindow = new BrowserWindow(windowOptions);
 
   // and load the index.html of the app.
-  mainWindow.loadURL(url.format({
-      pathname: path.join(__dirname, "../index.html"),
+  mainWindow.loadURL(format({
+      pathname: join(__dirname, "../index.html"),
       protocol: "file:",
       slashes: true,
   }));
@@ -37,7 +37,7 @@ function createWindow() {
     // when you should delete the corresponding element.
     mainWindow = null;
   });
-  const result = git(["config", "--list"], path.join(__dirname, "./test"));
+  const result = git(["config", "--list"], join(__dirname, "./test"));
 
   result.then((res) => {
     // tslint:disable-next-line:no-console

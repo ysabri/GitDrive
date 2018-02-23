@@ -1,4 +1,4 @@
-import * as Path from "path";
+import {basename} from "path";
 
 /**
  * An immutable object to keep track of local repos.
@@ -19,7 +19,7 @@ export class Repository {
         authors: ReadonlyArray<string>,
     ) {
         this.path = path;
-        this.name = Path.basename(path);
+        this.name = basename(path);
         this.authors = authors;
     }
 /**
