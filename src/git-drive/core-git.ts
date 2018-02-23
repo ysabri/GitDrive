@@ -53,3 +53,11 @@ export async function git(
 
     return execPromise;
 }
+
+/**
+ * This is to disable any pre-configured credential helpers (especially the windows
+ * one). The thing is git can be given a helper program that will get called
+ * whenever it needs to verify a user. We will most likely have our own method
+ * of verification and a credential helper.
+ */
+export const overrideCredentialHelper: ReadonlyArray<string> = ["-c", "credential.helper="];
