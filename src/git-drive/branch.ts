@@ -6,27 +6,26 @@ import {getBranches} from "./for-each-ref";
 
 
 /**
- * Create a new branch in the repo based on the commit.
+ * Create a new branch in the repo based on a commit SHA or HEAD.
  * This will be used once upon the creation of a topic-space and
  * upon the addition of the of a user to an existing topic-space.
- * The branch will always be created on top of a commit obj, not a committish.
- * TODO: look into the above assumption about the commit obj, cause maybe at
- * some point the branch will be created based on HEAD (even though HEAD would
- * realistically be a commit obj)
+ * The branch will always be created on top of a commit obj,
+ * not any other committish. HEAD has to be explicity specified (not an
+ * optional param) to avoid errors when calling the function.
  * @param repo - Repository in which to create the branch
  * @param name - The name of the branch, must be less than 101 chars (for now)
- * @param tip - Commit obj of where to create the branch.
+ * @param tip - SHA of the commit obj or HEAD to create the branch at.
  */
 export async function createBaranch(
     repo: Repository,
     name: string,
-    tip: Commit,
+    tip: string,
 ): Promise<Branch | null> {
     if (name.length > 100) {
         throw new Error("Branch name is longer than 100 chars");
     }
 
-    const args = ["branch", name, tip.SHA];
+    const args = ["branch", name, tip];
 
     try {
         await git(args, repo.path);
