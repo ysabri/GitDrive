@@ -37,7 +37,7 @@ function createWindow() {
     // when you should delete the corresponding element.
     mainWindow = null;
   });
-  const result = git(["config", "--list"], join(__dirname, "./test"));
+  const result = git(["config", "--list"], join(__dirname, "./"));
 
   result.then((res) => {
     // tslint:disable-next-line:no-console
