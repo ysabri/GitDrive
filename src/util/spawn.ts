@@ -1,7 +1,7 @@
 // This code was refactored from: https://github.com/desktop/desktop project,
 // at this link:
 // https://github.com/desktop/desktop/blob/master/app/src/lib/git/spawn.ts
-// and it was mainly written by: https://github.com/
+// and it was mainly written by: https://github.com/shiftkey
 
 // This was not edited much in terms of functionality, I just got rid of the
 // things we do not use.
