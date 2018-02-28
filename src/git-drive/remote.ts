@@ -57,4 +57,3 @@ export async function changeUrl(
 ): Promise<void> {
     await git(["remote", "set-url", "origin", url], repo.path);
 }
-

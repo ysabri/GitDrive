@@ -43,5 +43,3 @@ export async function pushAll(
 
     await git(args, repo.path);
 }
-
-

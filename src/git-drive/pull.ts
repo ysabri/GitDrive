@@ -29,5 +29,3 @@ export async function pull(
 // owner of the branch commits on their branch. It will be the case where
 // person 1 made a commit on branch person 2 and person 3 was the one who
 // pulled that commit. Will have to look into this.
-
-

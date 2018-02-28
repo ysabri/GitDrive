@@ -36,20 +36,3 @@ export async function fetchRefspec(
 
     await git(args, repo.path);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
