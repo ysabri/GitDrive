@@ -93,6 +93,15 @@ export async function getCommitDiff(
   file: FileChange,
   commitish: string,
 ): Promise<IDiff> {
+    // Explanation of what does this do: So this does find the diff between a
+    // file in a commit and its parent. The -m option and -first-parent is for
+    // merge commits, -m shows the merge commit output like a normal commit and
+    // the first parent shows the diff for the first parents only. The -1 is
+    // the number of commits to diff between and the commitish commit, one
+    // meaning only the parent. -z separates commits with NULs instead of new
+    // lines. --patch-with-raw appends a raw diff to the log. --no-color, turns
+    // off colored diff, git usually does this when the stdout is not a
+    // terminal, it seems like this is a just in case option.
   const args = [
     "log",
     commitish,
@@ -153,6 +162,11 @@ export async function getWorkingDirectoryDiff(
     // citation in source:
     // https://github.com/git/git/blob/1f66975deb8402131fbf7c14330d0c7cdebaeaa2/diff-no-index.c#L300
     // successExitCodes = new Set([0, 1]);
+    // Command explanation: --no-index is used to compare two paths, doesn't
+    // a git repo to run the command. --patch-with-raw appends a raw diff to
+    // the output. -z is to separates commits with NULs instead of new lines.
+    // --no-color is do disable colored diffs. /dev/null (ie nothing) is the
+    // "path" the file is being compared against.
     args = [
       "diff",
       "--no-ext-diff",
@@ -172,6 +186,7 @@ export async function getWorkingDirectoryDiff(
     // already staged to the renamed file which differs from our other diffs.
     // The closest I got to that was running hash-object and then using
     // git diff <blob> <blob> but that seems a bit excessive.
+    // Command explanation: Look at the command above.
     args = [
       "diff",
       "--no-ext-diff",
@@ -182,6 +197,7 @@ export async function getWorkingDirectoryDiff(
       file.path,
     ];
   } else {
+      // Command explanation: look at the command before the one above.
     args = [
       "diff",
       "HEAD",
