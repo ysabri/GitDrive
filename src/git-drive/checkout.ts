@@ -23,6 +23,7 @@ export async function checkoutBranch(
  * Partially checkout the given paths into the current working tree.
  * There should only be one working tree anyways and this should be done on an
  * empty indexing area.
+ * TODO: do the work around for windows here too.
  * @param repo Repo where the checkout will get performed
  * @param paths the list of paths to checkout
  */
