@@ -28,9 +28,10 @@ export async function checkoutBranch(
  */
 export async function partialCheckout(
     repo: Repository,
+    targetRef: string,
     paths: ReadonlyArray<string>,
 ): Promise<void> {
-    const args = ["checkout", "HEAD", "--", ...paths];
+    const args = ["checkout", targetRef, "--", ...paths];
     await git(args, repo.path);
 }
 
