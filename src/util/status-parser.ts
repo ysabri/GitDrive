@@ -58,6 +58,7 @@ export function parsePorcelainStatus(
   while (field) {
     if (field.startsWith("# ") && field.length > 2) {
       entries.push({ kind: "header", value: field.substr(2) });
+      field = fields.shift();
       continue;
     }
 
@@ -74,6 +75,7 @@ export function parsePorcelainStatus(
     } else if (entryKind === IgnoredEntryType) {
       // Ignored, we don't care about these for now
     }
+    field = fields.shift();
   }
 
   return entries;
