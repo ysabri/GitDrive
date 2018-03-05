@@ -1,6 +1,6 @@
 import {Repository} from "../model/repository";
 import {addAllToIndex} from "./add";
-import {GError, git} from "./core-git";
+import {git} from "./core-git";
 import {unstageResetAll} from "./reset";
 
 /**

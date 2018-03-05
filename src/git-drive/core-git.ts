@@ -48,7 +48,7 @@ export async function git(
     ExecOptions?: GExecOption,
 ): Promise<GResult> {
     const cmdOptions = {...ExecOptions};
-    // await un-warps the promise here returning the object
+
     const execPromise = await GitProcess.exec(args, cwd, cmdOptions);
 
     return execPromise;
