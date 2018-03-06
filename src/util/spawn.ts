@@ -75,7 +75,12 @@ export function spawnAndComplete(
 
             // mimic the experience of GitProcess.exec for handling known codes when
             // the process terminates
-            const exitCodes = new Set([0]);
+            let exitCodes;
+            if (args[args.length - 2] === "/dev/null") {
+                exitCodes = new Set([0, 1]);
+            } else {
+                exitCodes = new Set([0]);
+            }
 
             if (exitCodes.has(code) || signal) {
             resolve({
