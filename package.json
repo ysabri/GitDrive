@@ -10,7 +10,7 @@
     "build": "tsc",
     "lint": "tslint -c tslint.json -p tsconfig.json",
     "start": "npm run build && electron ./build/main.js",
-    "test": "mocha -r ts-node/register ./tests/**/*.ts ./tests/*.ts"
+    "test": "mocha -r ts-node/register --full-trace --check-leaks ./tests/**/*.ts ./tests/*.ts"
   },
   "keywords": [
     "Git",
