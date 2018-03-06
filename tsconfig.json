@@ -4,6 +4,7 @@
     "moduleResolution": "node",
     "target": "es6",
     "noImplicitReturns": true,
+    "noImplicitAny": true,
     "noFallthroughCasesInSwitch": true,
     "noUnusedLocals": true,
     "strict": true,

@@ -1,3 +1,6 @@
+// This code was refactored from: https://github.com/desktop/desktop project,
+// at this link:
+// https://github.com/desktop/desktop/blob/master/app/src/lib/git/log.ts
 import { Commit } from "../model/commit";
 import { CommitterID } from "../model/committer-id";
 import { Repository } from "../model/repository";
