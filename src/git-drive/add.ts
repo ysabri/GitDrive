@@ -23,7 +23,7 @@ export async function addAllToIndex(
     repo: Repository,
     addOptions?: IAddToIndexOptions,
 ): Promise<void> {
-    let args = ["add", "-all"];
+    let args = ["add", "--all"];
     if (addOptions && addOptions.update === true) {
         args = [...args, "--update"];
     }
