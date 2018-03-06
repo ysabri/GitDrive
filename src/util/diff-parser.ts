@@ -325,7 +325,7 @@ export class DiffParser {
         const previousLineIndex = lines.length - 1;
         const previousLine = lines[previousLineIndex];
         lines[previousLineIndex] = previousLine.withNoTrailingNewLine(true);
-
+        c = this.parseLinePrefix(this.peek());
         continue;
       }
 
@@ -357,6 +357,7 @@ export class DiffParser {
       }
 
       lines.push(diffLine);
+      c = this.parseLinePrefix(this.peek());
     }
 
     if (lines.length === 1) {
