@@ -48,7 +48,9 @@ export async function createBaranch(
     return null;
 }
 
-/** Rename the branch given, git will reject and return error if it exists */
+/** Rename the branch given, git will reject and return error if it
+ * doesn't exists
+ */
 export async function renameBranch(
     repo: Repository,
     branch: Branch,

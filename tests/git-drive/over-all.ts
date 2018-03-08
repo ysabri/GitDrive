@@ -5,7 +5,7 @@ import {createBaranch, renameBranch } from "../../src/git-drive/branch";
 import {checkoutBranch} from "../../src/git-drive/checkout";
 import {commit} from "../../src/git-drive/commit";
 import {git} from "../../src/git-drive/core-git";
-import {getWorkingDirectoryDiff} from "../../src/git-drive/diff";
+import {getCommitDiff, getWorkingDirectoryDiff} from "../../src/git-drive/diff";
 import {getIndexChanges, IndexStatus} from "../../src/git-drive/diff-index";
 import {getBranches} from "../../src/git-drive/for-each-ref";
 import {getChangedFiles, getCommit, getCommits} from "../../src/git-drive/log";
@@ -21,6 +21,7 @@ import {DiffParser} from "../../src/util/diff-parser";
 describe("Testing overall commands", () => {
     let repo;
     let twoBranchesPath;
+    const parser = new DiffParser();
     before (() => {
         twoBranchesPath = join(__dirname, "../testRepos/twoBranches/");
         repo = new Repository(twoBranchesPath, ["Yazeed Sabri"]);
@@ -106,7 +107,6 @@ describe("Testing overall commands", () => {
         const normalDiff = await getWorkingDirectoryDiff(repo, resetFile);
         expect(normalDiff.kind).to.equal(DiffType.Text);
         if (normalDiff.kind === DiffType.Text) {
-            const parser = new DiffParser();
             expect(parser.parse(normalDiff.text).contents).to.equal("");
             expect(normalDiff.hunks[0].lines[1].text).to.equal("+Testing second commit");
         }
@@ -126,7 +126,6 @@ describe("Testing overall commands", () => {
         const mixedDiff = await getWorkingDirectoryDiff(repo, mixedResetFile);
         expect(mixedDiff.kind).to.equal(DiffType.Text);
         if (mixedDiff.kind === DiffType.Text) {
-            const parser = new DiffParser();
             expect(parser.parse(mixedDiff.text).contents).to.equal("");
             expect(mixedDiff.hunks[0].lines[1].text).to.equal("+Testing second commit");
         }
@@ -139,5 +138,34 @@ describe("Testing overall commands", () => {
         // overwrite it.
         unlinkSync(join(repo.path, "sndCommit.txt"));
 
+    });
+
+    it("Cteates new branches and renames them", async () => {
+        const branch = await createBaranch(repo, "three", "HEAD");
+        expect(branch.name).to.equal("three");
+        const refs = await getBranches(repo);
+        expect(refs).to.have.lengthOf(3);
+        const filterRes: Branch = refs.find((br) => br.name === "three");
+        const statusRes = await getStatus(repo);
+        expect(filterRes.tip.SHA).to.equal(statusRes.currentTip);
+        expect(statusRes.currentTip).to.equal(branch.tip.SHA);
+        await git(["branch", "-d", "three"], repo.path);
+        const renameWrapper = async () => {
+            await renameBranch(repo, branch, "threee");
+        };
+        // this test fails for now till the error handling is implemented.
+        expect(renameWrapper).to.throw();
+        await renameBranch(repo, branch, "klds//'.,.,><>*-+.jlads");
+
+    });
+
+    it("gets a diff from a commit", async () => {
+        const files = await getChangedFiles(repo, "253f546bc4f6398bb218d425e2f862df5aa65be4");
+        const commitDiff = await getCommitDiff(repo, files[0], "253f546bc4f6398bb218d425e2f862df5aa65be4");
+        if (commitDiff.kind === DiffType.Text) {
+            const parsed = parser.parse(commitDiff.text);
+            expect(parsed.header.split("\n")[1].substr(1)).to.equal("dummy file for first commit");
+
+        }
     });
 });
