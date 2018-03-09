@@ -1,5 +1,5 @@
-import {Repository} from "../model/repository";
-import {git} from "./core-git";
+import { Repository } from "models/git/repository";
+import { git } from "./core-git";
 
 /** Define an immutable remote object */
 export interface IRemote {

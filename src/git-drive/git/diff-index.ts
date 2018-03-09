@@ -1,8 +1,8 @@
 // This code was taken from: https://github.com/desktop/desktop project,
 // at this link:
 // https://github.com/desktop/desktop/blob/master/app/src/lib/git/diff-index.ts
-import {Repository} from "../model/repository";
-import {git} from "./core-git";
+import { Repository } from "models/git/repository";
+import { git } from "./core-git";
 
 /**
  * Possible statuses of an entry in Git, see the git diff-index

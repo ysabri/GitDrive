@@ -1,7 +1,7 @@
-import {ChildProcess} from "child_process";
-import {Repository} from "../model/repository";
-import {spawnAndComplete} from "../util/spawn";
-import {git} from "./core-git";
+import { ChildProcess } from "child_process";
+import { Repository } from "models/git/repository";
+import { spawnAndComplete } from "utils/spawn";
+import { git } from "./core-git";
 
 
 /**

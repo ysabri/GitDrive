@@ -1,6 +1,6 @@
-import {Branch} from "../model/branch";
-import {Repository} from "../model/repository";
-import {git} from "./core-git";
+import { Branch } from "models/git/branch";
+import { Repository } from "models/git/repository";
+import { git } from "./core-git";
 
 /**
  * Checkout given branch.

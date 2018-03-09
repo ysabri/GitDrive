@@ -2,17 +2,17 @@
 // at this link:
 // https://github.com/desktop/desktop/blob/master/app/src/lib/git/status.ts
 
-import { DiffSelection, DiffSelectionType } from "../model/diff";
-import { Repository } from "../model/repository";
+import { DiffSelection, DiffSelectionType } from "models/git/diff";
+import { Repository } from "models/git/repository";
 import {
     AppFileStatus,
     FileEntry,
     GitStatusEntry,
     WorkingDirectoryFileChange,
     WorkingDirectoryStatus,
-} from "../model/status";
-import { fatalError } from "../util/errors-util";
-import { mapStatus, parsePorcelainStatus } from "../util/status-parser";
+} from "models/git/status";
+import { fatalError } from "utils/errors-util";
+import { mapStatus, parsePorcelainStatus } from "utils/status-parser";
 import { git } from "./core-git";
 
 /** The number of commits a revision range is ahead/behind. */

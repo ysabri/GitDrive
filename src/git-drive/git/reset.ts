@@ -1,6 +1,6 @@
-import {Repository} from "../model/repository";
-import {assertNever} from "../util/errors-util";
-import {git} from "./core-git";
+import { Repository } from "models/git/repository";
+import { assertNever } from "utils/errors-util";
+import { git } from "./core-git";
 
 /** The supported reset methods, no hard resets. */
 export const enum ResetMode {

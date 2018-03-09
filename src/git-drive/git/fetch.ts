@@ -1,5 +1,5 @@
-import {Repository} from "../model/repository";
-import {git, overrideCredentialHelper} from "./core-git";
+import { Repository } from "models/git/repository";
+import { git, overrideCredentialHelper } from "./core-git";
 
 /**
  * Fetch all changes from remote to local repo. Will likely use all the time.

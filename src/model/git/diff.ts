@@ -3,7 +3,7 @@
 // https://github.com/desktop/desktop/blob/master/app/src/models/diff.ts
 // and it was mainly written by: https://github.com/niik
 
-import { assertNever } from "../util/errors-util";
+import { assertNever } from "utils/errors-util";
 
 /**
  * V8 has a limit on the size of string it can create, and unless we want to

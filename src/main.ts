@@ -1,7 +1,7 @@
 import { app, BrowserWindow } from "electron";
-import {join} from "path";
-import {format} from "url";
-import {git} from "./git-drive";
+import { join } from "path";
+import { format } from "url";
+import { git } from "./git-drive/git/core-git";
 
 // YS:The null here is for the sake of dereferencing the object when the window
 // is closed.

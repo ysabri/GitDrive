@@ -14,3 +14,5 @@ export * from "./fetch";
 export * from "./pull";
 export * from "./push";
 export * from "./show";
+export * from "./log";
+export * from "./diff-index";

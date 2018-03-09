@@ -1,7 +1,7 @@
-import {Repository} from "../model/repository";
-import {addAllToIndex} from "./add";
-import {git} from "./core-git";
-import {unstageResetAll} from "./reset";
+import { Repository } from "models/git/repository";
+import { addAllToIndex } from "./add";
+import { git } from "./core-git";
+import { unstageResetAll } from "./reset";
 
 /**
  * Create a commit with the summary and message passed. For now this function
