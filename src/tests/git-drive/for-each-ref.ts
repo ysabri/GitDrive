@@ -3,15 +3,15 @@
  * TODO: Add test for recognizing remote branch namespace
  */
 import {expect} from "chai";
+import {getBranches} from "git-drive/git/for-each-ref";
+import {Branch} from "models/git/branch";
+import {Repository} from "models/git/repository";
 import * as Path from "path";
-import {getBranches} from "../../src/git-drive/git/for-each-ref";
-import {Branch} from "../../src/model/git/branch";
-import {Repository} from "../../src/model/git/repository";
 
 // this method is from mocha, it fine to call without importing cause
 // mocha is in the global namespace, so is node for example.
 describe("Testing the for-each-ref command", () => {
-    let twoBranchesRepo;
+    let twoBranchesRepo: Repository;
     before(() => {
         twoBranchesRepo = new Repository(Path.join
             (__dirname, "../testRepos/twoBranches/"), ["Yazeed Sabri"]);

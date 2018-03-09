@@ -1,4 +1,4 @@
-import {git, overrideCredentialHelper } from "./core-git";
+import { git, overrideCredentialHelper } from "./core-git";
 
 /**
  * Clones a repo from url.

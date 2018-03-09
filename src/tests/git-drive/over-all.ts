@@ -1,25 +1,25 @@
 import {expect} from "chai";
 import {unlinkSync, writeFileSync} from "fs";
+import {createBaranch, renameBranch } from "git-drive/git/branch";
+import {checkoutBranch} from "git-drive/git/checkout";
+import {commit} from "git-drive/git/commit";
+import {git} from "git-drive/git/core-git";
+import {getCommitDiff, getWorkingDirectoryDiff} from "git-drive/git/diff";
+import {getIndexChanges, IndexStatus} from "git-drive/git/diff-index";
+import {getBranches} from "git-drive/git/for-each-ref";
+import {getChangedFiles, getCommit, getCommits} from "git-drive/git/log";
+import {reset, ResetMode} from "git-drive/git/reset";
+import {getStatus, IStatusResult} from "git-drive/git/status";
+import {Branch} from "models/git/branch";
+import {Commit} from "models/git/commit";
+import {DiffType} from "models/git/diff";
+import {Repository} from "models/git/repository";
+import {AppFileStatus} from "models/git/status";
 import {join} from "path";
-import {createBaranch, renameBranch } from "../../src/git-drive/git/branch";
-import {checkoutBranch} from "../../src/git-drive/git/checkout";
-import {commit} from "../../src/git-drive/git/commit";
-import {git} from "../../src/git-drive/git/core-git";
-import {getCommitDiff, getWorkingDirectoryDiff} from "../../src/git-drive/git/diff";
-import {getIndexChanges, IndexStatus} from "../../src/git-drive/git/diff-index";
-import {getBranches} from "../../src/git-drive/git/for-each-ref";
-import {getChangedFiles, getCommit, getCommits} from "../../src/git-drive/git/log";
-import {reset, ResetMode} from "../../src/git-drive/git/reset";
-import {getStatus, IStatusResult} from "../../src/git-drive/git/status";
-import {Branch} from "../../src/model/git/branch";
-import {Commit} from "../../src/model/git/commit";
-import {DiffType} from "../../src/model/git/diff";
-import {Repository} from "../../src/model/git/repository";
-import {AppFileStatus} from "../../src/model/git/status";
-import {DiffParser} from "../../src/util/diff-parser";
+import {DiffParser} from "utils/diff-parser";
 
 describe("Testing overall commands", () => {
-    let repo;
+    let repo: Repository;
     let twoBranchesPath;
     const parser = new DiffParser();
     before (() => {
@@ -81,21 +81,21 @@ describe("Testing overall commands", () => {
         const commitWorked = await commit(repo, "Second commit", "This is a message");
         expect(commitWorked).to.equal(true);
         const commitObj = await getCommit(repo, "two");
-        expect(commitObj.committer.name).to.equal("Yazeed Sabri");
-        expect(commitObj.title).to.equal("Second commit");
-        expect(commitObj.body).to.equal("This is a message\n");
-        expect(commitObj.parentSHA).to.equal("253f546bc4f6398bb218d425e2f862df5aa65be4");
+        expect(commitObj!.committer.name).to.equal("Yazeed Sabri");
+        expect(commitObj!.title).to.equal("Second commit");
+        expect(commitObj!.body).to.equal("This is a message\n");
+        expect(commitObj!.parentSHA).to.equal("253f546bc4f6398bb218d425e2f862df5aa65be4");
 
         // test the getChangedFiles from log for the new commit we made
-        const files = await getChangedFiles(repo, commitObj.SHA);
+        const files = await getChangedFiles(repo, commitObj!.SHA);
         const file = files[0];
         expect(file.path).to.equal("sndCommit.txt");
         expect(file.status).to.equal(AppFileStatus.New);
-        expect(file.commitish).to.equal(commitObj.SHA);
+        expect(file.commitish).to.equal(commitObj!.SHA);
 
         // test soft reset along with getWorkingDirectoryDiff from diff
         // and getIndexChanges from diff-index
-        const resetWorked = await reset(repo, commitObj.parentSHA, ResetMode.Soft);
+        const resetWorked = await reset(repo, commitObj!.parentSHA, ResetMode.Soft);
         // ie. did not throw an error
         expect(resetWorked).to.equal(true);
         const statusRes = await getStatus(repo);
@@ -115,7 +115,7 @@ describe("Testing overall commands", () => {
         expect(indexDiff.get("sndCommit.txt")).to.equal(IndexStatus.Added);
 
         // test mixed reset (default) along with the diff commands
-        const resetMixed = await reset(repo, commitObj.parentSHA, ResetMode.Mixed);
+        const resetMixed = await reset(repo, commitObj!.parentSHA, ResetMode.Mixed);
         // ie. did not throw an error
         expect(resetMixed).to.equal(true);
         const statusMixed = await getStatus(repo);
@@ -142,20 +142,20 @@ describe("Testing overall commands", () => {
 
     it("Cteates new branches and renames them", async () => {
         const branch = await createBaranch(repo, "three", "HEAD");
-        expect(branch.name).to.equal("three");
+        expect(branch!.name).to.equal("three");
         const refs = await getBranches(repo);
         expect(refs).to.have.lengthOf(3);
-        const filterRes: Branch = refs.find((br) => br.name === "three");
+        const filterRes: Branch | undefined = refs.find((br) => br.name === "three");
         const statusRes = await getStatus(repo);
-        expect(filterRes.tip.SHA).to.equal(statusRes.currentTip);
-        expect(statusRes.currentTip).to.equal(branch.tip.SHA);
+        expect(filterRes!.tip.SHA).to.equal(statusRes.currentTip);
+        expect(statusRes.currentTip).to.equal(branch!.tip.SHA);
         await git(["branch", "-d", "three"], repo.path);
         const renameWrapper = async () => {
-            await renameBranch(repo, branch, "threee");
+            await renameBranch(repo, branch!, "threee");
         };
         // this test fails for now till the error handling is implemented.
         expect(renameWrapper).to.throw();
-        await renameBranch(repo, branch, "klds//'.,.,><>*-+.jlads");
+        await renameBranch(repo, branch!, "klds//'.,.,><>*-+.jlads");
 
     });
 

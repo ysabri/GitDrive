@@ -1,9 +1,9 @@
 import * as chai from "chai";
 import {accessSync, constants } from "fs";
+import init from "git-drive/git/init";
 import {join} from "path";
-import init from "../../src/git-drive/git/init";
 
-let pathToCreateAt;
+let pathToCreateAt: string;
 
 describe("Testing the init command", () => {
     // initialize the variable before all tests

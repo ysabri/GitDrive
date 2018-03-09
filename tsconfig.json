@@ -18,14 +18,15 @@
     "paths": {
       "git/*": ["git-drive/git/*"],
       "models/git/*": ["model/git/*"],
-      "utils/*": ["util/*"],
+      "utils/*": ["util/*"]
     }
   },
   "include": [
     "src/**/*"
   ],
   "exclude":[
-    "node_modules"
+    "node_modules",
+    "src/tests/**/*"
   ],
   "compileOnSave": false
 }
