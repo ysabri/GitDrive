@@ -4,9 +4,9 @@
  */
 import {expect} from "chai";
 import * as Path from "path";
-import {getBranches} from "../../src/git-drive/for-each-ref";
-import {Branch} from "../../src/model/branch";
-import {Repository} from "../../src/model/repository";
+import {getBranches} from "../../src/git-drive/git/for-each-ref";
+import {Branch} from "../../src/model/git/branch";
+import {Repository} from "../../src/model/git/repository";
 
 // this method is from mocha, it fine to call without importing cause
 // mocha is in the global namespace, so is node for example.

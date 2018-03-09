@@ -1,21 +1,21 @@
 import {expect} from "chai";
 import {unlinkSync, writeFileSync} from "fs";
 import {join} from "path";
-import {createBaranch, renameBranch } from "../../src/git-drive/branch";
-import {checkoutBranch} from "../../src/git-drive/checkout";
-import {commit} from "../../src/git-drive/commit";
-import {git} from "../../src/git-drive/core-git";
-import {getCommitDiff, getWorkingDirectoryDiff} from "../../src/git-drive/diff";
-import {getIndexChanges, IndexStatus} from "../../src/git-drive/diff-index";
-import {getBranches} from "../../src/git-drive/for-each-ref";
-import {getChangedFiles, getCommit, getCommits} from "../../src/git-drive/log";
-import {reset, ResetMode} from "../../src/git-drive/reset";
-import {getStatus, IStatusResult} from "../../src/git-drive/status";
-import {Branch} from "../../src/model/branch";
-import {Commit} from "../../src/model/commit";
-import {DiffType} from "../../src/model/diff";
-import {Repository} from "../../src/model/repository";
-import {AppFileStatus} from "../../src/model/status";
+import {createBaranch, renameBranch } from "../../src/git-drive/git/branch";
+import {checkoutBranch} from "../../src/git-drive/git/checkout";
+import {commit} from "../../src/git-drive/git/commit";
+import {git} from "../../src/git-drive/git/core-git";
+import {getCommitDiff, getWorkingDirectoryDiff} from "../../src/git-drive/git/diff";
+import {getIndexChanges, IndexStatus} from "../../src/git-drive/git/diff-index";
+import {getBranches} from "../../src/git-drive/git/for-each-ref";
+import {getChangedFiles, getCommit, getCommits} from "../../src/git-drive/git/log";
+import {reset, ResetMode} from "../../src/git-drive/git/reset";
+import {getStatus, IStatusResult} from "../../src/git-drive/git/status";
+import {Branch} from "../../src/model/git/branch";
+import {Commit} from "../../src/model/git/commit";
+import {DiffType} from "../../src/model/git/diff";
+import {Repository} from "../../src/model/git/repository";
+import {AppFileStatus} from "../../src/model/git/status";
 import {DiffParser} from "../../src/util/diff-parser";
 
 describe("Testing overall commands", () => {

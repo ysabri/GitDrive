@@ -1,7 +1,7 @@
 import * as chai from "chai";
 import {accessSync, constants } from "fs";
 import {join} from "path";
-import init from "../../src/git-drive/init";
+import init from "../../src/git-drive/git/init";
 
 let pathToCreateAt;
 

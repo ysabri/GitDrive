@@ -1,9 +1,9 @@
 import {expect} from "chai";
 import {join} from "path";
-import {createBaranch, renameBranch } from "../../src/git-drive/branch";
-import {git} from "../../src/git-drive/core-git";
-import {getBranches} from "../../src/git-drive/for-each-ref";
-import { Repository } from "../../src/model/repository";
+import {createBaranch, renameBranch } from "../../src/git-drive/git/branch";
+import {git} from "../../src/git-drive/git/core-git";
+import {getBranches} from "../../src/git-drive/git/for-each-ref";
+import { Repository } from "../../src/model/git/repository";
 // import { Commit } from "../../src/model/commit";
 
 describe("Testing the branch command", () => {
