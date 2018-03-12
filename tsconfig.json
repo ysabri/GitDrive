@@ -18,7 +18,8 @@
     "paths": {
       "git/*": ["git-drive/git/*"],
       "models/git/*": ["model/git/*"],
-      "utils/*": ["util/*"]
+      "utils/*": ["util/*"],
+      "models/app/*" : ["model/app/*"],
     }
   },
   "include": [

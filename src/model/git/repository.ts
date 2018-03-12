@@ -1,4 +1,4 @@
-import {basename} from "path";
+import { basename } from "path";
 
 /**
  * An immutable object to keep track of local repos.
@@ -11,22 +11,18 @@ export class Repository {
     public readonly path: string;
     /** Name of repo is the directory name it resides in */
     public readonly name: string;
-    /** A list of authors */
-    public readonly authors: ReadonlyArray<string>;
 
     public constructor(
         path: string,
-        authors: ReadonlyArray<string>,
     ) {
         this.path = path;
         this.name = basename(path);
-        this.authors = authors;
     }
 /**
  * For now repos with the same id are the same.
  */
 public get id(): string {
-    return `${this.path}${this.name}${this.authors}`;
+    return `${this.path}${this.name}`;
 }
 
 }
