@@ -2,6 +2,7 @@ import { app, BrowserWindow } from "electron";
 import { join } from "path";
 import { format } from "url";
 import { git } from "./git-drive/git/core-git";
+import { EnclosedVariant, IPublicVariant, PublicVariant, Variant } from "./model/POST";
 
 // YS:The null here is for the sake of dereferencing the object when the window
 // is closed.
@@ -49,6 +50,21 @@ function createWindow() {
     // tslint:disable-next-line:no-console
     console.log("why did this got rejected: " + err);
   });
+
+  const x: IPublicVariant = {stability: PublicVariant.MockupModel, type: "Public"};
+  const y: Variant = {stability: EnclosedVariant.InternalVariant, type: "Enclosed"};
+  testing(x);
+  testing(y);
+
+  function testing(variant: Variant): void {
+    if (variant.type === "Public") {
+      // tslint:disable-next-line:no-console
+      console.log("Public was passed");
+    } else {
+      // tslint:disable-next-line:no-console
+      console.log("Private was passed");
+    }
+  }
 
 }
 
