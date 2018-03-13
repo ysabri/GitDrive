@@ -1,6 +1,6 @@
 import { Commit } from "models/git/commit";
-import { User } from "./User";
-import { WorkSpace } from "./WorkSpace";
+import { User } from "./user";
+import { WorkSpace } from "./workspace";
 
 /** An immutable TopicSpace */
 export class TopicSpace {

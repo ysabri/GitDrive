@@ -1,15 +1,16 @@
 import { Commit } from "models/git/commit";
-import { GFile } from "./File";
-import { User } from "./User";
+import { GFile } from "./g-File";
+import { User } from "./user";
 
 /** An immutable workspace object */
 export class WorkSpace {
     /**
-     * The name of the workspace, for now it is the first 15 chars of the first
-     * commit's SHA. This should be dynamically decided, what I mean is it
-     * should be based on the least needed number of chars, the way git does
-     * it. So 7 at first then one more till that is not enough to uniquely
-     * identify and so on.
+     * The name of the workspace, for now it is the first G then the first 10
+     * chars of the first commit's SHA. This should be dynamically decided,
+     * what I mean is it should be based on the least needed number of chars,
+     * the way git does it. So 7 at first then one more till that is not enough
+     * to uniquely identify and so on. The G is to avoid ambiguity when calling
+     * commands like branch and checkout
      */
     public readonly name: string;
     /** The user that owns the workspace */

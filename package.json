@@ -40,6 +40,14 @@
     "typescript": "^2.6.2"
   },
   "dependencies": {
+    "module-alias": "^2.0.6",
     "protobufjs": "^6.8.6"
+  },
+  "_moduleAliases": {
+    "git": "build/git-drive/git",
+    "models/git": "build/model/git",
+    "utils": "build/util",
+    "app": "build/git-drive/app",
+    "models/app": "build/model/app"
   }
 }

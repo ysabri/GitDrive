@@ -1,7 +1,12 @@
+// tslint:disable-next-line:no-var-requires
+require("module-alias/register");
+
+import { checkoutDir } from "app/partialcheckouts";
 import { app, BrowserWindow } from "electron";
+import { git } from "git/core-git";
+import { GRepository } from "models/app/g-repository";
 import { join } from "path";
 import { format } from "url";
-import { git } from "./git-drive/git/core-git";
 import { EnclosedVariant, IPublicVariant, PublicVariant, Variant } from "./model/POST";
 
 // YS:The null here is for the sake of dereferencing the object when the window

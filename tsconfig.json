@@ -19,7 +19,8 @@
       "git/*": ["git-drive/git/*"],
       "models/git/*": ["model/git/*"],
       "utils/*": ["util/*"],
-      "models/app/*" : ["model/app/*"],
+      "app/*": ["git-drive/app/*"],
+      "models/app/*" : ["model/app/*"]
     }
   },
   "include": [
