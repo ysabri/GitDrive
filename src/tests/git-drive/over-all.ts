@@ -150,12 +150,16 @@ describe("Testing overall commands", () => {
         expect(filterRes!.tip.SHA).to.equal(statusRes.currentTip);
         expect(statusRes.currentTip).to.equal(branch!.tip.SHA);
         await git(["branch", "-d", "three"], repo.path);
-        const renameWrapper = async () => {
+        // cool guy test over here: So this tests a promise that is expected to
+        // throw and exists gracefully. Took some tinkering but it works as
+        // expected, meaning that if the promise does not throw the test fails.
+        let caught: boolean = true;
+        try {
             await renameBranch(repo, branch!, "threee");
-        };
-        // this test fails for now till the error handling is implemented.
-        expect(renameWrapper).to.throw();
-        await renameBranch(repo, branch!, "klds//'.,.,><>*-+.jlads");
+        } catch {
+            caught = false;
+        }
+        expect(caught).to.equal(false);
 
     });
 
