@@ -16,11 +16,13 @@
     "typeRoots": [ "./node_modules/@types" ],
     "baseUrl": "./src",
     "paths": {
+      "app/*": ["git-drive/app/*"],
+      "models/app/*" : ["model/app/*"],
+      "examples/*": ["examples/*"],
       "git/*": ["git-drive/git/*"],
       "models/git/*": ["model/git/*"],
-      "utils/*": ["util/*"],
-      "app/*": ["git-drive/app/*"],
-      "models/app/*" : ["model/app/*"]
+      "POST" : ["model/POST.ts"],
+      "utils/*": ["util/*"]
     }
   },
   "include": [

@@ -48,6 +48,8 @@
     "models/git": "build/model/git",
     "utils": "build/util",
     "app": "build/git-drive/app",
-    "models/app": "build/model/app"
+    "models/app": "build/model/app",
+    "examples": "build/examples",
+    "POST": "build/model/POST.js"
   }
 }
