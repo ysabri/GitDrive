@@ -1,10 +1,4 @@
-import { GFile } from "models/app/g-file";
 import { Branch } from "models/git/branch";
-import { Commit } from "models/git/commit";
-import { CommitterID } from "models/git/committer-id";
-import {getVal} from "utils/getVal";
-import { IPublicVariant, PublicVariant } from "../POST";
-import { WorkSpace } from "./workspace";
 
 /**
  * A key value map to be used for each workspace name to map a branch for
@@ -34,5 +28,6 @@ export class User {
         this.email = email;
         this.workSpaces = workspace;
     }
+
 
 }

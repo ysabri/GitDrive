@@ -2,6 +2,10 @@ import { Commit } from "models/git/commit";
 import { GFile } from "./g-File";
 import { User } from "./user";
 
+export interface IChangeList {
+    [key: string]: GFile;
+}
+
 /** An immutable workspace object */
 export class WorkSpace {
     /**
@@ -21,13 +25,13 @@ export class WorkSpace {
      * The SHA of the files along with the file itself that is yet to be
      * integrated into the WorkSpace.
      */
-    public readonly changeList: [string, GFile];
+    public readonly changeList: IChangeList;
 
     public constructor(
         name: string,
         user: User,
         commit: ReadonlyArray<Commit>,
-        changeList: [string, GFile],
+        changeList: IChangeList,
     ) {
         this.name = name;
         this.user = user;

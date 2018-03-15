@@ -6,6 +6,8 @@ import { GRepository } from "models/app/g-repository";
 import { join } from "path";
 
 /**
+ * This is not as strict as it should be since it is not harmful without the
+ * ability to commit the checkout.
  * This assumes that the intended workspace checked out already.
  * The caller is responsible for the state change in checkouts.
  * This also assumes the owner of the workspace is performing this checkout
@@ -16,13 +18,14 @@ export async function checkoutFile(
     repo: GRepository,
     file: GFile,
 ): Promise<void> {
-    // stage all the file before checkout to avoid lossing it
     addAllToIndex(repo);
     // checkout the file
     partialCheckout(repo, file.commit.SHA, [file.path]);
 }
 /**
  * Checkout the contents of a directory based on the state of the targetRef
+ * This is not as strict as it should be since it is not harmful without the
+ * ability to commit the checkouts.
  * This assumes the intended workspace is checked out already.
  * This also assumes the correct user is performing this.
  * @param repo The repo where the partial checkouts will happen
