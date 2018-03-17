@@ -33,10 +33,14 @@ export class WorkSpace {
         commit: ReadonlyArray<Commit>,
         changeList: IChangeList,
     ) {
-        this.name = name;
+        this.name = "G" + name.slice(0, 11);
         this.user = user;
         this.commit = commit;
         this.changeList = changeList;
+    }
+
+    public id(): string {
+        return `**<WorkSpace: ${this.name} ${this.user.id()} with commits:${this.commit.length}>**`;
     }
 
 }

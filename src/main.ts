@@ -1,10 +1,12 @@
 // tslint:disable-next-line:no-var-requires
 require("module-alias/register");
 
+import { startRepo } from "app/start";
 import { app, BrowserWindow } from "electron";
-import { keyValPair, variant } from "examples/examples";
-import { git } from "git/core-git";
-import { join } from "path";
+// import { keyValPair, variant } from "examples/examples";
+// import { git } from "git/core-git";
+import { IWorkspaceBranch, User } from "models/app/user";
+import { join, normalize } from "path";
 import { format } from "url";
 
 // YS:The null here is for the sake of dereferencing the object when the window
@@ -32,7 +34,7 @@ function createWindow() {
   }));
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
 
   // Emitted when the window is closed.
   mainWindow.on("closed", () => {
@@ -41,20 +43,33 @@ function createWindow() {
     // when you should delete the corresponding element.
     mainWindow = null;
   });
-  const result = git(["config", "--list"], join(__dirname, "./"));
+  // const result = git(["config", "--list"], join(__dirname, "./"));
 
-  result.then((res) => {
+  // result.then((res) => {
+  //   // tslint:disable-next-line:no-console
+  //   // console.log(res.stdout);
+  //   if (mainWindow) {
+  //     mainWindow.setSize(500, 400);
+  //   }
+  // }).catch((err) => {
+  //   // tslint:disable-next-line:no-console
+  //   console.log("why did this got rejected: " + err);
+  // });
+  // variant();
+  // keyValPair();
+  const users: User[] = [];
+  const emptyWorkSpaceBranch: IWorkspaceBranch = {};
+  users.push(new User("Yazeed Sabri", "ysabri@wisc.edu", emptyWorkSpaceBranch));
+  users.push(new User("LL", "LL@wisc.edu", emptyWorkSpaceBranch));
+  users.push(new User("GWiz", "GWiz@wisc.edu", emptyWorkSpaceBranch));
+  const promise = startRepo(normalize("C:\\Users\\hacoo\\Desktop\\repo-with-files"), users);
+  promise.then((repo) => {
     // tslint:disable-next-line:no-console
-    // console.log(res.stdout);
-    if (mainWindow) {
-      mainWindow.setSize(500, 400);
-    }
+    console.log(repo.id());
   }).catch((err) => {
     // tslint:disable-next-line:no-console
-    console.log("why did this got rejected: " + err);
+    console.log("The startRepo promise got rejected with: " + err);
   });
-  variant();
-  keyValPair();
 }
 
 // This method will be called when Electron has finished

@@ -27,4 +27,12 @@ export class TopicSpace {
         this.workSpaces = workspaces;
         this.originCommit = origincommit;
     }
+
+    public id(): string {
+        return `**[TopicSpace: ${this.name}\n\t${this.users.map((val) => {
+            return val.id();
+        }).toString()}\n\t${this.workSpaces.map((val) => {
+            return val.id();
+        }).toString()}\n\t]**`;
+    }
 }

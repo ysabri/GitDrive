@@ -29,5 +29,7 @@ export class User {
         this.workSpaces = workspace;
     }
 
-
+    public id(): string {
+        return `**{User: ${this.name} ${this.name}}**`;
+    }
 }

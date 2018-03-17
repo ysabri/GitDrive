@@ -21,7 +21,7 @@ export class Repository {
 /**
  * For now repos with the same id are the same.
  */
-public get id(): string {
+public id(): string {
     return `${this.path}${this.name}`;
 }
 

@@ -2,6 +2,7 @@ import { TopicSpace } from "models/app/topicspace";
 import { User } from "models/app/user";
 import { Repository } from "models/git/repository";
 
+
 /** An immutable repository object */
 export class GRepository extends Repository {
     // A list of TopicSpace in the repo
@@ -19,4 +20,11 @@ export class GRepository extends Repository {
         this.users = users;
     }
 
+    public id(): string {
+        return `**(Repository: ${super.id()}\n\t${this.topicSpaces.map((val) => {
+            return val.id();
+        }).toString()}\n\t${this.users.map((val) => {
+            return val.id();
+        }).toString()}\n)**`;
+    }
 }
