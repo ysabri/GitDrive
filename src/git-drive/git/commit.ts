@@ -1,4 +1,4 @@
-import { Repository } from "models/git/repository";
+import { Repository } from "../../model/git/repository";
 import { addAllToIndex } from "./add";
 import { git } from "./core-git";
 import { unstageResetAll } from "./reset";

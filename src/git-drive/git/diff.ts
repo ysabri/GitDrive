@@ -16,17 +16,17 @@ import {
   IRawDiff,
   LineEndingsChange,
   parseLineEndingText,
-} from "models/git/diff";
-import { Repository } from "models/git/repository";
+} from "../../model/git/diff";
+import { Repository } from "../../model/git/repository";
 import {
   AppFileStatus,
   FileChange,
   WorkingDirectoryFileChange,
-} from "models/git/status";
+} from "../../model/git/status";
 
-import { spawnAndComplete } from "utils/spawn";
+import { spawnAndComplete } from "../../util/spawn";
 
-import { DiffParser } from "utils/diff-parser";
+import { DiffParser } from "../../util/diff-parser";
 
 /**
  * V8 has a limit on the size of string it can create, and unless we want to

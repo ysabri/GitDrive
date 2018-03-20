@@ -1,5 +1,5 @@
-import { Commit } from "models/git/commit";
-import { Variant } from "POST";
+import { Commit } from "../git/commit";
+import { Variant } from "../POST";
 import { User } from "./user";
 
 /** An immutable file object */

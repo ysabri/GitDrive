@@ -1,4 +1,4 @@
-import { Repository } from "models/git/repository";
+import { Repository } from "../../model/git/repository";
 import { git } from "./core-git";
 
 export interface IAddToIndexOptions {

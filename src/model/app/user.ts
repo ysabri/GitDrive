@@ -1,4 +1,4 @@
-import { Branch } from "models/git/branch";
+import { Branch } from "../git/branch";
 
 /**
  * A key value map to be used for each workspace name to map a branch for

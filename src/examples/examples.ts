@@ -1,9 +1,11 @@
-import { IWorkspaceBranch } from "models/app/user";
-import { Branch } from "models/git/branch";
-import { Commit } from "models/git/commit";
-import { CommitterID } from "models/git/committer-id";
-import { EnclosedVariant, IPublicVariant, PublicVariant, Variant } from "POST";
-import { getVal } from "utils/getVal";
+import { normalize } from "path";
+import { startRepo } from "../git-drive/app/start";
+import { IWorkspaceBranch, User } from "../model/app/user";
+import { Branch } from "../model/git/branch";
+import { Commit } from "../model/git/commit";
+import { CommitterID } from "../model/git/committer-id";
+import { EnclosedVariant, IPublicVariant, PublicVariant, Variant } from "../model/POST";
+import { getVal } from "../util/getVal";
 
 
 // Show an example of how to use the Variant types

@@ -1,6 +1,6 @@
-import { TopicSpace } from "models/app/topicspace";
-import { User } from "models/app/user";
-import { Repository } from "models/git/repository";
+import { Repository } from "../git/repository";
+import { TopicSpace } from "./topicspace";
+import { User } from "./user";
 
 
 /** An immutable repository object */

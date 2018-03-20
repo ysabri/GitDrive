@@ -1,10 +1,10 @@
 // This code was refactored from: https://github.com/desktop/desktop project,
 // at this link:
 // https://github.com/desktop/desktop/blob/master/app/src/lib/git/log.ts
-import { Commit } from "models/git/commit";
-import { CommitterID } from "models/git/committer-id";
-import { Repository } from "models/git/repository";
-import { AppFileStatus, CommittedFileChange } from "models/git/status";
+import { Commit } from "../../model/git/commit";
+import { CommitterID } from "../../model/git/committer-id";
+import { Repository } from "../../model/git/repository";
+import { AppFileStatus, CommittedFileChange } from "../../model/git/status";
 import { git } from "./core-git";
 
 /**

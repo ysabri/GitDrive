@@ -3,7 +3,7 @@
 // https://github.com/desktop/desktop/blob/master/app/src/lib/status-parser.ts
 // and it was mainly written by: https://github.com/niik
 
-import { FileEntry, GitStatusEntry } from "models/git/status";
+import { FileEntry, GitStatusEntry } from "../model/git/status";
 
 export type StatusItem = IStatusHeader | IStatusEntry;
 

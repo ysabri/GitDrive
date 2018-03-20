@@ -1,14 +1,23 @@
+// import { copyFile, existsSync, writeFile } from "fs";
 import { existsSync, writeFile } from "fs";
-import init from "git/init";
-import { GRepository } from "models/app/g-repository";
-import { TopicSpace } from "models/app/topicspace";
-import { User } from "models/app/user";
-import { IChangeList, WorkSpace } from "models/app/workspace";
-import { Branch } from "models/git/branch";
-import { Commit } from "models/git/commit";
 import { join } from "path";
-import { commit, getBranches, getCommit, renameBranch, git, createBaranch, checkoutBranch } from "../git";
+import { GRepository } from "../../model/app/g-repository";
+import { TopicSpace } from "../../model/app/topicspace";
+import { User } from "../../model/app/user";
+import { IChangeList, WorkSpace } from "../../model/app/workspace";
+import { Branch } from "../../model/git/branch";
+import { Commit } from "../../model/git/commit";
+import {    checkoutBranch,
+            commit,
+            createBaranch,
+            getBranches,
+            getCommit,
+            git,
+            renameBranch,
+        } from "../git";
+import init from "../git/init";
 
+// path to the global .gitignore file
 export const ignoreDir: string = join(__dirname, "../../../static/.gitignore");
 
 export async function startRepo(

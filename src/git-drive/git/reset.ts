@@ -1,5 +1,5 @@
-import { Repository } from "models/git/repository";
-import { assertNever } from "utils/errors-util";
+import { Repository } from "../../model/git/repository";
+import { assertNever } from "../../util/errors-util";
 import { git } from "./core-git";
 
 /** The supported reset methods, no hard resets. */

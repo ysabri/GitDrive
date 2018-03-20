@@ -1,4 +1,4 @@
-import { Commit } from "models/git/commit";
+import { Commit } from "../git/commit";
 import { User } from "./user";
 import { WorkSpace } from "./workspace";
 

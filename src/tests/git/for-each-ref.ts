@@ -3,10 +3,10 @@
  * TODO: Add test for recognizing remote branch namespace
  */
 import {expect} from "chai";
-import {getBranches} from "git-drive/git/for-each-ref";
-import {Branch} from "models/git/branch";
-import {Repository} from "models/git/repository";
 import * as Path from "path";
+import {getBranches} from "../../git-drive/git/for-each-ref";
+import {Branch} from "../../model/git/branch";
+import {Repository} from "../../model/git/repository";
 
 // this method is from mocha, it fine to call without importing cause
 // mocha is in the global namespace, so is node for example.

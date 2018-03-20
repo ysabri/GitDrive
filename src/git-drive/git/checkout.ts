@@ -1,5 +1,5 @@
-import { Branch } from "models/git/branch";
-import { Repository } from "models/git/repository";
+import { Branch } from "../../model/git/branch";
+import { Repository } from "../../model/git/repository";
 import { git } from "./core-git";
 
 /**

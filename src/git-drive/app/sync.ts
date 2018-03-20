@@ -1,12 +1,12 @@
-import { commit } from "git/commit";
-import { fetchAll } from "git/fetch";
-import { getCommit } from "git/log";
-import { pushBranch } from "git/push";
-import { getStatus } from "git/status";
-import { GRepository } from "models/app/g-repository";
-import { User } from "models/app/user";
-import { WorkSpace } from "models/app/workspace";
-import { getVal } from "utils/getVal";
+import { GRepository } from "../../model/app/g-repository";
+import { User } from "../../model/app/user";
+import { WorkSpace } from "../../model/app/workspace";
+import { getVal } from "../../util/getVal";
+import { commit } from "../git/commit";
+import { fetchAll } from "../git/fetch";
+import { getCommit } from "../git/log";
+import { pushBranch } from "../git/push";
+import { getStatus } from "../git/status";
 /**
  * The big sync function, assumes very little but demands a lot.
  * @param repo Repo where the commit, push, fetch will happen

@@ -1,9 +1,9 @@
 import { existsSync, lstatSync, readdir } from "fs";
-import { addAllToIndex } from "git/add";
-import { partialCheckout } from "git/checkout";
-import { GFile } from "models/app/g-file";
-import { GRepository } from "models/app/g-repository";
 import { join } from "path";
+import { GFile } from "../../model/app/g-file";
+import { GRepository } from "../../model/app/g-repository";
+import { addAllToIndex } from "../git/add";
+import { partialCheckout } from "../git/checkout";
 
 /**
  * This is not as strict as it should be since it is not harmful without the

@@ -2,10 +2,10 @@
 // at this link:
 // https://github.com/desktop/desktop/blob/master/app/src/lib/git/for-each-ref.ts
 
-import { Branch } from "models/git/branch";
-import { Commit } from "models/git/commit";
-import { CommitterID } from "models/git/committer-id";
-import { Repository } from "models/git/repository";
+import { Branch } from "../../model/git/branch";
+import { Commit } from "../../model/git/commit";
+import { CommitterID } from "../../model/git/committer-id";
+import { Repository } from "../../model/git/repository";
 import { git } from "./core-git";
 
 /**

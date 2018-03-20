@@ -9,7 +9,7 @@ import {
   DiffLine,
   DiffLineType,
   IRawDiff,
-} from "models/git/diff";
+} from "../model/git/diff";
 import { assertNever } from "./errors-util";
 
 // https://en.wikipedia.org/wiki/Diff_utility

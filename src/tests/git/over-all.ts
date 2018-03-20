@@ -1,22 +1,22 @@
 import {expect} from "chai";
 import {unlinkSync, writeFileSync} from "fs";
-import {createBaranch, renameBranch } from "git-drive/git/branch";
-import {checkoutBranch} from "git-drive/git/checkout";
-import {commit} from "git-drive/git/commit";
-import {git} from "git-drive/git/core-git";
-import {getCommitDiff, getWorkingDirectoryDiff} from "git-drive/git/diff";
-import {getIndexChanges, IndexStatus} from "git-drive/git/diff-index";
-import {getBranches} from "git-drive/git/for-each-ref";
-import {getChangedFiles, getCommit, getCommits} from "git-drive/git/log";
-import {reset, ResetMode} from "git-drive/git/reset";
-import {getStatus, IStatusResult} from "git-drive/git/status";
-import {Branch} from "models/git/branch";
-import {Commit} from "models/git/commit";
-import {DiffType} from "models/git/diff";
-import {Repository} from "models/git/repository";
-import {AppFileStatus} from "models/git/status";
 import {join} from "path";
-import {DiffParser} from "utils/diff-parser";
+import {createBaranch, renameBranch } from "../../git-drive/git/branch";
+import {checkoutBranch} from "../../git-drive/git/checkout";
+import {commit} from "../../git-drive/git/commit";
+import {git} from "../../git-drive/git/core-git";
+import {getCommitDiff, getWorkingDirectoryDiff} from "../../git-drive/git/diff";
+import {getIndexChanges, IndexStatus} from "../../git-drive/git/diff-index";
+import {getBranches} from "../../git-drive/git/for-each-ref";
+import {getChangedFiles, getCommit, getCommits} from "../../git-drive/git/log";
+import {reset, ResetMode} from "../../git-drive/git/reset";
+import {getStatus, IStatusResult} from "../../git-drive/git/status";
+import {Branch} from "../../model/git/branch";
+import {Commit} from "../../model/git/commit";
+import {DiffType} from "../../model/git/diff";
+import {Repository} from "../../model/git/repository";
+import {AppFileStatus} from "../../model/git/status";
+import {DiffParser} from "../../util/diff-parser";
 
 describe("Testing overall commands", () => {
     let repo: Repository;

@@ -2,7 +2,7 @@
 // at this link:
 // https://github.com/desktop/desktop/blob/master/app/src/models/status.ts
 // and it was mainly written by: https://github.com/niik
-import { assertNever } from "utils/errors-util";
+import { assertNever } from "../../util/errors-util";
 import { DiffSelection, DiffSelectionType } from "./diff";
 
 /**

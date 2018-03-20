@@ -1,7 +1,7 @@
 // This code was taken from: https://github.com/desktop/desktop project,
 // at this link:
 // https://github.com/desktop/desktop/blob/master/app/src/lib/git/diff-index.ts
-import { Repository } from "models/git/repository";
+import { Repository } from "../../model/git/repository";
 import { git } from "./core-git";
 
 /**

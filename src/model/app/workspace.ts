@@ -1,4 +1,4 @@
-import { Commit } from "models/git/commit";
+import { Commit } from "../git/commit";
 import { GFile } from "./g-File";
 import { User } from "./user";
 
