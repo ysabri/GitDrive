@@ -63,7 +63,7 @@ export class DiffParser {
    * The offset into the text property where the current line starts (ie either zero
    * or one character ahead of the last newline character).
    */
-  private ls: number;
+  private ls: number = 0;
 
   /**
    * Line end pointer.
@@ -71,12 +71,12 @@ export class DiffParser {
    * The offset into the text property where the current line ends (ie it points to
    * the newline character) or -1 if the line boundary hasn't been determined yet
    */
-  private le: number;
+  private le: number = -1;
 
   /**
    * The text buffer containing the raw, unified diff output to be parsed
    */
-  private text: string;
+  private text: string = "";
 
   public constructor() {
     this.reset();

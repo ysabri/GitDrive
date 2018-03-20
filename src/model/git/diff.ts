@@ -18,12 +18,12 @@ export class Image {
   /**
    * The base64 encoded contents of the image
    */
-  public readonly contents: string;
+  // public readonly contents: string;
 
   /**
    * The data URI media type, so the browser can render the image correctly
    */
-  public readonly mediaType: string;
+  // public readonly mediaType: string;
 }
 
 /** each diff is made up of a number of hunks */
