@@ -16,3 +16,4 @@ export * from "./push";
 export * from "./show";
 export * from "./log";
 export * from "./diff-index";
+export * from "./rev-parse";
