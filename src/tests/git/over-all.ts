@@ -24,7 +24,7 @@ describe("Testing overall commands", () => {
     const parser = new DiffParser();
     before (() => {
         twoBranchesPath = join(__dirname, "../testRepos/twoBranches/");
-        repo = new Repository(twoBranchesPath, ["Yazeed Sabri"]);
+        repo = new Repository(twoBranchesPath);
     });
 
     it("status returns the right branch and no changes", async () => {
@@ -78,7 +78,10 @@ describe("Testing overall commands", () => {
         writeFileSync(join(repo.path, "sndCommit.txt"), "Testing second commit");
 
         // check if the commit worked assuming that getCommits still works
-        const commitWorked = await commit(repo, "Second commit", "This is a message");
+        const commitWorked = await commit(repo, "Yazeed Sabri",
+                                    "sabri.yazeed@gmail.com",
+                                    "Second commit",
+                                    "This is a message");
         expect(commitWorked).to.equal(true);
         const commitObj = await getCommit(repo, "two");
         expect(commitObj!.committer.name).to.equal("Yazeed Sabri");

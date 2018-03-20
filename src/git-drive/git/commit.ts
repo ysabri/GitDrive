@@ -13,6 +13,8 @@ import { unstageResetAll } from "./reset";
  */
 export async function commit(
     repo: Repository,
+    name: string,
+    email: string,
     summary: string,
     message: string,
 ): Promise<boolean> {
@@ -26,7 +28,7 @@ export async function commit(
 
     await addAllToIndex(repo);
 
-    const args = ["commit", "-F", "-"];
+    const args = ["commit", `--author="${name} <${email}>`, "-F", "-"];
     await git(args, repo.path, {
         stdin: commitMessage,
     });

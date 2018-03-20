@@ -14,7 +14,7 @@ describe("Testing the for-each-ref command", () => {
     let twoBranchesRepo: Repository;
     before(() => {
         twoBranchesRepo = new Repository(Path.join
-            (__dirname, "../testRepos/twoBranches/"), ["Yazeed Sabri"]);
+            (__dirname, "../testRepos/twoBranches/"));
     });
     it("returns all branches when given no namespace", async () => {
         const branches = await getBranches(twoBranchesRepo);

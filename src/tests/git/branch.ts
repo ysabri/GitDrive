@@ -12,7 +12,7 @@ describe("Testing the branch command", () => {
     it("Creates a branch", () => {
         const commitSHA = "253f546bc4f6398bb218d425e2f862df5aa65be4";
         const twoBranchesPath = join(__dirname, "../testRepos/twoBranches/");
-        const twoBranchesRepo = new Repository(twoBranchesPath, ["Yazeed Sabri"]);
+        const twoBranchesRepo = new Repository(twoBranchesPath);
         // const commit = new Commit(commitSHA,)
     });
 });

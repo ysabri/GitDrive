@@ -19,7 +19,12 @@ import init from "../git/init";
 
 // path to the global .gitignore file
 export const ignoreDir: string = join(__dirname, "../../../static/.gitignore");
-
+/**
+ * Create a repo with the given users. This will add any files/folders in path
+ * to the repo. The name of the repo is the basename(path).
+ * @param path where to create the repo
+ * @param users the authors at the beginning of the repo
+ */
 export async function startRepo(
     path: string,
     users: ReadonlyArray<User>,
@@ -28,24 +33,30 @@ export async function startRepo(
     if (!existsSync(path)) {
         throw new Error("[startRepo] The path doesn't exist: " + path);
     }
+
     // init the repo, with name basename(path)
     init(path);
-    // tslint:disable-next-line:no-console
-    console.log(ignoreDir);
-    // tslint:disable-next-line:no-console
-    console.log(path + "\\.gitignore");
+
     // copy the global default .gitignore for the first commit ever
-    // await copyFileSync(ignoreDir, path + "\\.gitignore");
+    // await copyFile(ignoreDir, path + "\\.gitignore", (err) => {
+    //     if (err) {
+    //         throw err;
+    //     }
+    // });
 
     // write the inital global .CURRENT_USER file
     await writeUserFile("GLOBAL USER", path);
+
     // temp obj to do operations on
     let GRepo = new GRepository(path, [], users);
     // create the first commit
     const res = await commit(GRepo,
+        "GLOBAL USER",
+        "testEmail@gmail.com",
         `First revision for: ${GRepo.name}`,
         `This revision adds the initial default .gitignore file along with any files in: ${GRepo.path}`);
 
+    // check if commit was a success and get it's info
     let firstCommit: Commit | null;
     if (res) {
         firstCommit = await getCommit(GRepo, "master");
@@ -53,6 +64,7 @@ export async function startRepo(
         throw new Error("[startRepo] commit failed as it returned false");
     }
 
+    // Create the workspaces on top of the fist commit
     let workspaces: ReadonlyArray<WorkSpace>;
     if (!firstCommit) {
         couldntFindCommit("first commit");
@@ -62,6 +74,7 @@ export async function startRepo(
         GRepo = new GRepository(path, [mainTopicSpace], users);
         return GRepo;
     }
+
     // This is what an invalid repo would look like, a repo with no TopicScapes
     // since it has no users.
     // Useful if we want to define a bare repo.
@@ -76,45 +89,60 @@ async function createWorkSpaces(
     users: ReadonlyArray<User>,
     firstCommit: Commit,
 ): Promise<ReadonlyArray<WorkSpace>> {
+    // array of to be returned workspaces
     const workspaces: WorkSpace[] = [];
+    // an empty changelist to init workspaces
     const emptyChangeList: IChangeList = {};
+    // a holder for the for-each-ref cmd
     let master: ReadonlyArray<Branch>;
+    // temp holder for user workspaces that will get pushed to workspaces
     let tempWS: WorkSpace;
+    // temp holder for the second commit obj
     let secondCommit: Commit | null;
+    // temp holder to the commit cmd result
     let commitRes: boolean;
-    // tslint:disable-next-line:forin
+
+    // tslint:disable-next-line:prefer-const
     for (let i in users) {
-        await writeUserFile(users[i].name + " " + users[i].email, repo.path);
+        if (users.hasOwnProperty(i)) {
+            await writeUserFile(users[i].name + " " + users[i].email, repo.path);
 
-        commitRes = await commit(repo,
-        `First revision for ${users[i].name}'s workspace: `,
-        ``);
+            commitRes = await commit(repo,
+                users[i].name,
+                users[i].email,
+                `First revision for ${users[i].name}'s workspace: `,
+                ``);
 
-        if (commitRes) {
-            secondCommit = await getCommit(repo , "master");
-        } else {
-            throw new Error("[startRepo] commit failed as it returned false");
-        }
+            if (commitRes) {
+                secondCommit = await getCommit(repo , "master");
+            } else {
+                throw new Error("[startRepo] commit failed as it returned false");
+            }
 
-        if (!secondCommit) {
-            couldntFindCommit(`user: ${users[i].name} commit`);
-        } else {
-            // should just return master
-            master = await getBranches(repo, "refs/heads/master");
+            if (!secondCommit) {
+                couldntFindCommit(`user: ${users[i].name} commit`);
+            } else {
+                // should just return master
+                master = await getBranches(repo, "refs/heads/master");
 
-            tempWS = new WorkSpace(secondCommit.SHA, users[i], [secondCommit], emptyChangeList);
-            workspaces.push(tempWS);
+                tempWS = new WorkSpace(secondCommit.SHA, users[i], [secondCommit], emptyChangeList);
+                workspaces.push(tempWS);
 
-            await renameBranch(repo, master[0], tempWS.name);
-            if (i !== String(users.length - 1)) {
+                await renameBranch(repo, master[0], tempWS.name);
 
-                await createBaranch(repo, "master", secondCommit.SHA);
-                // I know, but the branch obj shouldn't have changed as it has no
-                // knowledge about being checked-out and it is on the same commit
-                await checkoutBranch(repo, master[0]);
+                // re-create master for the next iteration, and reset it back
+                // to the first commit.
+                if (i !== String(users.length - 1)) {
 
-                const resetHardArgs = ["reset", "--hard", firstCommit.SHA];
-                await git(resetHardArgs, repo.path);
+                    await createBaranch(repo, "master", secondCommit.SHA);
+                    // I know, but the branch obj shouldn't have changed as it
+                    // has no knowledge about being checked-out or renamed and
+                    // it is on the same commit
+                    await checkoutBranch(repo, master[0]);
+
+                    const resetHardArgs = ["reset", "--hard", firstCommit.SHA];
+                    await git(resetHardArgs, repo.path);
+                }
             }
         }
     }
@@ -122,7 +150,10 @@ async function createWorkSpaces(
     return workspaces;
 }
 
-async function writeUserFile(userName: string, repoPath: string) {
+async function writeUserFile(
+    userName: string,
+    repoPath: string,
+): Promise<void> {
     await writeFile(join(repoPath, ".CURRENT_USER"), userName, (err) => {
         if (err) {
             throw err;

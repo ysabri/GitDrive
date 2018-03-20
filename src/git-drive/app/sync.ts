@@ -49,7 +49,7 @@ export async function sync(
             + "that belongs to user: " + user.name);
     }
     // commit the changes now that everything checks-out :)
-    commit(repo, summary, body);
+    commit(repo, user.name, user.email, summary, body);
     // push the changes
     pushBranch(repo, userBranch.name);
     // pull the other branches

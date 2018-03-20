@@ -7,6 +7,24 @@ import { CommitterID } from "../model/git/committer-id";
 import { EnclosedVariant, IPublicVariant, PublicVariant, Variant } from "../model/POST";
 import { getVal } from "../util/getVal";
 
+// show an example to start repo, this might pass as a test but not quite,
+// the info to check is left for user.
+export async function startEx() {
+  const users: User[] = [];
+  const emptyWorkSpaceBranch: IWorkspaceBranch = {};
+  users.push(new User("Yazeed Sabri", "ysabri@wisc.edu", emptyWorkSpaceBranch));
+  users.push(new User("LL", "LL@wisc.edu", emptyWorkSpaceBranch));
+  users.push(new User("GWiz", "GWiz@wisc.edu", emptyWorkSpaceBranch));
+  try {
+    await startRepo(normalize("C:\\Users\\hacoo\\Desktop\\repo-with-files"), users);
+    return;
+    // tslint:disable-next-line:no-console
+    // console.log(repo.id());
+  } catch (err) {
+    // tslint:disable-next-line:no-console
+    console.log("The startRepo promise got rejected with: " + err);
+  }
+}
 
 // Show an example of how to use the Variant types
 export async function variant() {
