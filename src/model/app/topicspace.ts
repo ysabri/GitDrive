@@ -29,10 +29,10 @@ export class TopicSpace {
     }
 
     public id(): string {
-        return `**[TopicSpace: ${this.name}\n\t${this.users.map((val) => {
+        return `${this.name}\n\t\t Users:(${this.users.map((val) => {
             return val.id();
-        }).toString()}\n\t${this.workSpaces.map((val) => {
+        }).toString()})\n\t\t and WorkSpaces:(${this.workSpaces.map((val) => {
             return val.id();
-        }).toString()}\n\t]**`;
+        }).toString()})`;
     }
 }

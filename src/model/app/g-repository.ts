@@ -21,10 +21,10 @@ export class GRepository extends Repository {
     }
 
     public id(): string {
-        return `**(Repository: ${super.id()}\n\t${this.topicSpaces.map((val) => {
+        return `**(Repository: ${super.id()}\n\t with TopicSpace: ${this.topicSpaces.map((val) => {
             return val.id();
-        }).toString()}\n\t${this.users.map((val) => {
+        }).toString()}\n\t and Users:(${this.users.map((val) => {
             return val.id();
-        }).toString()}\n)**`;
+        }).toString()})\n)**`;
     }
 }

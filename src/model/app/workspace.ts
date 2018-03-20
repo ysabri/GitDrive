@@ -40,7 +40,7 @@ export class WorkSpace {
     }
 
     public id(): string {
-        return `**<WorkSpace: ${this.name} ${this.user.id()} with commits:${this.commit.length}>**`;
+        return ` ${this.name} for:${this.user.name} with ${this.commit.length} commits`;
     }
 
 }

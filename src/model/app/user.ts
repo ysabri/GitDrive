@@ -30,6 +30,6 @@ export class User {
     }
 
     public id(): string {
-        return `**{User: ${this.name} ${this.name}}**`;
+        return ` ${this.name} ${this.email}`;
     }
 }
