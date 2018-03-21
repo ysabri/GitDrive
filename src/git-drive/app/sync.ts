@@ -28,7 +28,8 @@ export async function sync(
         throw new Error("[sync] User: " + user.name + " does not own the WorkSpace: "
             + workspace.name);
     }
-    // see if branch exists by getting its tip commit
+    // see if branch exists by getting its tip commit, I could do the same
+    // thing using for-each-ref
     const tip = await getCommit(repo, userBranch.name);
     if (!tip) {
         throw new Error("[sync] Branch: " + userBranch.name + " doesn't exit" +
@@ -49,9 +50,9 @@ export async function sync(
             + "that belongs to user: " + user.name);
     }
     // commit the changes now that everything checks-out :)
-    commit(repo, user.name, user.email, summary, body);
+    await commit(repo, user.name, user.email, summary, body);
     // push the changes
-    pushBranch(repo, userBranch.name);
+    await pushBranch(repo, userBranch.name);
     // pull the other branches
-    fetchAll(repo);
+    await fetchAll(repo);
 }

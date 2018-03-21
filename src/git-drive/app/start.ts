@@ -13,6 +13,7 @@ import {    checkoutBranch,
             getBranches,
             getCommit,
             git,
+            isGitRepository,
             renameBranch,
         } from "../git";
 import init from "../git/init";
@@ -34,8 +35,12 @@ export async function startRepo(
         throw new Error("[startRepo] The path doesn't exist: " + path);
     }
 
+    if ((await isGitRepository(path))) {
+        throw new Error(`[startRepo] ${path} already has a git repo`);
+    }
+
     // init the repo, with name basename(path)
-    init(path);
+    await init(path);
 
     // copy the global default .gitignore for the first commit ever
     // await copyFile(ignoreDir, path + "\\.gitignore", (err) => {
@@ -63,15 +68,14 @@ export async function startRepo(
     } else {
         throw new Error("[startRepo] commit failed as it returned false");
     }
-
     // Create the workspaces on top of the fist commit
-    let workspaces: ReadonlyArray<WorkSpace>;
+    let workspaceUserPair: [ReadonlyArray<WorkSpace>, ReadonlyArray<User>];
     if (!firstCommit) {
         couldntFindCommit("first commit");
     } else {
-        workspaces = await createWorkSpaces(GRepo, users, firstCommit);
-        const mainTopicSpace = new TopicSpace("Main", users, workspaces);
-        GRepo = new GRepository(path, [mainTopicSpace], users);
+        workspaceUserPair = await createWorkSpaces(GRepo, users, firstCommit);
+        const mainTopicSpace = new TopicSpace("Main", workspaceUserPair[1], workspaceUserPair[0]);
+        GRepo = new GRepository(path, [mainTopicSpace], workspaceUserPair[1]);
         return GRepo;
     }
 
@@ -88,9 +92,10 @@ async function createWorkSpaces(
     repo: GRepository,
     users: ReadonlyArray<User>,
     firstCommit: Commit,
-): Promise<ReadonlyArray<WorkSpace>> {
+): Promise<[ReadonlyArray<WorkSpace>, ReadonlyArray<User>]> {
     // array of to be returned workspaces
     const workspaces: WorkSpace[] = [];
+    const newUsers: User[] = [];
     // an empty changelist to init workspaces
     const emptyChangeList: IChangeList = {};
     // a holder for the for-each-ref cmd
@@ -125,8 +130,19 @@ async function createWorkSpaces(
                 // should just return master
                 master = await getBranches(repo, "refs/heads/master");
 
-                tempWS = new WorkSpace(secondCommit.SHA, users[i], [secondCommit], emptyChangeList);
+                tempWS = new WorkSpace(secondCommit.SHA, [secondCommit], emptyChangeList);
                 workspaces.push(tempWS);
+
+                const newWorkSpaces = users[i].workSpaces;
+                // This is just in case we want to extend the user object
+                // across multiple repos. If not then we don't need to add
+                // the new branch, just create a new keyValue pair object
+                // since this is starting a fresh repo.
+                newWorkSpaces[tempWS.name] = new Branch(tempWS.name,
+                                                    master[0].remoteUpstream,
+                                                     master[0].tip);
+                const newUser = new User(users[i].name, users[i].email, newWorkSpaces);
+                newUsers.push(newUser);
 
                 await renameBranch(repo, master[0], tempWS.name);
 
@@ -147,7 +163,7 @@ async function createWorkSpaces(
         }
     }
 
-    return workspaces;
+    return [workspaces, newUsers];
 }
 
 async function writeUserFile(

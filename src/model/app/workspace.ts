@@ -1,6 +1,5 @@
 import { Commit } from "../git/commit";
 import { GFile } from "./g-File";
-import { User } from "./user";
 
 export interface IChangeList {
     [key: string]: GFile;
@@ -17,8 +16,6 @@ export class WorkSpace {
      * commands like branch and checkout
      */
     public readonly name: string;
-    /** The user that owns the workspace */
-    public readonly user: User;
     /** The list of commits on the branch */
     public readonly commit: ReadonlyArray<Commit>;
     /**
@@ -29,18 +26,16 @@ export class WorkSpace {
 
     public constructor(
         name: string,
-        user: User,
         commit: ReadonlyArray<Commit>,
         changeList: IChangeList,
     ) {
         this.name = "G" + name.slice(0, 11);
-        this.user = user;
         this.commit = commit;
         this.changeList = changeList;
     }
 
     public id(): string {
-        return ` ${this.name} for:${this.user.name} with ${this.commit.length} commits`;
+        return ` ${this.name} with ${this.commit.length} commits`;
     }
 
 }
