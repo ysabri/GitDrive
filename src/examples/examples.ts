@@ -1,29 +1,50 @@
-import { normalize } from "path";
+import { writeFileSync } from "fs";
+import { join, normalize } from "path";
 import { startRepo } from "../git-drive/app/start";
+import { sync } from "../git-drive/app/sync";
+import { checkoutBranch } from "../git-drive/git/checkout";
+import { GRepository } from "../model/app/g-repository";
 import { IWorkspaceBranch, User } from "../model/app/user";
 import { Branch } from "../model/git/branch";
 import { Commit } from "../model/git/commit";
 import { CommitterID } from "../model/git/committer-id";
 import { EnclosedVariant, IPublicVariant, PublicVariant, Variant } from "../model/POST";
 import { getVal } from "../util/getVal";
+import { measure } from "../util/git-perf";
 
 // show an example to start repo, this might pass as a test but not quite,
 // the info to check is left for user.
-export async function startEx() {
+export async function startEx(): Promise<void> {
   const users: User[] = [];
   const emptyWorkSpaceBranch: IWorkspaceBranch = {};
   users.push(new User("Yazeed Sabri", "ysabri@wisc.edu", emptyWorkSpaceBranch));
   users.push(new User("LL", "LL@wisc.edu", emptyWorkSpaceBranch));
   users.push(new User("GWiz", "GWiz@wisc.edu", emptyWorkSpaceBranch));
+  let repo: GRepository;
   try {
-    await startRepo(normalize("C:\\Users\\hacoo\\Desktop\\repo-with-files"), users);
-    return;
+    repo = await measure("Start Repo",
+      () => startRepo(normalize("C:\\Users\\hacoo\\Desktop\\repo-with-files"), users));
+
     // tslint:disable-next-line:no-console
     // console.log(repo.id());
   } catch (err) {
     // tslint:disable-next-line:no-console
     console.log("The startRepo promise got rejected with: " + err);
+    return undefined;
   }
+  // tslint:disable-next-line:no-console
+  console.log("About to start running sync");
+  writeFileSync(join(repo.path, "sync.txt"), "testFile");
+  // notice how the same indexes map to the user to their workspace
+  const topicSpace = repo.topicSpaces[0];
+  const user = topicSpace.users[0];
+  const workSpace = topicSpace.workSpaces[0];
+  // should use getVal but I know the branch exists for a fact
+  const branch = user.workSpaces[workSpace.name];
+
+  await checkoutBranch(repo, branch);
+  await measure("sync",
+    () => sync(repo, user, workSpace, "First Sync Commit", "Yay this worked" ));
 }
 
 // Show an example of how to use the Variant types
@@ -47,21 +68,18 @@ export async function variant() {
 // show an example of the key value pair and using getVal
 export async function keyValPair() {
     const workObj: IWorkspaceBranch = {};
-    // another form would workObj["exist"] or in reality workObj[WorkSpace.name]
+    // another form would be workObj["exist"] or in reality workObj[WorkSpace.name]
     workObj.exist = new Branch("sdfj", "sdafsad", new Commit("sfa", "sdfa", "sdfa",
     new CommitterID("sadf", "dsfa", new Date()), "dfsF", []));
-    keyVal(workObj);
-    function keyVal(obj: IWorkspaceBranch): void {
-      const exist = getVal(obj, "exist");
-      const dnd = getVal(obj, "dnd");
-      if (!exist) {
-        // tslint:disable-next-line:no-console
-        console.log("exist is undefined");
-      }
-      if (!dnd) {
-        // tslint:disable-next-line:no-console
-        console.log("dnd dnd");
-      }
+    const exist = getVal(workObj, "exist");
+    const dnd = getVal(workObj, "dnd");
+    if (!exist) {
+      // tslint:disable-next-line:no-console
+      console.log("exist is undefined");
+    }
+    if (!dnd) {
+      // tslint:disable-next-line:no-console
+      console.log("dnd dnd");
     }
 
 }

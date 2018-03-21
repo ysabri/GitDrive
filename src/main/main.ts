@@ -7,7 +7,7 @@ import { format } from "url";
 import { startEx } from "../examples/examples";
 // import { keyValPair, startEx, variant } from "./examples/examples";
 import { git } from "../git-drive/git/core-git";
-import { measure } from "../util/git-perf";
+// import { sync } from "../git-drive/app/sync";
 
 // YS:The null here is for the sake of dereferencing the object when the window
 // is closed.
@@ -58,7 +58,8 @@ function createWindow() {
   });
   // variant();
   // keyValPair();
-  measure("Start Repo", () => startEx());
+  // measure("Start Repo", () => startEx());
+  startEx();
 }
 
 // This method will be called when Electron has finished
