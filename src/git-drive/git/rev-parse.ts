@@ -24,7 +24,8 @@ export async function getTopLevelWorkingDirectory(
       path,
     );
   } catch (err) {
-    if (err.code === RepositoryDoesNotExistErrorCode) {
+    // const Gerr = err as GitError;
+    if (err.code === RepositoryDoesNotExistErrorCode || err.errCode === 128) {
       return null;
     }
 

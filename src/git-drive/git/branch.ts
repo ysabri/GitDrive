@@ -60,10 +60,6 @@ export async function renameBranch(
         throw new Error("Branch name is longer than 100 chars");
     }
     const res = await git(["branch", "-m", branch.name, newName], repo.path);
-    if (res.exitCode === 128) {
-        throw new Error("Renaming a branch exited with code 128, the stderr: "
-        + res.stderr + " the stdout: " + res.stdout);
-    }
 }
 
 // This should get implemented later, for now it is not needed
