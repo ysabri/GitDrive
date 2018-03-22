@@ -128,13 +128,12 @@ async function createWorkSpaces(
                 // should just return master
                 master = await getBranches(repo, "refs/heads/master");
 
-                tempWS = new WorkSpace(secondCommit.SHA, [secondCommit], emptyChangeList);
+                tempWS = new WorkSpace(secondCommit.SHA, master[0].remoteUpstream,
+                    master[0].tip, [secondCommit], emptyChangeList);
                 workspaces.push(tempWS);
 
                 // Adding the new branch a keyVal pair into the user obj
-                users[i].workSpaces[tempWS.name] = new Branch(tempWS.name,
-                                                    master[0].remoteUpstream,
-                                                     master[0].tip);
+                users[i].workSpaces[tempWS.name] = tempWS;
 
                 await renameBranch(repo, master[0], tempWS.name);
 
@@ -158,7 +157,7 @@ async function createWorkSpaces(
     return workspaces;
 }
 
-async function writeUserFile(
+export async function writeUserFile(
     userName: string,
     repoPath: string,
 ): Promise<void> {
