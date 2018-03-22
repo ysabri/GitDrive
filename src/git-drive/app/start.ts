@@ -68,14 +68,13 @@ export async function startRepo(
     } else {
         throw new Error("[startRepo] commit failed as it returned false");
     }
-    // Create the workspaces on top of the fist commit
-    let workspaceUserPair: [ReadonlyArray<WorkSpace>, ReadonlyArray<User>];
     if (!firstCommit) {
         couldntFindCommit("first commit");
     } else {
-        workspaceUserPair = await createWorkSpaces(GRepo, users, firstCommit);
-        const mainTopicSpace = new TopicSpace("Main", workspaceUserPair[1], workspaceUserPair[0]);
-        GRepo = new GRepository(path, [mainTopicSpace], workspaceUserPair[1]);
+        const workspaces = await createWorkSpaces(GRepo, users, firstCommit);
+        const mainTopicSpace = new TopicSpace("Main",
+            users, workspaces, firstCommit, undefined);
+        GRepo = new GRepository(path, [mainTopicSpace], users);
         return GRepo;
     }
 
@@ -92,10 +91,9 @@ async function createWorkSpaces(
     repo: GRepository,
     users: ReadonlyArray<User>,
     firstCommit: Commit,
-): Promise<[ReadonlyArray<WorkSpace>, ReadonlyArray<User>]> {
+): Promise<ReadonlyArray<WorkSpace>> {
     // array of to be returned workspaces
     const workspaces: WorkSpace[] = [];
-    const newUsers: User[] = [];
     // an empty changelist to init workspaces
     const emptyChangeList: IChangeList = {};
     // a holder for the for-each-ref cmd
@@ -133,16 +131,10 @@ async function createWorkSpaces(
                 tempWS = new WorkSpace(secondCommit.SHA, [secondCommit], emptyChangeList);
                 workspaces.push(tempWS);
 
-                const newWorkSpaces = users[i].workSpaces;
-                // This is just in case we want to extend the user object
-                // across multiple repos. If not then we don't need to add
-                // the new branch, just create a new keyValue pair object
-                // since this is starting a fresh repo.
-                newWorkSpaces[tempWS.name] = new Branch(tempWS.name,
+                // Adding the new branch a keyVal pair into the user obj
+                users[i].workSpaces[tempWS.name] = new Branch(tempWS.name,
                                                     master[0].remoteUpstream,
                                                      master[0].tip);
-                const newUser = new User(users[i].name, users[i].email, newWorkSpaces);
-                newUsers.push(newUser);
 
                 await renameBranch(repo, master[0], tempWS.name);
 
@@ -163,7 +155,7 @@ async function createWorkSpaces(
         }
     }
 
-    return [workspaces, newUsers];
+    return workspaces;
 }
 
 async function writeUserFile(

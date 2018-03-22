@@ -24,18 +24,26 @@ export class WorkSpace {
      */
     public readonly changeList: IChangeList;
 
+    public readonly originCommit?: string;
+
     public constructor(
         name: string,
         commit: ReadonlyArray<Commit>,
         changeList: IChangeList,
+        origin?: string,
     ) {
         this.name = "G" + name.slice(0, 11);
         this.commit = commit;
         this.changeList = changeList;
+        this.originCommit = origin;
     }
 
     public id(): string {
         return ` ${this.name} with ${this.commit.length} commits`;
+    }
+
+    public get firstCommit(): string {
+        return this.name.slice(1, 11);
     }
 
 }

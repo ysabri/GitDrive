@@ -1,7 +1,8 @@
 import { GRepository } from "../../model/app/g-repository";
 import { User } from "../../model/app/user";
 import { WorkSpace } from "../../model/app/workspace";
-import { getVal } from "../../util/getVal";
+import { Commit } from "../../model/git/commit";
+import { getVal } from "../../util/keyVal";
 import { commit } from "../git/commit";
 import { fetchAll } from "../git/fetch";
 import { getCommit } from "../git/log";
@@ -21,7 +22,7 @@ export async function sync(
     workspace: WorkSpace,
     summary: string,
     body: string,
-): Promise<void> {
+): Promise<WorkSpace> {
     // get the branch and check if user owns it
     const userBranch = getVal(user.workSpaces, workspace.name);
     if (!userBranch) {
@@ -55,4 +56,7 @@ export async function sync(
     await pushBranch(repo, userBranch.name);
     // pull the other branches
     await fetchAll(repo);
+    const newCommitArr: Commit[] = [];
+    newCommitArr.concat(workspace.commit, [tip]);
+    return new WorkSpace(workspace.name, newCommitArr, workspace.changeList, workspace.originCommit);
 }
