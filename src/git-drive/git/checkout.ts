@@ -61,3 +61,21 @@ export async function orphanCheckout(
     const args = ["checkout", "--orphan", branchName, "HEAD"];
     await git(args, repo.path);
 }
+
+/**
+ * Create and checkout branchname at the current position of HEAD
+ * @param repo repo where to checkout the new branch
+ * @param branchName the name of the branch to create
+ * @param startPoint The SHA of where to create the commit
+ */
+export async function checkoutAndCreateBranch(
+    repo: Repository,
+    branchName: string,
+    startPoint: string,
+): Promise<void> {
+    if (branchName.length > 100) {
+        throw new Error("Branch name is longer than 100 chars");
+    }
+    const args = ["checkout", "-b", branchName, startPoint];
+    await git(args, repo.path);
+}
