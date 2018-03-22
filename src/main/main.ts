@@ -5,6 +5,7 @@ import { app, BrowserWindow } from "electron";
 import { join } from "path";
 import { format } from "url";
 import { startEx } from "../examples/examples";
+// import { startEx, userTest } from "../examples/examples";
 // import { keyValPair, startEx, variant } from "./examples/examples";
 import { git } from "../git-drive/git/core-git";
 // import { sync } from "../git-drive/app/sync";

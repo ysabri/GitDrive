@@ -1,5 +1,6 @@
 import { writeFileSync } from "fs";
 import { join, normalize } from "path";
+import { createWorkSpace } from "../git-drive/app/add-workspace";
 import { startRepo } from "../git-drive/app/start";
 import { sync } from "../git-drive/app/sync";
 import { checkoutBranch } from "../git-drive/git/checkout";
@@ -9,16 +10,18 @@ import { Branch } from "../model/git/branch";
 import { Commit } from "../model/git/commit";
 import { CommitterID } from "../model/git/committer-id";
 import { EnclosedVariant, IPublicVariant, PublicVariant, Variant } from "../model/POST";
-import { getVal } from "../util/getVal";
 import { measure } from "../util/git-perf";
+import { getVal } from "../util/keyVal";
 
 // show an example to start repo, this might pass as a test but not quite,
 // the info to check is left for user.
 export async function startEx(): Promise<void> {
   const users: User[] = [];
-  const emptyWorkSpaceBranch: IWorkspaceBranch = {};
+  let emptyWorkSpaceBranch: IWorkspaceBranch = {};
   users.push(new User("Yazeed Sabri", "ysabri@wisc.edu", emptyWorkSpaceBranch));
+  emptyWorkSpaceBranch = {};
   users.push(new User("LL", "LL@wisc.edu", emptyWorkSpaceBranch));
+  emptyWorkSpaceBranch = {};
   users.push(new User("GWiz", "GWiz@wisc.edu", emptyWorkSpaceBranch));
   let repo: GRepository;
   try {
@@ -26,7 +29,7 @@ export async function startEx(): Promise<void> {
       () => startRepo(normalize("C:\\Users\\hacoo\\Desktop\\repo-with-files"), users));
 
     // tslint:disable-next-line:no-console
-    // console.log(repo.id());
+    console.log(repo.id());
   } catch (err) {
     // tslint:disable-next-line:no-console
     console.log("The startRepo promise got rejected with: " + err);
@@ -43,8 +46,19 @@ export async function startEx(): Promise<void> {
   const branch = user.workSpaces[workSpace.name];
 
   await checkoutBranch(repo, branch);
-  await measure("sync",
+  // console.log(workSpace.id());
+  const newWS = await measure("sync",
     () => sync(repo, user, workSpace, "First Sync Commit", "Yay this worked" ));
+  // tslint:disable-next-line:no-console
+  console.log(newWS.id());
+  // console.log(repo.id());
+
+  emptyWorkSpaceBranch = {};
+  const fourthUser = new User("cool guy", "coolGuy@newGuy.com", emptyWorkSpaceBranch);
+  const fourthWS = await measure("Create WorkSpace",
+      () => createWorkSpace(repo, fourthUser, topicSpace, newWS));
+  // tslint:disable-next-line:no-console
+  console.log(fourthWS);
 }
 
 // Show an example of how to use the Variant types
