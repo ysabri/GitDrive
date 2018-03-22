@@ -14,7 +14,7 @@
     "watch": false,
     "types" : [ "mocha", "node" ],
     "typeRoots": [ "./node_modules/@types" ],
-    "baseUrl": "./src",
+    "baseUrl": "./src"
   },
   "include": [
     "src/**/*"
