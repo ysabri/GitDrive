@@ -59,7 +59,7 @@ export async function renameBranch(
     if (newName.length > 100) {
         throw new Error("Branch name is longer than 100 chars");
     }
-    const res = await git(["branch", "-m", branch.name, newName], repo.path);
+    await git(["branch", "-m", branch.name, newName], repo.path);
 }
 
 // This should get implemented later, for now it is not needed
