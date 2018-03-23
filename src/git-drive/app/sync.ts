@@ -1,12 +1,13 @@
 import { GRepository } from "../../model/app/g-repository";
+import { TopicSpace } from "../../model/app/topicspace";
 import { User } from "../../model/app/user";
 import { WorkSpace } from "../../model/app/workspace";
 import { Commit } from "../../model/git/commit";
-// import { getVal } from "../../util/keyVal";
+import { getVal } from "../../util/keyVal";
 import { commit } from "../git/commit";
-// import { fetchAll } from "../git/fetch";
+import { fetchAll } from "../git/fetch";
 import { getCommit } from "../git/log";
-// import { pushBranch } from "../git/push";
+import { pushBranch } from "../git/push";
 import { getStatus } from "../git/status";
 /**
  * The big sync function, assumes very little but demands a lot.
@@ -18,17 +19,18 @@ import { getStatus } from "../git/status";
  */
 export async function sync(
     repo: GRepository,
-    user: User,
+    topicSpace: TopicSpace,
     workspace: WorkSpace,
+    user: User,
     summary: string,
     body: string,
 ): Promise<WorkSpace> {
     // // get the branch and check if user owns it
-    // const userBranch = getVal(user.workSpaces, workspace.name);
-    // if (!userBranch) {
-    //     throw new Error("[sync] User: " + user.name + " does not own the WorkSpace: "
-    //         + workspace.name);
-    // }
+    const userBranch = getVal(user.workSpaces, workspace.name);
+    if (!userBranch) {
+        throw new Error("[sync] User: " + user.name + " does not own the WorkSpace: "
+            + workspace.name);
+    }
     // see if branch exists by getting its tip commit, I could do the same
     // thing using for-each-ref
     const tip = workspace.tip;
@@ -65,10 +67,11 @@ export async function sync(
     }
     // console.log(newCommitArr);
     // push the changes
-    // await pushBranch(repo, workspace.name);
-    // pull the other branches
-    // await fetchAll(repo);
-    // return the new workspace with the new commit
+    if (workspace.remoteUpstream) {
+        await pushBranch(repo, workspace.name);
+        // pull the other branches
+        await fetchAll(repo);
+    }
     return new WorkSpace(workspace.name,
         workspace.remoteUpstream, newTip, newCommitArr, workspace.changeList,
         workspace.originCommit);
