@@ -1,5 +1,6 @@
 import { writeFileSync } from "fs";
 import { join, normalize } from "path";
+import { addWS, changeWS } from "../controller/state-updater";
 import { createWorkSpace } from "../git-drive/app/add-workspace";
 import { startRepo } from "../git-drive/app/start";
 import { sync } from "../git-drive/app/sync";
@@ -35,8 +36,6 @@ export async function startEx(): Promise<void> {
     console.log("The startRepo promise got rejected with: " + err);
     return undefined;
   }
-  // tslint:disable-next-line:no-console
-  console.log("About to start running sync");
   writeFileSync(join(repo.path, "sync.txt"), "testFile");
   // notice how the same indexes map to the user to their workspace
   const topicSpace = repo.topicSpaces[0];
@@ -46,19 +45,20 @@ export async function startEx(): Promise<void> {
   const branch = user.workSpaces[workSpace.name];
 
   await checkoutBranch(repo, branch);
-  // console.log(workSpace.id());
+
   const newWS = await measure("sync",
-    () => sync(repo, user, workSpace, "First Sync Commit", "Yay this worked" ));
+    () => sync(repo, topicSpace, workSpace, user, "First Sync Commit", "Yay this worked" ));
+  const newRepo = await changeWS(repo, topicSpace, newWS);
   // tslint:disable-next-line:no-console
-  console.log(newWS.id());
-  // console.log(repo.id());
+  console.log(newRepo.id());
 
   emptyWorkSpaceBranch = {};
   const fourthUser = new User("cool guy", "coolGuy@newGuy.com", emptyWorkSpaceBranch);
   const fourthWS = await measure("Create WorkSpace",
       () => createWorkSpace(repo, fourthUser, topicSpace, newWS));
+  const newerRepo = await addWS(newRepo, topicSpace, fourthWS, fourthUser);
   // tslint:disable-next-line:no-console
-  console.log(fourthWS);
+  console.log(newerRepo.id());
 }
 
 // Show an example of how to use the Variant types
