@@ -1,7 +1,7 @@
 import {expect} from "chai";
 import {unlinkSync, writeFileSync} from "fs";
 import {join} from "path";
-import {createBaranch, renameBranch } from "../../git-drive/git/branch";
+import {createBranch, renameBranch } from "../../git-drive/git/branch";
 import {checkoutBranch} from "../../git-drive/git/checkout";
 import {commit} from "../../git-drive/git/commit";
 import {git} from "../../git-drive/git/core-git";
@@ -144,7 +144,7 @@ describe("Testing overall commands", () => {
     });
 
     it("Cteates new branches and renames them", async () => {
-        const branch = await createBaranch(repo, "three", "HEAD");
+        const branch = await createBranch(repo, "three", "HEAD");
         expect(branch!.name).to.equal("three");
         const refs = await getBranches(repo);
         expect(refs).to.have.lengthOf(3);
