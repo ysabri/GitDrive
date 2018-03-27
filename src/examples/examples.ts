@@ -1,6 +1,7 @@
 import { writeFileSync } from "fs";
 import { join, normalize } from "path";
-import { addWS, changeWS } from "../controller/state-updater";
+import { addWS, changeWS, addTS } from "../controller/state-updater";
+import { createTopicSpace } from "../git-drive/app/add-topicspace";
 import { createWorkSpace } from "../git-drive/app/add-workspace";
 import { startRepo } from "../git-drive/app/start";
 import { sync } from "../git-drive/app/sync";
@@ -61,6 +62,26 @@ export async function startEx(): Promise<void> {
   const newerRepo = await addWS(newRepo, topicSpace, fourthWS, fourthUser);
   // tslint:disable-next-line:no-console
   console.log(newerRepo.id());
+  emptyWorkSpaceBranch = {};
+  const fifthUser = new User("bob benson", "benson@bob.com", emptyWorkSpaceBranch);
+  emptyWorkSpaceBranch = {};
+  const sixthUser = new User("jack sparrow", "sparrow@jack.com", emptyWorkSpaceBranch);
+  emptyWorkSpaceBranch = {};
+  const seventhUser = new User("hp", "hp@hp.hp", emptyWorkSpaceBranch);
+  let newTS;
+  try {
+    newTS = await measure("Create TS", () => createTopicSpace(repo,
+    [fifthUser, sixthUser, seventhUser], newerRepo.topicSpaces[0].workSpaces[0].tip, "Bug Fix"));
+  } catch (err) {
+    if (err) {
+      console.log(err);
+    }
+  }
+  if (newTS) {
+    const newestRepo = await addTS(newerRepo, newTS);
+    // tslint:disable-next-line:no-console
+    console.log(newestRepo.id());
+  }
 }
 
 // Show an example of how to use the Variant types
