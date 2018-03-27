@@ -1,20 +1,15 @@
 // import { copyFile, existsSync, writeFile } from "fs";
-import { existsSync, writeFile } from "fs";
+import { existsSync } from "fs";
 import { join } from "path";
 import { GRepository } from "../../model/app/g-repository";
 import { TopicSpace } from "../../model/app/topicspace";
 import { User } from "../../model/app/user";
-import { IChangeList, WorkSpace } from "../../model/app/workspace";
-import { Branch } from "../../model/git/branch";
+import {  } from "../../model/app/workspace";
 import { Commit } from "../../model/git/commit";
-import {    checkoutBranch,
-            commit,
-            createBaranch,
-            getBranches,
+import { createWorkSpaces, writeUserFile } from "../../util/repo-creation";
+import {    commit,
             getCommit,
-            git,
             isGitRepository,
-            renameBranch,
         } from "../git";
 import init from "../git/init";
 
@@ -69,7 +64,8 @@ export async function startRepo(
         throw new Error("[startRepo] commit failed as it returned false");
     }
     if (!firstCommit) {
-        couldntFindCommit("first commit");
+        throw new Error(`[startRepo] getCommit couldn't find the first` +
+        " commit under HEAD");
     } else {
         const workspaces = await createWorkSpaces(GRepo, users, firstCommit);
         const mainTopicSpace = new TopicSpace("Main",
@@ -84,91 +80,4 @@ export async function startRepo(
     // tslint:disable-next-line:no-console
     console.log("We are returning a broken repo");
     return GRepo;
-}
-
-
-async function createWorkSpaces(
-    repo: GRepository,
-    users: ReadonlyArray<User>,
-    firstCommit: Commit,
-): Promise<ReadonlyArray<WorkSpace>> {
-    // array of to be returned workspaces
-    const workspaces: WorkSpace[] = [];
-    // an empty changelist to init workspaces
-    const emptyChangeList: IChangeList = {};
-    // a holder for the for-each-ref cmd
-    let master: ReadonlyArray<Branch>;
-    // temp holder for user workspaces that will get pushed to workspaces
-    let tempWS: WorkSpace;
-    // temp holder for the second commit obj
-    let secondCommit: Commit | null;
-    // temp holder to the commit cmd result
-    let commitRes: boolean;
-
-    // tslint:disable-next-line:prefer-const
-    for (let i in users) {
-        if (users.hasOwnProperty(i)) {
-            await writeUserFile(users[i].name + " " + users[i].email, repo.path);
-
-            commitRes = await commit(repo,
-                users[i].name,
-                users[i].email,
-                `First revision for ${users[i].name}'s workspace: `,
-                ``);
-
-            if (commitRes) {
-                secondCommit = await getCommit(repo , "master");
-            } else {
-                throw new Error("[startRepo] commit failed as it returned false");
-            }
-
-            if (!secondCommit) {
-                couldntFindCommit(`user: ${users[i].name} commit`);
-            } else {
-                // should just return master
-                master = await getBranches(repo, "refs/heads/master");
-
-                tempWS = new WorkSpace(secondCommit.SHA, master[0].remoteUpstream,
-                    master[0].tip, [secondCommit], emptyChangeList);
-                workspaces.push(tempWS);
-
-                // Adding the new branch a keyVal pair into the user obj
-                users[i].workSpaces[tempWS.name] = tempWS;
-
-                await renameBranch(repo, master[0], tempWS.name);
-
-                // re-create master for the next iteration, and reset it back
-                // to the first commit.
-                if (i !== String(users.length - 1)) {
-
-                    await createBaranch(repo, "master", secondCommit.SHA);
-                    // I know, but the branch obj shouldn't have changed as it
-                    // has no knowledge about being checked-out or renamed and
-                    // it is on the same commit
-                    await checkoutBranch(repo, master[0]);
-
-                    const resetHardArgs = ["reset", "--hard", firstCommit.SHA];
-                    await git(resetHardArgs, repo.path);
-                }
-            }
-        }
-    }
-
-    return workspaces;
-}
-
-export async function writeUserFile(
-    userName: string,
-    repoPath: string,
-): Promise<void> {
-    await writeFile(join(repoPath, ".CURRENT_USER"), userName, (err) => {
-        if (err) {
-            throw err;
-        }
-    });
-}
-
-function couldntFindCommit(name: string): never {
-    throw new Error(`[startRepo] getCommit couldn't find the ${name}` +
-            " under HEAD");
 }
