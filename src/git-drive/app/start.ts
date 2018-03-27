@@ -67,10 +67,13 @@ export async function startRepo(
         throw new Error(`[startRepo] getCommit couldn't find the first` +
         " commit under HEAD");
     } else {
-        const workspaces = await createWorkSpaces(GRepo, users, firstCommit);
+        const workspaces = await createWorkSpaces(GRepo, users, firstCommit, "master");
         const mainTopicSpace = new TopicSpace("Main",
             users, workspaces, firstCommit, undefined);
-        GRepo = new GRepository(path, [mainTopicSpace], users);
+        const usersCopy = users.map((value) => {
+            return value;
+        });
+        GRepo = new GRepository(path, [mainTopicSpace], usersCopy);
         return GRepo;
     }
 }

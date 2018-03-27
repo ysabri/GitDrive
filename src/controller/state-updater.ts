@@ -75,7 +75,13 @@ export async function addTS(
 ): Promise<GRepository> {
     const newTSArr = repo.topicSpaces as TopicSpace[];
     newTSArr.push(newTopicSpace);
-    return new GRepository(repo.path, newTSArr, repo.users);
+    const newUserArr = repo.users as User[];
+    for (let user of newTopicSpace.users) {
+        if (!newUserArr.includes(user)) {
+            newUserArr.push(user);
+        }
+    }
+    return new GRepository(repo.path, newTSArr, newUserArr);
 }
 /** create a new repo object without the victim topicspace  */
 export async function removeTS(

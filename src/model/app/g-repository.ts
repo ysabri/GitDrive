@@ -23,7 +23,7 @@ export class GRepository extends Repository {
     public id(): string {
         return `**(Repository: ${super.id()}\n\t with TopicSpace: ${this.topicSpaces.map((val) => {
             return val.id();
-        }).toString()}\n\t and Users:(${this.users.map((val) => {
+        }).join("\n\t, TopicSpace: ")}\n\t and Users:(${this.users.map((val) => {
             return val.id();
         }).toString()})\n)**`;
     }
