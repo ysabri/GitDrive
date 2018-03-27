@@ -9,8 +9,8 @@
   "scripts": {
     "compile": "electron-webpack",
     "build": "tsc",
-    "lint": "tslint -c tslint.json ts-src/**/* -p tsconfig.json",
-    "start": "yarn clean && yarn build && electron-webpack dev",
+    "lint": "tslint -c tslint.json build/**/* -p tsconfig.json",
+    "start": "yarn clean && yarn build && yarn lint && electron-webpack dev",
     "test": "mocha -r ts-node/register -r tsconfig-paths/register --full-trace --check-leaks ./src/tests/**/*.ts ./src/tests/*.ts",
     "clean": "rimraf build/*",
     "dist": "yarn compile && electron-builder"

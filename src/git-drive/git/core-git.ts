@@ -152,6 +152,8 @@ function getDescriptionForError(error: errorsEnum): string {
         return "Bad revision.";
       case errorsEnum.NotAGitRepository:
         return "This is not a git repository.";
+      case errorsEnum.BranchRenameFailed:
+        return "The branch you tried to rename doesn't exist";
       case errorsEnum.ProtectedBranchForcePush:
         return "This branch is protected from force-push operations.";
       case errorsEnum.ProtectedBranchRequiresReview:
