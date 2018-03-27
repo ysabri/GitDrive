@@ -73,11 +73,4 @@ export async function startRepo(
         GRepo = new GRepository(path, [mainTopicSpace], users);
         return GRepo;
     }
-
-    // This is what an invalid repo would look like, a repo with no TopicScapes
-    // since it has no users.
-    // Useful if we want to define a bare repo.
-    // tslint:disable-next-line:no-console
-    console.log("We are returning a broken repo");
-    return GRepo;
 }

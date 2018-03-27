@@ -3,6 +3,7 @@ import { TopicSpace } from "../../model/app/topicspace";
 import { User } from "../../model/app/user";
 import { IChangeList, WorkSpace } from "../../model/app/workspace";
 import { Branch } from "../../model/git/branch";
+import { writeUserFile } from "../../util/repo-creation";
 import {
     checkoutAndCreateBranch,
     commit,
@@ -11,7 +12,6 @@ import {
     reset,
     ResetMode,
 } from "../git";
-import { writeUserFile } from "./start";
 
 /**
  * Create a workspace for our new user
