@@ -16,7 +16,7 @@ import { getBranches } from "./for-each-ref";
  * @param name - The name of the branch, must be less than 101 chars (for now)
  * @param tip - SHA of the commit obj or HEAD to create the branch at.
  */
-export async function createBaranch(
+export async function createBranch(
     repo: Repository,
     name: string,
     tip: string,

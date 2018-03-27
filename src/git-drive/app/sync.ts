@@ -39,7 +39,7 @@ export async function sync(
             " or was deleted from repository: " + repo.name);
     }
     // check if the tip commit belongs to user, something got really messed up
-    // if this error get thrown.
+    // if this error gets thrown.
     if (tip.committer.name !== user.name) {
         throw new Error("[sync] Based on the last commit, user: " + user.name +
             " doesn't own branch: " + workspace.name);
@@ -58,16 +58,14 @@ export async function sync(
     if (newTip && newTip.SHA === tip.SHA) {
         throw new Error(`[sync] Could not commit on ${user.name}'s branch`);
     } else if (newTip)  {
-        // await newCommitArr.push(workspace.commit);
         newCommitArr.push(newTip);
     } else {
         throw new Error("[sync] Branch: " + workspace.name + " doesn't exit" +
         " or was deleted from repository: " + repo.name +
         " right after committing");
     }
-    // console.log(newCommitArr);
-    // push the changes
     if (workspace.remoteUpstream) {
+        // push the changes
         await pushBranch(repo, workspace.name);
         // pull the other branches
         await fetchAll(repo);

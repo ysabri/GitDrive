@@ -11,9 +11,13 @@ import { assertNever } from "../../util/errors-util";
  * implemented.
  */
 export class GitError extends Error {
+    /** The none zero returned error code */
     public readonly errCode: number;
+    /** The human readable description of the error */
     public readonly description: string;
+    /** The enum of the error, this is useful in filtering for certain errors */
     public readonly errEnum: errorsEnum;
+
     public constructor(
         description: string,
         args: ReadonlyArray<string>,
@@ -53,12 +57,16 @@ export async function git(
     const cmdOptions = {...ExecOptions};
 
     const execResult = await GitProcess.exec(args, cwd, cmdOptions);
+
     const exitCode = execResult.exitCode;
     if (exitCode !== 0) {
         const stdout = execResult.stdout;
         const stderr = execResult.stderr;
+
         const stdoutEnum = GitProcess.parseError(stdout);
         const stderrEnum = GitProcess.parseError(stderr);
+        // Throw the error based on whichever enum was found for it,
+        // these won't overlap, its either or none
         let description = "";
         if (stderrEnum) {
             description += getDescriptionForError(stderrEnum) ;
@@ -80,6 +88,10 @@ export async function git(
  */
 export const overrideCredentialHelper: ReadonlyArray<string> = ["-c", "credential.helper="];
 
+/**
+ * This function takes a known error and returns back a human readable
+ * explanation that is usually shorter.
+ */
 function getDescriptionForError(error: errorsEnum): string {
     switch (error) {
       case errorsEnum.SSHKeyAuditUnverified:

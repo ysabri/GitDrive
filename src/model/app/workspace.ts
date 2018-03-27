@@ -15,7 +15,11 @@ export class WorkSpace extends Branch {
      * integrated into the WorkSpace.
      */
     public readonly changeList: IChangeList;
-
+    /**
+     * The origin from where this workspace was created. It is undefined if
+     * it was created at the beginning  of the repo, ie on top of its
+     * topicspace first commit
+     */
     public readonly originCommit?: string;
 
     /**

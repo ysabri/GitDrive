@@ -43,11 +43,12 @@ export async function startEx(): Promise<void> {
   const workSpace = topicSpace.workSpaces[0];
   // should use getVal but I know the branch exists for a fact
   const branch = user.workSpaces[workSpace.name];
-
+  // checkout the branch we want to commit at
   await checkoutBranch(repo, branch);
 
   const newWS = await measure("sync",
     () => sync(repo, topicSpace, workSpace, user, "First Sync Commit", "Yay this worked" ));
+  // Add the change to a new repo object
   const newRepo = await changeWS(repo, topicSpace, newWS);
   // tslint:disable-next-line:no-console
   console.log(newRepo.id());
@@ -56,6 +57,7 @@ export async function startEx(): Promise<void> {
   const fourthUser = new User("cool guy", "coolGuy@newGuy.com", emptyWorkSpaceBranch);
   const fourthWS = await measure("Create WorkSpace",
       () => createWorkSpace(repo, fourthUser, topicSpace, newWS));
+  // add the change to a new repo obj
   const newerRepo = await addWS(newRepo, topicSpace, fourthWS, fourthUser);
   // tslint:disable-next-line:no-console
   console.log(newerRepo.id());
