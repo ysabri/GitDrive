@@ -14,6 +14,12 @@ import { IChangeList, WorkSpace } from "../model/app/workspace";
 import { Branch } from "../model/git/branch";
 import { Commit } from "../model/git/commit";
 
+/**
+ * Writes the .CURRENT_USER file given the username. The file will contain just
+ * the userName variable contents.
+ * @param userName The username to write, not much restrictions here
+ * @param repoPath The base path to the repo so we can write the file there
+ */
 export async function writeUserFile(
     userName: string,
     repoPath: string,
@@ -26,10 +32,11 @@ export async function writeUserFile(
 }
 
 /**
- *
- * @param repo
- * @param users
- * @param firstCommit
+ * create the workspace for the users given
+ * @param repo The repo to create the workspace at.
+ * @param users The users to create workspaces for each.
+ * @param firstCommit The first commit for the workspace, ie. the commit all
+ * branches are based on.
  */
 export async function createWorkSpaces(
     repo: GRepository,
