@@ -29,6 +29,7 @@
   "license": "MIT",
   "devDependencies": {
     "@types/chai": "^4.1.2",
+    "@types/long": "^3.0.32",
     "@types/mocha": "^2.2.44",
     "@types/node": "^8.0.53",
     "@types/source-map-support": "^0.4.0",
