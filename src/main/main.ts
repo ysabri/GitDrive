@@ -4,10 +4,12 @@
 import { app, BrowserWindow } from "electron";
 import { join } from "path";
 import { format } from "url";
-import { startEx } from "../examples/examples";
+import loadAwesomeProto from "../examples/protobuf-example";
+// import { startEx } from "../examples/examples";
 // import { startEx, userTest } from "../examples/examples";
 // import { keyValPair, startEx, variant } from "./examples/examples";
 import { git } from "../git-drive/git/core-git";
+import { measure } from "../util/git-perf";
 // import { sync } from "../git-drive/app/sync";
 
 // YS:The null here is for the sake of dereferencing the object when the window
@@ -60,7 +62,10 @@ function createWindow() {
   // variant();
   // keyValPair();
   // measure("Start Repo", () => startEx());
-  startEx();
+  // startEx();
+
+  // measure("loading proto", () => loadAwesomeProto());
+
 }
 
 // This method will be called when Electron has finished

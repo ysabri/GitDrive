@@ -16,11 +16,9 @@ export async function measure<T>(
   } finally {
     if (startTime) {
       const rawTime = now() - startTime;
-      if (rawTime > 100) {
-        const timeInSeconds = (rawTime / 1000).toFixed(3);
-        // tslint:disable-next-line:no-console
-        console.log(`Executing ${cmd} (took ${timeInSeconds}s)`);
-      }
+      const timeInSeconds = (rawTime / 1000).toFixed(3);
+      // tslint:disable-next-line:no-console
+      console.log(`Executing ${cmd} (took ${timeInSeconds}s)`);
     }
 
   }

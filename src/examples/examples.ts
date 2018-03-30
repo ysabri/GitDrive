@@ -3,6 +3,7 @@ import { join, normalize } from "path";
 import { addTS, addWS, changeWS } from "../controller/state-updater";
 import { createTopicSpace } from "../git-drive/app/add-topicspace";
 import { createWorkSpace } from "../git-drive/app/add-workspace";
+import { loadGRepo } from "../git-drive/app/load-repo";
 import { startRepo } from "../git-drive/app/start";
 import { sync } from "../git-drive/app/sync";
 import { checkoutBranch } from "../git-drive/git/checkout";
@@ -78,10 +79,16 @@ export async function startEx(): Promise<void> {
       console.log(err);
     }
   }
+  let newestRepo: GRepository;
   if (newTS) {
-    const newestRepo = await addTS(newerRepo, newTS);
+    newestRepo = await addTS(newerRepo, newTS);
     // tslint:disable-next-line:no-console
     console.log(newestRepo.id());
+    try {
+      await measure("loading a Repo", () => loadGRepo(newestRepo.path));
+    } catch (err) {
+      console.log(err);
+    }
   }
 }
 
