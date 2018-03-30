@@ -76,7 +76,7 @@ export async function addTS(
     const newTSArr = repo.topicSpaces as TopicSpace[];
     newTSArr.push(newTopicSpace);
     const newUserArr = repo.users as User[];
-    for (let user of newTopicSpace.users) {
+    for (const user of newTopicSpace.users) {
         if (!newUserArr.includes(user)) {
             newUserArr.push(user);
         }

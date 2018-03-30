@@ -57,8 +57,7 @@ export async function createWorkSpaces(
     // temp holder to the commit cmd result
     let commitRes: boolean;
 
-    // tslint:disable-next-line:prefer-const
-    for (let i in users) {
+    for (const i in users) {
         if (users.hasOwnProperty(i)) {
             await writeUserFile(users[i].name + " " + users[i].email, repo.path);
 

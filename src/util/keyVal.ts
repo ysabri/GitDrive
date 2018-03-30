@@ -21,8 +21,7 @@ export function deleteVal<T, K extends keyof T>(arr: T, key: K): boolean {
  */
 export function copyVal<T>(arr: T): T {
     const R = {} as T;
-    // tslint:disable-next-line:prefer-const
-    for (let i in arr) {
+    for (const i in arr) {
         if (arr.hasOwnProperty(i)) {
             R[i] = arr[i];
         }
