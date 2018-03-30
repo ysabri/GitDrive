@@ -53,7 +53,7 @@ export async function startRepo(
     const res = await commit(GRepo,
         "GLOBAL USER",
         "testEmail@gmail.com",
-        `First revision for: ${GRepo.name}`,
+        `First revision for:Main:in repo:${GRepo.name}`,
         `This revision adds the initial default .gitignore file along with any files in: ${GRepo.path}`);
 
     // check if commit was a success and get it's info

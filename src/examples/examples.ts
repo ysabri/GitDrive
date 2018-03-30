@@ -1,6 +1,6 @@
 import { writeFileSync } from "fs";
 import { join, normalize } from "path";
-import { addWS, changeWS, addTS } from "../controller/state-updater";
+import { addTS, addWS, changeWS } from "../controller/state-updater";
 import { createTopicSpace } from "../git-drive/app/add-topicspace";
 import { createWorkSpace } from "../git-drive/app/add-workspace";
 import { startRepo } from "../git-drive/app/start";
@@ -74,6 +74,7 @@ export async function startEx(): Promise<void> {
     [fifthUser, sixthUser, seventhUser], newerRepo.topicSpaces[0].workSpaces[0].tip, "Bug Fix"));
   } catch (err) {
     if (err) {
+      // tslint:disable-next-line:no-console
       console.log(err);
     }
   }

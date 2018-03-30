@@ -20,14 +20,14 @@ export async function createTopicSpace(
     name: string,
 ): Promise<TopicSpace> {
     // create the branch
-    orphanCheckout(repo, "temp");
+    await orphanCheckout(repo, "temp", origin.SHA);
     // write the user file
-    writeUserFile("GLOBAL USER", repo.path);
+    await writeUserFile("GLOBAL USER", repo.path);
     // make the first commit
     const res = await commit(repo,
         "GLOBAL USER",
         "testEmail@gmail.com",
-        `First revision for TopicSpace: ${name}`,
+        `First revision in the TopicSpace:${name}`,
         "",
     );
     let firstCommit: Commit | null;

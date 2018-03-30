@@ -51,6 +51,7 @@ export async function partialCheckout(
 export async function orphanCheckout(
     repo: Repository,
     branchName: string,
+    startPoint: string,
 ): Promise<void> {
     // This check has to be done here since a new branch is getting created,
     // and the branch has to adhere to the branch len requirements. Check
@@ -58,7 +59,7 @@ export async function orphanCheckout(
     if (branchName.length > 100) {
         throw new Error("Branch name is longer than 100 chars");
     }
-    const args = ["checkout", "--orphan", branchName, "HEAD"];
+    const args = ["checkout", "--orphan", branchName, startPoint];
     await git(args, repo.path);
 }
 
