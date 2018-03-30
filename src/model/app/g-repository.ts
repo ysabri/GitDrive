@@ -11,11 +11,15 @@ export class GRepository extends Repository {
     public readonly users: ReadonlyArray<User>;
 
     public constructor(
-        path: string,
+        path: string | Repository,
         topicspaces: ReadonlyArray<TopicSpace>,
         users: ReadonlyArray<User>,
     ) {
-        super(path);
+        if (typeof path === "string") {
+            super(path);
+        } else {
+            super(path.path);
+        }
         this.topicSpaces = topicspaces;
         this.users = users;
     }

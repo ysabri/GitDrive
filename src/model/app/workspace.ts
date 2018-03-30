@@ -29,7 +29,19 @@ export class WorkSpace extends Branch {
      * the way git does it. So 7 at first then one more till that is not enough
      * to uniquely identify and so on. The G is to avoid ambiguity when calling
      * commands like branch and checkout
+     *
+     * This is what an overload looks like, not the prettiest thing but it
+     * makes sense once you remember typescript is a structurally typed
+     * language. The last constructor is the actual one that gets called, the
+     * types of arg1-6 is a union of all the types of each argument in the
+     * constructors above them in order, thus the optionality of some arg4-6.
      */
+    public constructor(
+        branch: Branch,
+        commits: ReadonlyArray<Commit>,
+        changeList: IChangeList,
+        origin?: string,
+    );
     public constructor(
         name: string,
         remoteUpstream: string | null,
@@ -37,15 +49,32 @@ export class WorkSpace extends Branch {
         commits: ReadonlyArray<Commit>,
         changeList: IChangeList,
         origin?: string,
+    )
+    constructor(
+        arg1: Branch | string,
+        arg2: ReadonlyArray<Commit> | string | null,
+        arg3: Commit | IChangeList,
+        arg4?: string | ReadonlyArray<Commit>,
+        arg5?: IChangeList,
+        arg6?: string,
     ) {
-        if (name.startsWith("G")) {
-            super(name, remoteUpstream, tip);
+        // meaning the second constructor was called
+        if (typeof arg1 === "string") {
+            if (arg1.startsWith("G")) {
+                super(arg1, arg2 as string | null, arg3 as Commit);
+            } else {
+                super("G" + arg1.slice(0, 10), arg2 as string | null, arg3 as Commit);
+            }
+            this.commits = arg4 as ReadonlyArray<Commit>;
+            this.changeList = arg5 as IChangeList;
+            // this class member can be undefined
+            this.originCommit = arg6;
         } else {
-            super("G" + name.slice(0, 10), remoteUpstream, tip);
+            super(arg1.name, arg1.remoteUpstream, arg1.tip);
+            this.commits = arg2 as ReadonlyArray<Commit>;
+            this.changeList = arg3 as IChangeList;
+            this.originCommit = arg4 as string;
         }
-        this.commits = commits;
-        this.changeList = changeList;
-        this.originCommit = origin;
     }
 
     public id(): string {
