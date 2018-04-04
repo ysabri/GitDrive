@@ -1,0 +1,11 @@
+syntax = "proto3";
+package GRepo;
+import "user.proto";
+import "topicspace.proto";
+
+message GRepo {
+    string path = 1;
+    string name = 2;
+    repeated TopicSpace topicSpaces = 3;
+    repeated User users = 4;
+}

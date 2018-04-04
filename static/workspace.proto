@@ -1,0 +1,10 @@
+syntax = "proto3";
+import "commit.proto";
+
+message WorkSpace {
+    string name = 1;
+    string remoteUpstream = 2;
+    Commit tip = 3;
+    repeated Commit commits = 4;
+    string originCommit = 5;
+}

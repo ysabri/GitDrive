@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+message CommitterID {
+    string name = 1;
+    string email = 2;
+    string date = 3;
+    int32 tzOffset = 4;
+}

@@ -1,0 +1,12 @@
+syntax = "proto3";
+import "user.proto";
+import "workspace.proto";
+import "commit.proto";
+
+message TopicSpace {
+    string name = 1;
+    repeated User users = 2;
+    repeated WorkSpace WorkSpaces = 3;
+    Commit firstCommit = 4;
+    Commit originCommit = 5;
+}

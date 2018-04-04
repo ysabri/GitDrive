@@ -1,0 +1,8 @@
+syntax = "proto3";
+import "commit.proto";
+
+message Branch {
+    string name = 1;
+    string remoteUpstream = 2;
+    Commit tip = 3;
+}

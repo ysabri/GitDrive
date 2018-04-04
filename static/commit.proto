@@ -1,0 +1,11 @@
+syntax = "proto3";
+import "committerid.proto";
+
+message Commit {
+    string SHA = 1;
+    string title = 2;
+    string body = 3;
+    CommitterID committer = 4;
+    string parentSHA = 5;
+    repeated string historySHA = 6;
+}

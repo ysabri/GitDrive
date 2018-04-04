@@ -29,7 +29,6 @@
   "license": "MIT",
   "devDependencies": {
     "@types/chai": "^4.1.2",
-    "@types/long": "^3.0.32",
     "@types/mocha": "^2.2.44",
     "@types/node": "^8.0.53",
     "@types/source-map-support": "^0.4.0",
@@ -48,7 +47,8 @@
     "webpack": "^3.11.0"
   },
   "dependencies": {
-    "protobufjs": "^6.8.6",
+    "@types/google-protobuf": "^3.2.7",
+    "google-protobuf": "^3.5.0",
     "source-map-support": "^0.5.4"
   },
   "resolutions": {
