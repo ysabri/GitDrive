@@ -1,6 +1,7 @@
 // This code was taken from: https://github.com/desktop/desktop project,
 // it was mainly written by: https://github.com/niik
-
+// tslint:disable-next-line:no-var-requires
+const protoCommitterID = require("../../../static/committerid_pb");
 /**
  * A tuple of name, email, and date for the author or commit
  * info in a commit.
@@ -47,21 +48,54 @@ export class CommitterID {
 
       return new CommitterID(name, email, date, tzOffset);
     }
-
-    public readonly name: string;
-    public readonly email: string;
-    public readonly date: Date;
-    public readonly tzOffset: number;
-
+    public readonly protoObj: any;
+    // public readonly name: string;
+    // public readonly email: string;
+    // public readonly date: Date;
+    // public readonly tzOffset: number;
+    public constructor(
+      protoBufObj: any,
+    )
     public constructor(
       name: string,
       email: string,
       date: Date,
       tzOffset?: number,
+    )
+    constructor(
+      name: string | any,
+      email?: string,
+      date?: Date,
+      tzOffset?: number,
     ) {
-      this.name = name;
-      this.email = email;
-      this.date = date;
-      this.tzOffset = tzOffset || new Date().getTimezoneOffset();
+      if (typeof name === "string") {
+        this.protoObj = new protoCommitterID.CommitterID();
+        this.protoObj.setName(name);
+        this.protoObj.setEmail(email);
+        this.protoObj.setDate(date!.toDateString());
+        this.protoObj.setTzoffset(tzOffset || new Date().getTimezoneOffset());
+      } else {
+        this.protoObj = name;
+      }
+      // this.name = name;
+      // this.email = email;
+      // this.date = date;
+      // this.tzOffset = tzOffset || new Date().getTimezoneOffset();
+    }
+
+    public get name(): string {
+      return this.protoObj.getName();
+    }
+
+    public get email(): string {
+      return this.protoObj.getEmail();
+    }
+
+    public get date(): Date {
+      return new Date(this.protoObj.getDate() as string);
+    }
+
+    public get tzOffset(): number {
+      return this.protoObj.getTzoffset();
     }
   }
