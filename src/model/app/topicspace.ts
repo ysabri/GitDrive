@@ -7,17 +7,16 @@ const protoTopicSpace = require("../../../static/topicspace_pb");
 
 /** An immutable TopicSpace */
 export class TopicSpace {
-    /** The name of the TopicSpace */
+    /**  */
     // public readonly name: string;
-    /** The list of users in the space */
+    /**  */
     // public readonly users: ReadonlyArray<User>;
-    /** The WorkSpaces in the topic space, it should match users in length */
+    /**  */
     // public readonly workSpaces: ReadonlyArray<WorkSpace>;
-    /** The first commit in the topicSpace */
+    /**  */
     // public readonly firstCommit: Commit;
     /**
-     * The origin commit that created the space, it is undefind for the first
-     * space.
+     *
      */
     // public readonly originCommit?: Commit;
 
@@ -26,7 +25,16 @@ export class TopicSpace {
         const mssg = protoTopicSpace.TopicSpace.deserializeBinary(uint8Arr);
         return new TopicSpace(mssg);
     }
-
+    /**
+     * This protoBuf object has the following members, in order:
+     * - The name of the TopicSpace: name: string
+     * - The list of users in the space: users: ReadonlyArray<User>
+     * - The WorkSpaces in the topic space, it should match users in length:
+     *  workspaces: ReadonlyArray<Workspace>
+     * - The first commit in the topicSpace: firstCommitL: Commit
+     * - The origin commit that created the space, it is undefind for the first
+     * space: originCommit: Commit
+     */
     public readonly topicspaceProtoBuf: any;
 
     public constructor(
@@ -58,11 +66,6 @@ export class TopicSpace {
             this.topicspaceProtoBuf.setFirstcommit(firstCommit!.commitProtoBuf);
             this.topicspaceProtoBuf.setOrigincommit(origincommit ?
                 origincommit.commitProtoBuf : undefined);
-            // this.name = name;
-            // this.users = users;
-            // this.workSpaces = workspaces;
-            // this.firstCommit = firstCommit;
-            // this.originCommit = origincommit;
         } else {
             this.topicspaceProtoBuf = nameOrProtoMsg;
         }
@@ -75,29 +78,35 @@ export class TopicSpace {
             return val.id();
         }).toString()})`;
     }
-
+    /** The name of the TopicSpace */
     public get name(): string {
         return this.topicspaceProtoBuf.getName();
     }
-
+    /** The list of users in the space: users */
     public get users(): ReadonlyArray<User> {
         const protoArr = this.topicspaceProtoBuf.getUsersList() as any[];
         return protoArr.map((value) => {
             return new User(value);
         });
     }
-
+    /**
+     * The WorkSpaces in the topic space, it should match users in length:
+     * workspaces.
+     */
     public get workSpaces(): ReadonlyArray<WorkSpace> {
         const protoArr = this.topicspaceProtoBuf.getWorkspacesList() as any[];
         return protoArr.map((value) => {
             return new WorkSpace(value);
         });
     }
-
+    /** The first commit in the topicSpace */
     public get firstCommit(): Commit {
         return new Commit(this.topicspaceProtoBuf.getFirstcommit());
     }
-
+    /**
+     * The origin commit that created the space, it is undefind for the first
+     * space.
+     */
     public get originCommit(): Commit | undefined {
         return this.topicspaceProtoBuf.hasOrigincommit() ?
             new Commit(this.topicspaceProtoBuf.getOrigincommit()) : undefined;

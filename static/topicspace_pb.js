@@ -254,7 +254,7 @@ proto.TopicSpace.prototype.clearUsersList = function() {
 
 
 /**
- * repeated WorkSpace WorkSpaces = 3;
+ * repeated WorkSpace workspaces = 3;
  * @return {!Array.<!proto.WorkSpace>}
  */
 proto.TopicSpace.prototype.getWorkspacesList = function() {

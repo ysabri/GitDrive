@@ -7,17 +7,19 @@ const protoGRepo = require("../../../static/grepo_pb");
 
 /** An immutable repository object */
 export class GRepository extends Repository {
-    // A list of TopicSpace in the repo
-    // public readonly topicSpaces: ReadonlyArray<TopicSpace>;
-    // The global list of users in the Repo
-    // public readonly users: ReadonlyArray<User>;
 
     /** Deserialize the byte array read from the proto message */
     public static deserialize(uint8Arr: Uint8Array): GRepository {
         const mssg = protoGRepo.GRepo.deserializeBinary(uint8Arr);
         return new GRepository(mssg);
     }
-
+    /**
+     * This protoBuf object has the following members, in order:
+     * - The parent Repository object: parent: Repository
+     * - A list of TopicSpace in the repo:
+     *  topicspaces: ReadonlyArray<TopicSpace>
+     * - The global list of users in the repo: users: ReadonlyArray<User>
+     */
     public readonly gRepositoryProtoBuf: any;
 
     public constructor(
@@ -59,14 +61,14 @@ export class GRepository extends Repository {
             return val.id();
         }).toString()})\n)**`;
     }
-
+    /** A list of TopicSpace in the repo */
     public get topicSpaces(): ReadonlyArray<TopicSpace> {
         const protoArr = this.gRepositoryProtoBuf.getTopicspacesList() as any[];
         return protoArr.map((value) => {
             return new TopicSpace(value);
         });
     }
-
+    /** The global list of users in the repo */
     public get users(): ReadonlyArray<User> {
         const protoArr = this.gRepositoryProtoBuf.getUsersList() as any[];
         return protoArr.map((value) => {

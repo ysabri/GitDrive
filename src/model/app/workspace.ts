@@ -10,25 +10,22 @@ export interface IChangeList {
 
 /** An immutable workspace object */
 export class WorkSpace extends Branch {
-    /** The list of commits on the branch */
-    // public readonly commits: ReadonlyArray<Commit>;
-    /**
-     * The SHA of the files along with the file itself that is yet to be
-     * integrated into the WorkSpace.
-     */
-    // public readonly changeList: IChangeList;
-    /**
-     * The origin from where this workspace was created. It is undefined if
-     * it was created at the beginning  of the repo, ie on top of its
-     * topicspace first commit
-     */
-    // public readonly originCommit?: string;
 
     /** Deserialize the byte array read from the proto message */
     public static deserialize(uint8Arr: Uint8Array): WorkSpace {
         const mssg = workSpaceProto.Workspace.deserializeBinary(uint8Arr);
         return new WorkSpace(mssg);
     }
+    /**
+     * This protoBuf object has the following members, in order:
+     * - The parent Branch object: parent: Branch
+     * - The list of commits on the branch: commits: ReadonlyArray<Commit>
+     * - The origin from where this workspace was created. It is undefined if
+     *  it was created at the beginning  of the repo, ie on top of its
+     *  topicspace first commit: originCommit: string
+     * - The SHA of the files along with the file itself that is yet to be
+     * integrated into the WorkSpace: changeList: Map<string, GFile>
+     */
     public readonly workSpaceProtoBuf: any;
 
     /**
@@ -93,10 +90,6 @@ export class WorkSpace extends Branch {
             }));
             // TODO: add change list
             this.workSpaceProtoBuf.setOrigincommit(arg6 as string || "");
-            // this.commits = arg4 as ReadonlyArray<Commit>;
-            // this.changeList = arg5 as IChangeList;
-            // this class member can be undefined
-            // this.originCommit = arg6;
         } else if (arg1 instanceof Branch) {
             super(arg1.name, arg1.remoteUpstream, arg1.tip);
             this.workSpaceProtoBuf = new workSpaceProto.WorkSpace();
@@ -106,10 +99,7 @@ export class WorkSpace extends Branch {
                 return value.commitProtoBuf;
             }));
             // TODO: add changelist
-            // this.commits = arg2 as ReadonlyArray<Commit>;
-            // this.changeList = arg3 as IChangeList;
             this.workSpaceProtoBuf.setOrigincommit(arg4 as string || "");
-            // this.originCommit = arg4 as string;
         } else {
             super(arg1.getParent());
             this.workSpaceProtoBuf = arg1;
@@ -123,7 +113,7 @@ export class WorkSpace extends Branch {
     public get firstCommit(): string {
         return this.name.slice(1, 11);
     }
-
+    /** The list of commits on the branch: commits */
     public get commits(): ReadonlyArray<Commit> {
         const protoArr = this.workSpaceProtoBuf.getCommitsList() as any[];
         return protoArr.map((value) => {
@@ -134,13 +124,21 @@ export class WorkSpace extends Branch {
     public addCommit(newCommit: Commit) {
         this.workSpaceProtoBuf.addCommits(newCommit.commitProtoBuf);
     }
-
+    /**
+     * The origin from where this workspace was created. It is undefined if
+     *  it was created at the beginning  of the repo, ie on top of its
+     *  topicspace's first commit
+     */
+    public get originCommit(): string | undefined {
+        const shaStr = this.workSpaceProtoBuf.getOrigincommit();
+        return shaStr !== "" ? shaStr : undefined;
+    }
+    /**
+     * The SHA of the files along with the file itself that is yet to be
+     * integrated into the WorkSpace.
+     */
     public get changeList(): IChangeList {
         return {};
-    }
-
-    public get originCommit(): string {
-        return this.workSpaceProtoBuf.getOrigincommit();
     }
 
     public toPrint(): string[] {

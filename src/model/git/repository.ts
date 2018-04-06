@@ -18,8 +18,9 @@ export class Repository {
     }
     /**
      * The proto Repository object, it has these members, in order:
-     * path: string,
-     * name: string,
+     * The local path of where the repository resides: path: string,
+     * The name of the repo, for now it is the basename of the path:
+     *  name: string,
      */
     public readonly repositoryProtoBuf: any;
 
@@ -42,12 +43,12 @@ export class Repository {
         return `${this.repositoryProtoBuf.getPath()} ${this.repositoryProtoBuf.getName()}`;
     }
 
-    /** Just your typical getter from the private proto instance */
+    /** The local path of where the repository resides */
     public get path(): string {
         return this.repositoryProtoBuf.getPath();
     }
 
-    /** You typical getter from the private proto instance */
+    /** The name of the repo, for now it is the basename of the path */
     public get name(): string {
         return this.repositoryProtoBuf.getName();
     }

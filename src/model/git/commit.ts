@@ -4,39 +4,33 @@ const protoCommit = require("../../../static/commit_pb");
 
 /** An immutable Git Commit. */
 export class Commit {
-    // /** The 40 character hex SHA has for the commit */
-    // public readonly SHA: string;
-    // /** The title/summary of the commit */
-    // public readonly title: string;
-    // /** The message/body of the commit */
-    // public readonly body: string;
-    // /**
-    //  * The committer ID (email, name, time).
-    //  * This assumes that the author and committer are the same
-    //  * since it is the case in GitDrive.
-    //  * Here is qoute from the Git Pro book as why they would be differen:
-    //  * "You may be wondering what the difference is between author and
-    //  * committer. The author is the person who originally wrote the patch,
-    //  * whereas the committer is the person who last applied the patch. So,
-    //  * if you send in a patch to a project and one of the core members applies
-    //  * the patch, both of you get credit — you as the author and the core
-    //  * member as the committer.""
-    //  */
-    // public readonly committer: CommitterID;
-    // /** This is the parent's SHA, it is not a list as history is linear in GitDrive */
-    // public readonly parentSHA: string;
-    // /**
-    //  * A list of old SHA hashes that belonged to the commit before it got rewritten.
-    //  * If null then the commit was never rewritten.
-    //  */
-    // public readonly historySHA: ReadonlyArray<string> | null;
 
     /** Deserialize the byte array read from the proto message */
     public static deserialize(uint8Arr: Uint8Array): Commit {
         const mssg = protoCommit.Commit.deserializeBinary(uint8Arr);
         return new Commit(mssg);
     }
-
+    /**
+     * This protoBuf object has the following members, in order:
+     * - The 40 character hex SHA has for the commit: sha: string
+     * - The title/summary of the commit: title: string
+     * - The message/body of the commit: body: string
+     * - The committer ID (email, name, time).
+     *  This assumes that the author and committer are the same since it is
+     *  the case in GitDrive. Here is qoute from the Git Pro book as why they
+     *  would be differen:
+     *  "You may be wondering what the difference is between author and
+     *  committer. The author is the person who originally wrote the patch,
+     *  whereas the committer is the person who last applied the patch. So,
+     *  if you send in a patch to a project and one of the core members applies
+     *  the patch, both of you get credit — you as the author and the core
+     *  member as the committer.": committer: CommitterID
+     * - This is the parent's SHA, it is not a list as history is linear
+     *  in GitDrive: parentsha: string
+     * - A list of old SHA hashes that belonged to the commit before it got
+     *  rewritten. If null then the commit was never rewritten. TODO: take this
+     *  out: historysha: ReadonlyArray<string>
+     */
     public readonly commitProtoBuf: any;
 
     public constructor(
@@ -70,29 +64,40 @@ export class Commit {
             this.commitProtoBuf = shaOrProtoMsg;
         }
     }
-
+    /** The 40 character hex SHA has for the commit */
     public get SHA(): string {
         return this.commitProtoBuf.getSha();
     }
-
+    /** The title/summary of the commit */
     public get title(): string {
         return this.commitProtoBuf.getTitle();
     }
-
+    /** The message/body of the commit */
     public get body(): string {
         return this.commitProtoBuf.getBody();
     }
-
+    /** The committer ID (email, name, time). */
     public get committer(): CommitterID {
         return new CommitterID(this.commitProtoBuf.getCommitter());
     }
-
+    /**
+     * This is the parent's SHA, it is not a list as history is linear
+     * in GitDrive
+     */
     public get parentSHA(): string {
         return this.commitProtoBuf.getParentsha();
     }
+    /**
+     * A list of old SHA hashes that belonged to the commit before it got
+     * rewritten. If null then the commit was never rewritten.
+     */
+    public get historySHA(): ReadonlyArray<string> | null {
+        const historyArr = this.commitProtoBuf.getHistoryshaList();
+        return historyArr.length() > 0 ? historyArr : null;
+    }
 
-    public get historySHA(): ReadonlyArray<string> {
-        return this.commitProtoBuf.getHistoryshaList();
+    public addHistorySHA(oldSHA: string): void {
+        this.commitProtoBuf.addHistorysha(oldSHA);
     }
 
     public serialize(): Uint8Array {

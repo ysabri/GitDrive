@@ -54,7 +54,14 @@ export class CommitterID {
       const mssg = protoCommitterID.CommitterID.deserializeBinary(uint8Arr);
       return new CommitterID(mssg);
     }
-
+    /**
+     * This protoBuf object has the following members, in order:
+     * - Name of the committer: name: string
+     * - Email of the committer: email: string
+     * - Date of the commit: date: string
+     * - Time offset of, if not given then the current offset is chosen:
+     *  tzoffset: string
+     */
     public readonly committerIDProtoBuf: any;
 
     public constructor(
@@ -82,19 +89,19 @@ export class CommitterID {
         this.committerIDProtoBuf = name;
       }
     }
-
+    /** Name of the committer */
     public get name(): string {
       return this.committerIDProtoBuf.getName();
     }
-
+    /** Email of the committer */
     public get email(): string {
       return this.committerIDProtoBuf.getEmail();
     }
-
+    /** Date of the commit: date */
     public get date(): Date {
       return new Date(this.committerIDProtoBuf.getDate() as string);
     }
-
+    /** Time offset of, if not given then the current offset is chosen */
     public get tzOffset(): number {
       return this.committerIDProtoBuf.getTzoffset();
     }

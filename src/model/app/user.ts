@@ -5,22 +5,20 @@ const protoUser = require("../../../static/user_pb");
 
 /** An immutable user object */
 export class User {
-    /** The name of the user, not a username, ie, "first last" */
-    // public readonly name: string;
-    /** The email of the user, will be used in commits */
-    // public readonly email: string;
-    /**
-     * The WorkSpaces that belong to the user, along with their branches in
-     * each WorkSpace.
-     */
-    // public readonly workSpaces: IWorkspaceBranch;
 
     /** Deserialize the byte array read from the proto message */
     public static deserialize(uint8Arr: Uint8Array): User {
         const mssg = protoUser.User.deserializeBinary(uint8Arr);
         return new User(mssg);
     }
-
+    /**
+     * This protoBuf object has the following members, in order:
+     * - The name of the user, not a username, ie, "first last":
+     *  name: string
+     * - The email of the user, will be used in commits: email: string
+     * - The WorkSpaces that belongs to the user:
+     *  workspaces: ReadonlyArray<Workspace>
+     */
     public readonly userProtoBuf: any;
 
     public constructor(
@@ -52,14 +50,15 @@ export class User {
         return ` ${this.name} ${this.email}`;
     }
 
+    /** The name of the user, not a username, ie, "first last" */
     public get name(): string {
         return this.userProtoBuf.getName();
     }
-
+    /** The email of the user, will be used in commits: email */
     public get email(): string {
         return this.userProtoBuf.getEmail();
     }
-
+    /** The WorkSpaces that belongs to the user */
     public get workSpaces(): ReadonlyArray<WorkSpace> {
         const protoArr = this.userProtoBuf.getWorkspacesList() as any[];
         return protoArr.map((value) => {
