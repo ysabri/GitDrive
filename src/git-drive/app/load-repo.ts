@@ -74,6 +74,10 @@ export async function loadGRepo(
     // tslint:disable-next-line:no-console
     console.log("The topicSpaces parsed:");
     // tslint:disable-next-line:no-console
-    console.log(topicSpaces);
-    return new GRepository(repo, [], []);
+    console.log(topicSpaces.map((value) => {
+        return value.map((commit) => {
+            return commit.toPrint();
+        });
+    }));
+    return new GRepository(repo.path, [], []);
 }

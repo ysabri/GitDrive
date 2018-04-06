@@ -1,9 +1,12 @@
+import { appendFileSync, readFileSync } from "fs";
+import { join } from "path";
 import { GRepository } from "../../model/app/g-repository";
 import { TopicSpace } from "../../model/app/topicspace";
 import { User } from "../../model/app/user";
 import { WorkSpace } from "../../model/app/workspace";
 import { Commit } from "../../model/git/commit";
-import { getVal } from "../../util/keyVal";
+import { Repository } from "../../model/git/repository";
+// import { getVal } from "../../util/keyVal";
 import { commit } from "../git/commit";
 import { fetchAll } from "../git/fetch";
 import { getCommit } from "../git/log";
@@ -25,12 +28,13 @@ export async function sync(
     summary: string,
     body: string,
 ): Promise<WorkSpace> {
-    // // get the branch and check if user owns it
-    const userBranch = getVal(user.workSpaces, workspace.name);
-    if (!userBranch) {
-        throw new Error("[sync] User: " + user.name + " does not own the WorkSpace: "
-            + workspace.name);
-    }
+    // TODO: add this back with the new array
+    // get the branch and check if user owns it
+    // const userBranch = getVal(user.workSpaces, workspace.name);
+    // if (!userBranch) {
+    //     throw new Error("[sync] User: " + user.name + " does not own the WorkSpace: "
+    //         + workspace.name);
+    // }
     // see if branch exists by getting its tip commit, I could do the same
     // thing using for-each-ref
     const tip = workspace.tip;
@@ -51,7 +55,25 @@ export async function sync(
         throw new Error("[sync] The current checked-out branch is not the one "
             + "that belongs to user: " + user.name);
     }
-    // commit the changes now that everything checks-out :)
+    await writeUserInfo(repo);
+
+    const buffer = readFileSync(join(repo.path, "repo.proto"));
+    const retrievedRepo = Repository.deserialize(new Uint8Array(buffer));
+    console.log("repo we got back: ");
+    console.log(retrievedRepo.id());
+    // console.log(buffer);
+    // const uintArr = new Uint8Array(buffer);
+    // console.log(uintArr);
+    // const msg = protoUser.decode(uintArr);
+    // console.log(msg);
+    // const valid = protoUser.verify(msg);
+    // if (valid === null) {
+    //     // tslint:disable-next-line:no-console
+    //     console.log("object is verified");
+    // } else {
+    //     // tslint:disable-next-line:no-console
+    //     console.log(valid);
+    // }
     await commit(repo, user.name, user.email, summary, body);
     const newCommitArr: Commit[] = workspace.commits as Commit[];
     const newTip = await getCommit(repo, workspace.name);
@@ -73,4 +95,10 @@ export async function sync(
     return new WorkSpace(workspace.name,
         workspace.remoteUpstream, newTip, newCommitArr, workspace.changeList,
         workspace.originCommit);
+}
+
+
+async function writeUserInfo(repo: Repository): Promise<void> {
+    appendFileSync(join(repo.path, "repo.proto"), repo.serialize());
+    return;
 }

@@ -54,7 +54,7 @@ export async function createWorkSpace(
         const tempWS = new WorkSpace(firstCommit.SHA, null, firstCommit,
             [firstCommit], emptyChangeList, basedOn.tip.SHA);
         await renameBranch(repo, new Branch("temp", null, firstCommit) , tempWS.name);
-        user.workSpaces[tempWS.name] = tempWS;
+        user.addWorkspace(tempWS);
         return tempWS;
     } else {
         throw new Error(`[createWorkSpace] First commit for user ${user.name}`

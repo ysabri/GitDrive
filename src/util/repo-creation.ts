@@ -85,7 +85,7 @@ export async function createWorkSpaces(
                 workspaces.push(tempWS);
 
                 // Adding the new branch a keyVal pair into the user obj
-                users[i].workSpaces[tempWS.name] = tempWS;
+                users[i].addWorkspace(tempWS); // workSpaces[tempWS.name] = ;
 
                 await renameBranch(repo, tempBranch[0], tempWS.name);
 
