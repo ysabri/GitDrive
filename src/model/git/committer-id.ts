@@ -1,5 +1,5 @@
-// This code was taken from: https://github.com/desktop/desktop project,
-// it was mainly written by: https://github.com/niik
+// The base of this code was taken from: https://github.com/desktop/desktop
+// project, it was mainly written by: https://github.com/niik
 // tslint:disable-next-line:no-var-requires
 const protoCommitterID = require("../../../static/committerid_pb");
 /**
@@ -48,13 +48,17 @@ export class CommitterID {
 
       return new CommitterID(name, email, date, tzOffset);
     }
-    public readonly protoObj: any;
-    // public readonly name: string;
-    // public readonly email: string;
-    // public readonly date: Date;
-    // public readonly tzOffset: number;
+
+    /** Deserialize the byte array read from the proto message */
+    public static deserialize(uint8Arr: Uint8Array): CommitterID {
+      const mssg = protoCommitterID.CommitterID.deserializeBinary(uint8Arr);
+      return new CommitterID(mssg);
+    }
+
+    public readonly committerIDProtoBuf: any;
+
     public constructor(
-      protoBufObj: any,
+      protoMsg: any,
     )
     public constructor(
       name: string,
@@ -69,33 +73,38 @@ export class CommitterID {
       tzOffset?: number,
     ) {
       if (typeof name === "string") {
-        this.protoObj = new protoCommitterID.CommitterID();
-        this.protoObj.setName(name);
-        this.protoObj.setEmail(email);
-        this.protoObj.setDate(date!.toDateString());
-        this.protoObj.setTzoffset(tzOffset || new Date().getTimezoneOffset());
+        this.committerIDProtoBuf = new protoCommitterID.CommitterID();
+        this.committerIDProtoBuf.setName(name);
+        this.committerIDProtoBuf.setEmail(email);
+        this.committerIDProtoBuf.setDate(date!.toDateString());
+        this.committerIDProtoBuf.setTzoffset(tzOffset || new Date().getTimezoneOffset());
       } else {
-        this.protoObj = name;
+        this.committerIDProtoBuf = name;
       }
-      // this.name = name;
-      // this.email = email;
-      // this.date = date;
-      // this.tzOffset = tzOffset || new Date().getTimezoneOffset();
     }
 
     public get name(): string {
-      return this.protoObj.getName();
+      return this.committerIDProtoBuf.getName();
     }
 
     public get email(): string {
-      return this.protoObj.getEmail();
+      return this.committerIDProtoBuf.getEmail();
     }
 
     public get date(): Date {
-      return new Date(this.protoObj.getDate() as string);
+      return new Date(this.committerIDProtoBuf.getDate() as string);
     }
 
     public get tzOffset(): number {
-      return this.protoObj.getTzoffset();
+      return this.committerIDProtoBuf.getTzoffset();
+    }
+
+    public toPrint(): string[] {
+      return [this.name, this.email, this.date.toDateString(),
+        String(this.tzOffset)];
+    }
+
+    public serialize(): Uint8Array {
+      return this.committerIDProtoBuf.serializeBinary();
     }
   }

@@ -14,42 +14,46 @@ export class Repository {
     /** Deserialize the byte array read from the proto message */
     public static deserialize(uint8Arr: Uint8Array): Repository {
         const mssg = protoRepository.Repository.deserializeBinary(uint8Arr);
-        return new Repository(mssg.getPath());
+        return new Repository(mssg);
     }
     /**
      * The proto Repository object, it has these members, in order:
      * path: string,
      * name: string,
      */
-    private readonly protoObj: any;
+    public readonly repositoryProtoBuf: any;
 
     public constructor(
-        repoPath: string,
+        repoPath: string | any,
     ) {
-    this.protoObj = new protoRepository.Repository();
-    this.protoObj.setPath(repoPath);
-    this.protoObj.setName(basename(repoPath));
+        if (typeof repoPath === "string") {
+            this.repositoryProtoBuf = new protoRepository.Repository();
+            this.repositoryProtoBuf.setPath(repoPath);
+            this.repositoryProtoBuf.setName(basename(repoPath));
+        } else {
+            this.repositoryProtoBuf = repoPath;
+        }
     }
 
     /**
      * For now repos with the same id are the same.
      */
     public id(): string {
-        return `${this.protoObj.getPath()} ${this.protoObj.getName()}`;
+        return `${this.repositoryProtoBuf.getPath()} ${this.repositoryProtoBuf.getName()}`;
     }
 
     /** Just your typical getter from the private proto instance */
     public get path(): string {
-        return this.protoObj.getPath();
+        return this.repositoryProtoBuf.getPath();
     }
 
     /** You typical getter from the private proto instance */
     public get name(): string {
-        return this.protoObj.getName();
+        return this.repositoryProtoBuf.getName();
     }
 
     public serialize(): Uint8Array {
-        return this.protoObj.serializeBinary();
+        return this.repositoryProtoBuf.serializeBinary();
     }
 
 

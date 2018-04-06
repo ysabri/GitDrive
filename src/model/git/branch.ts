@@ -1,4 +1,6 @@
 import {Commit} from "./commit";
+// tslint:disable-next-line:no-var-requires
+const protoBranch = require("../../../static/branch_pb");
 /**
  * An immutable Git branch.
  * If the branch's remoteUpstream is null, it means it is a local branch.
@@ -7,26 +9,62 @@ import {Commit} from "./commit";
  */
 export class Branch {
     /** Current name of branch with no prefixes */
-    public readonly name: string;
+    // public readonly name: string;
 
     /**
      * This is prefixed with the remote name, which will always be origin
      * since all GitDrive repos should have one remote only.
      * This will be null when remote is not configured.
      */
-    public readonly remoteUpstream: string | null;
+    // public readonly remoteUpstream: string | null;
     /** Commit object the branch is pointing to */
-    public readonly tip: Commit;
+    // public readonly tip: Commit;
+    /** Deserialize the byte array read from the proto message */
+    public static deserialize(uint8Arr: Uint8Array): Branch {
+        const mssg = protoBranch.Branch.deserializeBinary(uint8Arr);
+        return new Branch(mssg);
+    }
 
+    public readonly branchProtoBuf: any;
+
+    public constructor(
+        protoMsg: any,
+    )
     public constructor(
         name: string,
         remote: string | null,
         tip: Commit,
+    )
+    constructor(
+        nameOrProtoMsg: string | any,
+        remote?: string | null,
+        tip?: Commit,
     ) {
-        this.name = name;
-        this.remoteUpstream = remote;
-        this.tip = tip;
+        if (typeof nameOrProtoMsg === "string") {
+            this.branchProtoBuf = new protoBranch.Branch();
+            this.branchProtoBuf.setName(nameOrProtoMsg);
+            this.branchProtoBuf.setRemoteupstream(remote || "");
+            this.branchProtoBuf.setTip(tip!.commitProtoBuf);
+        } else {
+            this.branchProtoBuf = nameOrProtoMsg;
+        }
     }
 
+    public get name(): string {
+        return this.branchProtoBuf.getName();
+    }
+
+    public get remoteUpstream(): string | null {
+        const remoteString = this.branchProtoBuf.getRemoteupstream();
+        return remoteString !== "" ?  remoteString : null;
+    }
+
+    public get tip(): Commit {
+        return new Commit(this.branchProtoBuf.getTip());
+    }
+
+    public serialize(): Uint8Array {
+        return this.branchProtoBuf.serializeBinary();
+    }
 
 }

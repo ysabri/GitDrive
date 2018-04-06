@@ -30,8 +30,18 @@ export class Commit {
     //  * If null then the commit was never rewritten.
     //  */
     // public readonly historySHA: ReadonlyArray<string> | null;
-    private readonly protoObj: any;
 
+    /** Deserialize the byte array read from the proto message */
+    public static deserialize(uint8Arr: Uint8Array): Commit {
+        const mssg = protoCommit.Commit.deserializeBinary(uint8Arr);
+        return new Commit(mssg);
+    }
+
+    public readonly commitProtoBuf: any;
+
+    public constructor(
+        protoMsg: any,
+    )
     public constructor(
         sha: string,
         title: string,
@@ -39,44 +49,59 @@ export class Commit {
         author: CommitterID,
         parent: string,
         history: ReadonlyArray<string> | null,
+    )
+    constructor(
+        shaOrProtoMsg: string | any,
+        title?: string,
+        body?: string,
+        author?: CommitterID,
+        parent?: string,
+        history?: ReadonlyArray<string> | null,
     ) {
-        this.protoObj = new protoCommit.Commit();
-        this.protoObj.setSha(sha);
-        this.protoObj.setTitle(title);
-        this.protoObj.setBody(body);
-        this.protoObj.setCommitter(author.protoObj);
-        this.protoObj.setParentsha(parent);
-        this.protoObj.setHistoryshaList(history || []);
-        // this.SHA = sha;
-        // this.title = title;
-        // this.body = body;
-        // this.committer = author;
-        // this.parentSHA = parent;
-        // this.historySHA = history;
+        if (typeof shaOrProtoMsg === "string") {
+            this.commitProtoBuf = new protoCommit.Commit();
+            this.commitProtoBuf.setSha(shaOrProtoMsg);
+            this.commitProtoBuf.setTitle(title);
+            this.commitProtoBuf.setBody(body);
+            this.commitProtoBuf.setCommitter(author!.committerIDProtoBuf);
+            this.commitProtoBuf.setParentsha(parent);
+            this.commitProtoBuf.setHistoryshaList(history || []);
+        } else {
+            this.commitProtoBuf = shaOrProtoMsg;
+        }
     }
 
     public get SHA(): string {
-        return this.protoObj.getSha();
+        return this.commitProtoBuf.getSha();
     }
 
     public get title(): string {
-        return this.protoObj.getTitle();
+        return this.commitProtoBuf.getTitle();
     }
 
     public get body(): string {
-        return this.protoObj.getBody();
+        return this.commitProtoBuf.getBody();
     }
 
     public get committer(): CommitterID {
-        return new CommitterID(this.protoObj.getCommitter());
+        return new CommitterID(this.commitProtoBuf.getCommitter());
     }
 
     public get parentSHA(): string {
-        return this.protoObj.getParentsha();
+        return this.commitProtoBuf.getParentsha();
     }
 
     public get historySHA(): ReadonlyArray<string> {
-        return this.protoObj.getHistoryshaList();
+        return this.commitProtoBuf.getHistoryshaList();
+    }
+
+    public serialize(): Uint8Array {
+        return this.commitProtoBuf.serializeBinary();
+    }
+
+    public toPrint(): string[] {
+        return ["SHA: " + this.SHA, "Title: " + this.title,
+            "Body: " + this.body, ...this.committer.toPrint()];
     }
 
     /** See if the given SHA belongs or belonged to this commit obj */
