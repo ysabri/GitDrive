@@ -11,6 +11,7 @@ var jspb = require('google-protobuf');
 var goog = jspb;
 var global = Function('return this')();
 
+var repo_pb = require('./repo_pb.js');
 var user_pb = require('./user_pb.js');
 var topicspace_pb = require('./topicspace_pb.js');
 goog.exportSymbol('proto.GRepo.GRepo', null, global);
@@ -37,7 +38,7 @@ if (goog.DEBUG && !COMPILED) {
  * @private {!Array<number>}
  * @const
  */
-proto.GRepo.GRepo.repeatedFields_ = [3,4];
+proto.GRepo.GRepo.repeatedFields_ = [2,3];
 
 
 
@@ -68,8 +69,7 @@ proto.GRepo.GRepo.prototype.toObject = function(opt_includeInstance) {
  */
 proto.GRepo.GRepo.toObject = function(includeInstance, msg) {
   var f, obj = {
-    path: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    name: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    parent: (f = msg.getParent()) && repo_pb.Repository.toObject(includeInstance, f),
     topicspacesList: jspb.Message.toObjectList(msg.getTopicspacesList(),
     topicspace_pb.TopicSpace.toObject, includeInstance),
     usersList: jspb.Message.toObjectList(msg.getUsersList(),
@@ -111,19 +111,16 @@ proto.GRepo.GRepo.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setPath(value);
+      var value = new repo_pb.Repository;
+      reader.readMessage(value,repo_pb.Repository.deserializeBinaryFromReader);
+      msg.setParent(value);
       break;
     case 2:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setName(value);
-      break;
-    case 3:
       var value = new topicspace_pb.TopicSpace;
       reader.readMessage(value,topicspace_pb.TopicSpace.deserializeBinaryFromReader);
       msg.addTopicspaces(value);
       break;
-    case 4:
+    case 3:
       var value = new user_pb.User;
       reader.readMessage(value,user_pb.User.deserializeBinaryFromReader);
       msg.addUsers(value);
@@ -157,24 +154,18 @@ proto.GRepo.GRepo.prototype.serializeBinary = function() {
  */
 proto.GRepo.GRepo.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getPath();
-  if (f.length > 0) {
-    writer.writeString(
+  f = message.getParent();
+  if (f != null) {
+    writer.writeMessage(
       1,
-      f
-    );
-  }
-  f = message.getName();
-  if (f.length > 0) {
-    writer.writeString(
-      2,
-      f
+      f,
+      repo_pb.Repository.serializeBinaryToWriter
     );
   }
   f = message.getTopicspacesList();
   if (f.length > 0) {
     writer.writeRepeatedMessage(
-      3,
+      2,
       f,
       topicspace_pb.TopicSpace.serializeBinaryToWriter
     );
@@ -182,7 +173,7 @@ proto.GRepo.GRepo.serializeBinaryToWriter = function(message, writer) {
   f = message.getUsersList();
   if (f.length > 0) {
     writer.writeRepeatedMessage(
-      4,
+      3,
       f,
       user_pb.User.serializeBinaryToWriter
     );
@@ -191,48 +182,48 @@ proto.GRepo.GRepo.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional string path = 1;
- * @return {string}
+ * optional Repository parent = 1;
+ * @return {?proto.Repository}
  */
-proto.GRepo.GRepo.prototype.getPath = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+proto.GRepo.GRepo.prototype.getParent = function() {
+  return /** @type{?proto.Repository} */ (
+    jspb.Message.getWrapperField(this, repo_pb.Repository, 1));
 };
 
 
-/** @param {string} value */
-proto.GRepo.GRepo.prototype.setPath = function(value) {
-  jspb.Message.setProto3StringField(this, 1, value);
+/** @param {?proto.Repository|undefined} value */
+proto.GRepo.GRepo.prototype.setParent = function(value) {
+  jspb.Message.setWrapperField(this, 1, value);
+};
+
+
+proto.GRepo.GRepo.prototype.clearParent = function() {
+  this.setParent(undefined);
 };
 
 
 /**
- * optional string name = 2;
- * @return {string}
+ * Returns whether this field is set.
+ * @return {!boolean}
  */
-proto.GRepo.GRepo.prototype.getName = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/** @param {string} value */
-proto.GRepo.GRepo.prototype.setName = function(value) {
-  jspb.Message.setProto3StringField(this, 2, value);
+proto.GRepo.GRepo.prototype.hasParent = function() {
+  return jspb.Message.getField(this, 1) != null;
 };
 
 
 /**
- * repeated TopicSpace topicSpaces = 3;
+ * repeated TopicSpace topicSpaces = 2;
  * @return {!Array.<!proto.TopicSpace>}
  */
 proto.GRepo.GRepo.prototype.getTopicspacesList = function() {
   return /** @type{!Array.<!proto.TopicSpace>} */ (
-    jspb.Message.getRepeatedWrapperField(this, topicspace_pb.TopicSpace, 3));
+    jspb.Message.getRepeatedWrapperField(this, topicspace_pb.TopicSpace, 2));
 };
 
 
 /** @param {!Array.<!proto.TopicSpace>} value */
 proto.GRepo.GRepo.prototype.setTopicspacesList = function(value) {
-  jspb.Message.setRepeatedWrapperField(this, 3, value);
+  jspb.Message.setRepeatedWrapperField(this, 2, value);
 };
 
 
@@ -242,7 +233,7 @@ proto.GRepo.GRepo.prototype.setTopicspacesList = function(value) {
  * @return {!proto.TopicSpace}
  */
 proto.GRepo.GRepo.prototype.addTopicspaces = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 3, opt_value, proto.TopicSpace, opt_index);
+  return jspb.Message.addToRepeatedWrapperField(this, 2, opt_value, proto.TopicSpace, opt_index);
 };
 
 
@@ -252,18 +243,18 @@ proto.GRepo.GRepo.prototype.clearTopicspacesList = function() {
 
 
 /**
- * repeated User users = 4;
+ * repeated User users = 3;
  * @return {!Array.<!proto.User>}
  */
 proto.GRepo.GRepo.prototype.getUsersList = function() {
   return /** @type{!Array.<!proto.User>} */ (
-    jspb.Message.getRepeatedWrapperField(this, user_pb.User, 4));
+    jspb.Message.getRepeatedWrapperField(this, user_pb.User, 3));
 };
 
 
 /** @param {!Array.<!proto.User>} value */
 proto.GRepo.GRepo.prototype.setUsersList = function(value) {
-  jspb.Message.setRepeatedWrapperField(this, 4, value);
+  jspb.Message.setRepeatedWrapperField(this, 3, value);
 };
 
 
@@ -273,7 +264,7 @@ proto.GRepo.GRepo.prototype.setUsersList = function(value) {
  * @return {!proto.User}
  */
 proto.GRepo.GRepo.prototype.addUsers = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 4, opt_value, proto.User, opt_index);
+  return jspb.Message.addToRepeatedWrapperField(this, 3, opt_value, proto.User, opt_index);
 };
 
 

@@ -11,6 +11,7 @@ var jspb = require('google-protobuf');
 var goog = jspb;
 var global = Function('return this')();
 
+var workspace_pb = require('./workspace_pb.js');
 goog.exportSymbol('proto.User', null, global);
 
 /**
@@ -24,12 +25,19 @@ goog.exportSymbol('proto.User', null, global);
  * @constructor
  */
 proto.User = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.User.repeatedFields_, null);
 };
 goog.inherits(proto.User, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   proto.User.displayName = 'proto.User';
 }
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.User.repeatedFields_ = [3];
+
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -60,7 +68,9 @@ proto.User.prototype.toObject = function(opt_includeInstance) {
 proto.User.toObject = function(includeInstance, msg) {
   var f, obj = {
     name: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    email: jspb.Message.getFieldWithDefault(msg, 2, "")
+    email: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    workspacesList: jspb.Message.toObjectList(msg.getWorkspacesList(),
+    workspace_pb.WorkSpace.toObject, includeInstance)
   };
 
   if (includeInstance) {
@@ -105,6 +115,11 @@ proto.User.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {string} */ (reader.readString());
       msg.setEmail(value);
       break;
+    case 3:
+      var value = new workspace_pb.WorkSpace;
+      reader.readMessage(value,workspace_pb.WorkSpace.deserializeBinaryFromReader);
+      msg.addWorkspaces(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -148,6 +163,14 @@ proto.User.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getWorkspacesList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      3,
+      f,
+      workspace_pb.WorkSpace.serializeBinaryToWriter
+    );
+  }
 };
 
 
@@ -178,6 +201,37 @@ proto.User.prototype.getEmail = function() {
 /** @param {string} value */
 proto.User.prototype.setEmail = function(value) {
   jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+/**
+ * repeated WorkSpace workspaces = 3;
+ * @return {!Array.<!proto.WorkSpace>}
+ */
+proto.User.prototype.getWorkspacesList = function() {
+  return /** @type{!Array.<!proto.WorkSpace>} */ (
+    jspb.Message.getRepeatedWrapperField(this, workspace_pb.WorkSpace, 3));
+};
+
+
+/** @param {!Array.<!proto.WorkSpace>} value */
+proto.User.prototype.setWorkspacesList = function(value) {
+  jspb.Message.setRepeatedWrapperField(this, 3, value);
+};
+
+
+/**
+ * @param {!proto.WorkSpace=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.WorkSpace}
+ */
+proto.User.prototype.addWorkspaces = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 3, opt_value, proto.WorkSpace, opt_index);
+};
+
+
+proto.User.prototype.clearWorkspacesList = function() {
+  this.setWorkspacesList([]);
 };
 
 

@@ -1,10 +1,9 @@
 syntax = "proto3";
 import "commit.proto";
+import "branch.proto";
 
 message WorkSpace {
-    string name = 1;
-    string remoteUpstream = 2;
-    Commit tip = 3;
-    repeated Commit commits = 4;
-    string originCommit = 5;
+    Branch parent = 1;
+    repeated Commit commits = 2;
+    string originCommit = 3;
 }

@@ -12,6 +12,7 @@ var goog = jspb;
 var global = Function('return this')();
 
 var commit_pb = require('./commit_pb.js');
+var branch_pb = require('./branch_pb.js');
 goog.exportSymbol('proto.WorkSpace', null, global);
 
 /**
@@ -36,7 +37,7 @@ if (goog.DEBUG && !COMPILED) {
  * @private {!Array<number>}
  * @const
  */
-proto.WorkSpace.repeatedFields_ = [4];
+proto.WorkSpace.repeatedFields_ = [2];
 
 
 
@@ -67,12 +68,10 @@ proto.WorkSpace.prototype.toObject = function(opt_includeInstance) {
  */
 proto.WorkSpace.toObject = function(includeInstance, msg) {
   var f, obj = {
-    name: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    remoteupstream: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    tip: (f = msg.getTip()) && commit_pb.Commit.toObject(includeInstance, f),
+    parent: (f = msg.getParent()) && branch_pb.Branch.toObject(includeInstance, f),
     commitsList: jspb.Message.toObjectList(msg.getCommitsList(),
     commit_pb.Commit.toObject, includeInstance),
-    origincommit: jspb.Message.getFieldWithDefault(msg, 5, "")
+    origincommit: jspb.Message.getFieldWithDefault(msg, 3, "")
   };
 
   if (includeInstance) {
@@ -110,24 +109,16 @@ proto.WorkSpace.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setName(value);
+      var value = new branch_pb.Branch;
+      reader.readMessage(value,branch_pb.Branch.deserializeBinaryFromReader);
+      msg.setParent(value);
       break;
     case 2:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setRemoteupstream(value);
-      break;
-    case 3:
-      var value = new commit_pb.Commit;
-      reader.readMessage(value,commit_pb.Commit.deserializeBinaryFromReader);
-      msg.setTip(value);
-      break;
-    case 4:
       var value = new commit_pb.Commit;
       reader.readMessage(value,commit_pb.Commit.deserializeBinaryFromReader);
       msg.addCommits(value);
       break;
-    case 5:
+    case 3:
       var value = /** @type {string} */ (reader.readString());
       msg.setOrigincommit(value);
       break;
@@ -160,32 +151,18 @@ proto.WorkSpace.prototype.serializeBinary = function() {
  */
 proto.WorkSpace.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getName();
-  if (f.length > 0) {
-    writer.writeString(
-      1,
-      f
-    );
-  }
-  f = message.getRemoteupstream();
-  if (f.length > 0) {
-    writer.writeString(
-      2,
-      f
-    );
-  }
-  f = message.getTip();
+  f = message.getParent();
   if (f != null) {
     writer.writeMessage(
-      3,
+      1,
       f,
-      commit_pb.Commit.serializeBinaryToWriter
+      branch_pb.Branch.serializeBinaryToWriter
     );
   }
   f = message.getCommitsList();
   if (f.length > 0) {
     writer.writeRepeatedMessage(
-      4,
+      2,
       f,
       commit_pb.Commit.serializeBinaryToWriter
     );
@@ -193,7 +170,7 @@ proto.WorkSpace.serializeBinaryToWriter = function(message, writer) {
   f = message.getOrigincommit();
   if (f.length > 0) {
     writer.writeString(
-      5,
+      3,
       f
     );
   }
@@ -201,53 +178,23 @@ proto.WorkSpace.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional string name = 1;
- * @return {string}
+ * optional Branch parent = 1;
+ * @return {?proto.Branch}
  */
-proto.WorkSpace.prototype.getName = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+proto.WorkSpace.prototype.getParent = function() {
+  return /** @type{?proto.Branch} */ (
+    jspb.Message.getWrapperField(this, branch_pb.Branch, 1));
 };
 
 
-/** @param {string} value */
-proto.WorkSpace.prototype.setName = function(value) {
-  jspb.Message.setProto3StringField(this, 1, value);
+/** @param {?proto.Branch|undefined} value */
+proto.WorkSpace.prototype.setParent = function(value) {
+  jspb.Message.setWrapperField(this, 1, value);
 };
 
 
-/**
- * optional string remoteUpstream = 2;
- * @return {string}
- */
-proto.WorkSpace.prototype.getRemoteupstream = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/** @param {string} value */
-proto.WorkSpace.prototype.setRemoteupstream = function(value) {
-  jspb.Message.setProto3StringField(this, 2, value);
-};
-
-
-/**
- * optional Commit tip = 3;
- * @return {?proto.Commit}
- */
-proto.WorkSpace.prototype.getTip = function() {
-  return /** @type{?proto.Commit} */ (
-    jspb.Message.getWrapperField(this, commit_pb.Commit, 3));
-};
-
-
-/** @param {?proto.Commit|undefined} value */
-proto.WorkSpace.prototype.setTip = function(value) {
-  jspb.Message.setWrapperField(this, 3, value);
-};
-
-
-proto.WorkSpace.prototype.clearTip = function() {
-  this.setTip(undefined);
+proto.WorkSpace.prototype.clearParent = function() {
+  this.setParent(undefined);
 };
 
 
@@ -255,24 +202,24 @@ proto.WorkSpace.prototype.clearTip = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.WorkSpace.prototype.hasTip = function() {
-  return jspb.Message.getField(this, 3) != null;
+proto.WorkSpace.prototype.hasParent = function() {
+  return jspb.Message.getField(this, 1) != null;
 };
 
 
 /**
- * repeated Commit commits = 4;
+ * repeated Commit commits = 2;
  * @return {!Array.<!proto.Commit>}
  */
 proto.WorkSpace.prototype.getCommitsList = function() {
   return /** @type{!Array.<!proto.Commit>} */ (
-    jspb.Message.getRepeatedWrapperField(this, commit_pb.Commit, 4));
+    jspb.Message.getRepeatedWrapperField(this, commit_pb.Commit, 2));
 };
 
 
 /** @param {!Array.<!proto.Commit>} value */
 proto.WorkSpace.prototype.setCommitsList = function(value) {
-  jspb.Message.setRepeatedWrapperField(this, 4, value);
+  jspb.Message.setRepeatedWrapperField(this, 2, value);
 };
 
 
@@ -282,7 +229,7 @@ proto.WorkSpace.prototype.setCommitsList = function(value) {
  * @return {!proto.Commit}
  */
 proto.WorkSpace.prototype.addCommits = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 4, opt_value, proto.Commit, opt_index);
+  return jspb.Message.addToRepeatedWrapperField(this, 2, opt_value, proto.Commit, opt_index);
 };
 
 
@@ -292,17 +239,17 @@ proto.WorkSpace.prototype.clearCommitsList = function() {
 
 
 /**
- * optional string originCommit = 5;
+ * optional string originCommit = 3;
  * @return {string}
  */
 proto.WorkSpace.prototype.getOrigincommit = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
 /** @param {string} value */
 proto.WorkSpace.prototype.setOrigincommit = function(value) {
-  jspb.Message.setProto3StringField(this, 5, value);
+  jspb.Message.setProto3StringField(this, 3, value);
 };
 
 

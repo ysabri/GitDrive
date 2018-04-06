@@ -1,6 +1,8 @@
 syntax = "proto3";
+import "workspace.proto";
 
 message User {
     string name = 1;
     string email = 2;
+    repeated WorkSpace workspaces = 3;
 }
