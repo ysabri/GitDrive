@@ -2,7 +2,8 @@ import { GRepository } from "../../model/app/g-repository";
 import { TopicSpace } from "../../model/app/topicspace";
 import { User } from "../../model/app/user";
 import { Commit } from "../../model/git/commit";
-import { createWorkSpaces, writeUserFile } from "../../util/repo-creation";
+import { writeRepoInfo } from "../../util/metafile";
+import { createWorkSpaces } from "../../util/repo-creation";
 import { commit, getCommit, orphanCheckout } from "../git";
 
 /**
@@ -21,8 +22,10 @@ export async function createTopicSpace(
 ): Promise<TopicSpace> {
     // create the branch
     await orphanCheckout(repo, "temp", origin.SHA);
+
+    await writeRepoInfo(repo);
     // write the user file
-    await writeUserFile("GLOBAL USER", repo.path);
+    // await writeUserFile("GLOBAL USER", repo.path);
     // make the first commit
     const res = await commit(repo,
         "GLOBAL USER",

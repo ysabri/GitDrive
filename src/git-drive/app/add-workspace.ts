@@ -3,7 +3,8 @@ import { TopicSpace } from "../../model/app/topicspace";
 import { User } from "../../model/app/user";
 import { IChangeList, WorkSpace } from "../../model/app/workspace";
 import { Branch } from "../../model/git/branch";
-import { writeUserFile } from "../../util/repo-creation";
+import { writeRepoInfo } from "../../util/metafile";
+// import { writeUserFile } from "../../util/repo-creation";
 import {
     checkoutAndCreateBranch,
     commit,
@@ -27,7 +28,7 @@ export async function createWorkSpace(
     topicSpace: TopicSpace,
     basedOn: WorkSpace,
 ): Promise<WorkSpace> {
-    // check if the user has a topicspace already, each user has only one
+    // check if the user in the topicspace already, each user has only one
     // workspace per topicspace
     const exists = topicSpace.users.filter((usr) => {
         return usr.name === user.name;
@@ -41,8 +42,10 @@ export async function createWorkSpace(
     // mixed reset to the global first commit in the topicspace,
     // this means that the state we reset-ed from is un-staged now
     await reset(repo, topicSpace.firstCommit.SHA, ResetMode.Mixed);
+
+    await writeRepoInfo(repo);
     // re-write the user file to match the user of the workspace
-    await writeUserFile(user.name + " " + user.email, repo.path);
+    // await writeUserFile(user.name + " " + user.email, repo.path);
     // commit, it will stage everything in the process
     await commit(repo, user.name, user.email,
         `First revision for ${user.name}'s workspace: `,

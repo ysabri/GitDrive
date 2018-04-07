@@ -46,7 +46,7 @@ export async function startEx(): Promise<void> {
   await checkoutBranch(repo, workSpace);
 
   const newWS = await measure("sync",
-    () => sync(repo, topicSpace, workSpace, user, "First Sync Commit", "Yay this worked" ));
+    () => sync(repo, workSpace, user, "First Sync Commit", "Yay this worked" ));
   // Add the change to a new repo object
   const newRepo = await changeWS(repo, topicSpace, newWS);
   // tslint:disable-next-line:no-console

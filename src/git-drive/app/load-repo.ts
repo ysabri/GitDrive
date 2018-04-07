@@ -4,6 +4,7 @@ import { IChangeList, WorkSpace } from "../../model/app/workspace";
 import { Branch } from "../../model/git/branch";
 import { Commit } from "../../model/git/commit";
 import { Repository } from "../../model/git/repository";
+import { readRepoInfo } from "../../util/metafile";
 import { getBranches, getCommit, isGitRepository } from "../git";
 
 export async function loadGRepo(
@@ -71,13 +72,10 @@ export async function loadGRepo(
         }
         topicSpaceCounter++;
     }
-    // tslint:disable-next-line:no-console
-    console.log("The topicSpaces parsed:");
-    // tslint:disable-next-line:no-console
-    console.log(topicSpaces.map((value) => {
-        return value.map((commit) => {
-            return commit.toPrint();
-        });
-    }));
+
+    const repoInfo = await readRepoInfo(repo);
+    console.log("this is the info read about the repo");
+    console.log(repoInfo.id());
+
     return new GRepository(repo.path, [], []);
 }

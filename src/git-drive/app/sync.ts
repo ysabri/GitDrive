@@ -1,11 +1,12 @@
-import { appendFileSync, readFileSync } from "fs";
-import { join } from "path";
+// import { appendFileSync, readFileSync } from "fs";
+// import { join } from "path";
 import { GRepository } from "../../model/app/g-repository";
-import { TopicSpace } from "../../model/app/topicspace";
+// import { TopicSpace } from "../../model/app/topicspace";
 import { User } from "../../model/app/user";
 import { WorkSpace } from "../../model/app/workspace";
 import { Commit } from "../../model/git/commit";
-import { Repository } from "../../model/git/repository";
+import { readRepoInfo, writeRepoInfo } from "../../util/metafile";
+// import { Repository } from "../../model/git/repository";
 // import { getVal } from "../../util/keyVal";
 import { commit } from "../git/commit";
 import { fetchAll } from "../git/fetch";
@@ -22,7 +23,6 @@ import { getStatus } from "../git/status";
  */
 export async function sync(
     repo: GRepository,
-    topicSpace: TopicSpace,
     workspace: WorkSpace,
     user: User,
     summary: string,
@@ -55,25 +55,11 @@ export async function sync(
         throw new Error("[sync] The current checked-out branch is not the one "
             + "that belongs to user: " + user.name);
     }
-    await writeUserInfo(repo);
-
-    const buffer = readFileSync(join(repo.path, "repo.proto"));
-    const retrievedRepo = Repository.deserialize(new Uint8Array(buffer));
-    console.log("repo we got back: ");
-    console.log(retrievedRepo.id());
-    // console.log(buffer);
-    // const uintArr = new Uint8Array(buffer);
-    // console.log(uintArr);
-    // const msg = protoUser.decode(uintArr);
-    // console.log(msg);
-    // const valid = protoUser.verify(msg);
-    // if (valid === null) {
-    //     // tslint:disable-next-line:no-console
-    //     console.log("object is verified");
-    // } else {
-    //     // tslint:disable-next-line:no-console
-    //     console.log(valid);
-    // }
+    await writeRepoInfo(repo);
+    const repoInfo = await readRepoInfo(repo);
+    console.log("the repo we just wrote before committing in sync");
+    console.log(repoInfo);
+    console.log(repoInfo.id());
     await commit(repo, user.name, user.email, summary, body);
     const newCommitArr: Commit[] = workspace.commits as Commit[];
     const newTip = await getCommit(repo, workspace.name);
@@ -95,10 +81,4 @@ export async function sync(
     return new WorkSpace(workspace.name,
         workspace.remoteUpstream, newTip, newCommitArr, workspace.changeList,
         workspace.originCommit);
-}
-
-
-async function writeUserInfo(repo: Repository): Promise<void> {
-    appendFileSync(join(repo.path, "repo.proto"), repo.serialize());
-    return;
 }

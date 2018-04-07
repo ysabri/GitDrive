@@ -40,7 +40,7 @@ export class Repository {
      * For now repos with the same id are the same.
      */
     public id(): string {
-        return `${this.repositoryProtoBuf.getPath()} ${this.repositoryProtoBuf.getName()}`;
+        return `${this.path} ${this.name}`;
     }
 
     /** The local path of where the repository resides */

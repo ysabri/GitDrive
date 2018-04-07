@@ -6,7 +6,8 @@ import { TopicSpace } from "../../model/app/topicspace";
 import { User } from "../../model/app/user";
 import {  } from "../../model/app/workspace";
 import { Commit } from "../../model/git/commit";
-import { createWorkSpaces, writeUserFile } from "../../util/repo-creation";
+import { writeRepoInfo } from "../../util/metafile";
+import { createWorkSpaces } from "../../util/repo-creation";
 import {    commit,
             getCommit,
             isGitRepository,
@@ -45,10 +46,11 @@ export async function startRepo(
     // });
 
     // write the inital global .CURRENT_USER file
-    await writeUserFile("GLOBAL USER", path);
+    // await writeUserFile("GLOBAL USER", path);
 
     // temp obj to do operations on
-    let GRepo = new GRepository(path, [], users);
+    const GRepo = new GRepository(path, [], users);
+    await writeRepoInfo(GRepo);
     // create the first commit
     const res = await commit(GRepo,
         "GLOBAL USER",
@@ -73,7 +75,6 @@ export async function startRepo(
         const usersCopy = users.map((value) => {
             return value;
         });
-        GRepo = new GRepository(path, [mainTopicSpace], usersCopy);
-        return GRepo;
+        return new GRepository(path, [mainTopicSpace], usersCopy);
     }
 }

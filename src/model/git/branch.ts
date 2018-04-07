@@ -50,11 +50,7 @@ export class Branch {
     public get name(): string {
         return this.branchProtoBuf.getName();
     }
-    /**
-     * This is postfixed with the remote name, which will always be origin
-     * since all GitDrive repos should have one remote only.
-     * This will be null when remote is not configured.
-     */
+    /** Origin or null */
     public get remoteUpstream(): string | null {
         const remoteString = this.branchProtoBuf.getRemoteupstream();
         return remoteString !== "" ?  remoteString : null;
