@@ -1,4 +1,4 @@
-import { writeFile } from "fs";
+import { writeFile } from "fs-extra";
 import { join } from "path";
 import {
     checkoutBranch,
@@ -13,7 +13,7 @@ import { User } from "../model/app/user";
 import { IChangeList, WorkSpace } from "../model/app/workspace";
 import { Branch } from "../model/git/branch";
 import { Commit } from "../model/git/commit";
-import { writeRepoInfo } from "./metafile";
+// import { writeRepoInfo } from "./metafile";
 
 /**
  * Writes the .CURRENT_USER file given the username. The file will contain just
@@ -61,7 +61,7 @@ export async function createWorkSpaces(
     for (const i in users) {
         if (users.hasOwnProperty(i)) {
             await writeUserFile(users[i].name + " " + users[i].email, repo.path);
-            await writeRepoInfo(repo);
+            // await writeRepoInfo(repo);
 
             commitRes = await commit(repo,
                 users[i].name,

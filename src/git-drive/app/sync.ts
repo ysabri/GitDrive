@@ -5,7 +5,7 @@ import { GRepository } from "../../model/app/g-repository";
 import { User } from "../../model/app/user";
 import { WorkSpace } from "../../model/app/workspace";
 import { Commit } from "../../model/git/commit";
-import { readRepoInfo, writeRepoInfo } from "../../util/metafile";
+import { writeRepoInfo } from "../../util/metafile";
 // import { Repository } from "../../model/git/repository";
 // import { getVal } from "../../util/keyVal";
 import { commit } from "../git/commit";
@@ -55,11 +55,9 @@ export async function sync(
         throw new Error("[sync] The current checked-out branch is not the one "
             + "that belongs to user: " + user.name);
     }
+
     await writeRepoInfo(repo);
-    const repoInfo = await readRepoInfo(repo);
-    console.log("the repo we just wrote before committing in sync");
-    console.log(repoInfo);
-    console.log(repoInfo.id());
+
     await commit(repo, user.name, user.email, summary, body);
     const newCommitArr: Commit[] = workspace.commits as Commit[];
     const newTip = await getCommit(repo, workspace.name);

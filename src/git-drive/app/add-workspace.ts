@@ -4,7 +4,7 @@ import { User } from "../../model/app/user";
 import { IChangeList, WorkSpace } from "../../model/app/workspace";
 import { Branch } from "../../model/git/branch";
 import { writeRepoInfo } from "../../util/metafile";
-// import { writeUserFile } from "../../util/repo-creation";
+import { writeUserFile } from "../../util/repo-creation";
 import {
     checkoutAndCreateBranch,
     commit,
@@ -45,7 +45,7 @@ export async function createWorkSpace(
 
     await writeRepoInfo(repo);
     // re-write the user file to match the user of the workspace
-    // await writeUserFile(user.name + " " + user.email, repo.path);
+    await writeUserFile(user.name + " " + user.email, repo.path);
     // commit, it will stage everything in the process
     await commit(repo, user.name, user.email,
         `First revision for ${user.name}'s workspace: `,

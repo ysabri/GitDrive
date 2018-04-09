@@ -47,7 +47,9 @@
     "webpack": "^3.11.0"
   },
   "dependencies": {
+    "@types/fs-extra": "^5.0.1",
     "@types/google-protobuf": "^3.2.7",
+    "fs-extra": "^5.0.0",
     "google-protobuf": "^3.5.0",
     "source-map-support": "^0.5.4"
   },

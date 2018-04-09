@@ -50,7 +50,9 @@ export async function startRepo(
 
     // temp obj to do operations on
     const GRepo = new GRepository(path, [], users);
+
     await writeRepoInfo(GRepo);
+
     // create the first commit
     const res = await commit(GRepo,
         "GLOBAL USER",
