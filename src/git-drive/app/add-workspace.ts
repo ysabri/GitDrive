@@ -52,15 +52,15 @@ export async function createWorkSpace(
         ``);
     // check if the commit was made
     const firstCommit = await getCommit(repo, "temp");
-    if (firstCommit) {
-        const emptyChangeList: IChangeList = {};
-        const tempWS = new WorkSpace(firstCommit.SHA, null, firstCommit,
-            [firstCommit], emptyChangeList, basedOn.tip.SHA);
-        await renameBranch(repo, new Branch("temp", null, firstCommit) , tempWS.name);
-        user.addWorkspace(tempWS);
-        return tempWS;
-    } else {
+    if (!firstCommit) {
         throw new Error(`[createWorkSpace] First commit for user ${user.name}`
         + "cannot be found");
     }
+
+    const emptyChangeList: IChangeList = {};
+    const tempWS = new WorkSpace(firstCommit.SHA, null, firstCommit,
+        [firstCommit], emptyChangeList, basedOn.tip.SHA);
+    await renameBranch(repo, new Branch("temp", null, firstCommit) , tempWS.name);
+    user.addWorkspace(tempWS);
+    return tempWS;
 }

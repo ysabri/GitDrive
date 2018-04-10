@@ -107,7 +107,7 @@ export class WorkSpace extends Branch {
     }
 
     public id(): string {
-        return ` ${this.name} with ${this.commits.length} commits`;
+        return ` ${this.name} with ${this.commits.length} commits and tip: ${this.tip.title}`;
     }
 
     public get firstCommit(): string {

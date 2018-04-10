@@ -1,5 +1,4 @@
 import { readFile, writeFile} from "fs-extra";
-// import { readFileSync, writeFile } from "fs";
 import { join } from "path";
 import { GRepository } from "../model/app/g-repository";
 import { Repository } from "../model/git/repository";
@@ -25,7 +24,5 @@ export async function writeRepoInfo(repo: GRepository, path?: string): Promise<v
 
 export async function readRepoInfo(repo: Repository): Promise<GRepository> {
     const buffer = await readFile(join(repo.path, "repo.proto"));
-    // console.log("The buffer we read out:");
-    // console.log(buffer);
     return GRepository.deserialize(new Uint8Array(buffer));
 }

@@ -5,7 +5,7 @@ import { Branch } from "../../model/git/branch";
 import { Commit } from "../../model/git/commit";
 import { Repository } from "../../model/git/repository";
 import { readRepoInfo } from "../../util/metafile";
-import { getBranches, getCommit, isGitRepository } from "../git";
+import { getBranches, getCommit, isGitRepository, getStatus } from "../git";
 
 export async function loadGRepo(
     path: string,
@@ -91,7 +91,8 @@ export async function loadGRepo(
         }
         topicSpaceCounter++;
     }
-
+    const statusofCurrBranch = await getStatus(repo);
+    console.log(statusofCurrBranch);
     const repoInfo = await readRepoInfo(repo);
     console.log("this is the info read about the repo");
     console.log(repoInfo.id());

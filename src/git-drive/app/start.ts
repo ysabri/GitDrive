@@ -1,13 +1,15 @@
-// import { copyFile, existsSync, writeFile } from "fs";
-import { existsSync } from "fs";
+// import { existsSync } from "fs";
+import { copy, pathExists } from "fs-extra";
 import { join } from "path";
 import { GRepository } from "../../model/app/g-repository";
 import { TopicSpace } from "../../model/app/topicspace";
 import { User } from "../../model/app/user";
 import {  } from "../../model/app/workspace";
 import { Commit } from "../../model/git/commit";
-import { writeRepoInfo } from "../../util/metafile";
-import { createWorkSpaces } from "../../util/repo-creation";
+// import { writeRepoInfo } from "../../util/metafile";
+import { commitRepoInfo, createWorkSpaces, writeUserFile } from "../../util/repo-creation";
+// import { createWorkSpaces, writeUserFile } from "../../util/repo-creation";
+
 import {    commit,
             getCommit,
             isGitRepository,
@@ -27,7 +29,7 @@ export async function startRepo(
     users: ReadonlyArray<User>,
 ): Promise<GRepository> {
 
-    if (!existsSync(path)) {
+    if (!(await pathExists(path))) {
         throw new Error("[startRepo] The path doesn't exist: " + path);
     }
 
@@ -39,19 +41,15 @@ export async function startRepo(
     await init(path);
 
     // copy the global default .gitignore for the first commit ever
-    // await copyFile(ignoreDir, path + "\\.gitignore", (err) => {
-    //     if (err) {
-    //         throw err;
-    //     }
-    // });
+    await copy(ignoreDir, join(path, ".gitignore"));
 
     // write the inital global .CURRENT_USER file
-    // await writeUserFile("GLOBAL USER", path);
+    await writeUserFile("GLOBAL USER", path);
 
     // temp obj to do operations on
     const GRepo = new GRepository(path, [], users);
 
-    await writeRepoInfo(GRepo);
+    // await writeRepoInfo(GRepo);
 
     // create the first commit
     const res = await commit(GRepo,
@@ -77,6 +75,9 @@ export async function startRepo(
         const usersCopy = users.map((value) => {
             return value;
         });
-        return new GRepository(path, [mainTopicSpace], usersCopy);
+        const newRepo = new GRepository(path, [mainTopicSpace], usersCopy);
+        // return new GRepository(path, [mainTopicSpace], usersCopy);
+        // commit the protbuf info into each workspace for the first topicspace
+        return await commitRepoInfo(newRepo, 0);
     }
 }

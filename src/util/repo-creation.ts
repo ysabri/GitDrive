@@ -1,5 +1,6 @@
 import { writeFile } from "fs-extra";
 import { join } from "path";
+import { changeTS } from "../controller/state-updater";
 import {
     checkoutBranch,
     commit,
@@ -9,11 +10,12 @@ import {
     git,
     renameBranch } from "../git-drive/git";
 import { GRepository } from "../model/app/g-repository";
+import { TopicSpace } from "../model/app/topicspace";
 import { User } from "../model/app/user";
 import { IChangeList, WorkSpace } from "../model/app/workspace";
 import { Branch } from "../model/git/branch";
 import { Commit } from "../model/git/commit";
-// import { writeRepoInfo } from "./metafile";
+import { writeRepoInfo } from "./metafile";
 
 /**
  * Writes the .CURRENT_USER file given the username. The file will contain just
@@ -61,7 +63,6 @@ export async function createWorkSpaces(
     for (const i in users) {
         if (users.hasOwnProperty(i)) {
             await writeUserFile(users[i].name + " " + users[i].email, repo.path);
-            // await writeRepoInfo(repo);
 
             commitRes = await commit(repo,
                 users[i].name,
@@ -109,4 +110,35 @@ export async function createWorkSpaces(
     }
 
     return workspaces;
+}
+
+
+export async function commitRepoInfo(
+    repo: GRepository,
+    topicSpaceIndex: number,
+): Promise<GRepository> {
+    const topicspace = repo.topicSpaces[topicSpaceIndex];
+    const workspaces = topicspace.workSpaces;
+
+    // we don't assume that any branch checkedout belongs to the topicspace,
+    // this could be the case and it could save us a checkout. Even if we
+    // save a checkout, we still have to do a test/check and that might be as
+    // expensive if not more than just checking out the branches.
+    const newWSs: WorkSpace[] = [];
+    for (const currWS of workspaces) {
+            await checkoutBranch(repo, currWS);
+            await writeRepoInfo(repo);
+            await commit(repo, currWS.tip.committer.name, currWS.tip.committer.email,
+                "Dummy commit - to be ignored", "");
+            const newFirstCommit = await getCommit(repo, currWS.name);
+            if (!newFirstCommit) {
+                throw new Error("This did not commit");
+            }
+            newWSs.push(new WorkSpace(currWS.name, currWS.remoteUpstream,
+                newFirstCommit, [...currWS.commits, newFirstCommit], currWS.changeList, currWS.originCommit));
+
+    }
+    const newTS = new TopicSpace(topicspace.name, topicspace.users, newWSs,
+        topicspace.firstCommit, topicspace.originCommit);
+    return changeTS(repo, newTS);
 }
