@@ -1,18 +1,16 @@
-// import { existsSync } from "fs";
 import { copy, pathExists } from "fs-extra";
 import { join } from "path";
 import { GRepository } from "../../model/app/g-repository";
 import { TopicSpace } from "../../model/app/topicspace";
 import { User } from "../../model/app/user";
-import {  } from "../../model/app/workspace";
 import { Commit } from "../../model/git/commit";
-// import { writeRepoInfo } from "../../util/metafile";
-import { commitRepoInfo, createWorkSpaces, writeUserFile } from "../../util/repo-creation";
-// import { createWorkSpaces, writeUserFile } from "../../util/repo-creation";
-
+import { Repository } from "../../model/git/repository";
+import { writeRepoInfo } from "../../util/metafile";
+import { createWorkSpaces, writeUserFile } from "../../util/repo-creation";
 import {    commit,
             getCommit,
             isGitRepository,
+            orphanCheckout,
         } from "../git";
 import init from "../git/init";
 
@@ -47,37 +45,38 @@ export async function startRepo(
     await writeUserFile("GLOBAL USER", path);
 
     // temp obj to do operations on
-    const GRepo = new GRepository(path, [], users);
-
-    // await writeRepoInfo(GRepo);
+    const repo = new Repository(path);
 
     // create the first commit
-    const res = await commit(GRepo,
+    const res = await commit(repo,
         "GLOBAL USER",
         "testEmail@gmail.com",
-        `First revision for:Main:in repo:${GRepo.name}`,
-        `This revision adds the initial default .gitignore file along with any files in: ${GRepo.path}`);
+        `First revision for:Main:in repo:${repo.name}`,
+        `This revision adds the initial default .gitignore file along with any files in: ${repo.path}`);
 
     // check if commit was a success and get it's info
     let firstCommit: Commit | null;
-    if (res) {
-        firstCommit = await getCommit(GRepo, "master");
-    } else {
+    if (!res) {
         throw new Error("[startRepo] commit failed as it returned false");
     }
+
+    firstCommit = await getCommit(repo, "master");
     if (!firstCommit) {
         throw new Error(`[startRepo] getCommit couldn't find the first` +
         " commit under HEAD");
-    } else {
-        const workspaces = await createWorkSpaces(GRepo, users, firstCommit, "master");
-        const mainTopicSpace = new TopicSpace("Main",
-            users, workspaces, firstCommit, undefined);
-        const usersCopy = users.map((value) => {
-            return value;
-        });
-        const newRepo = new GRepository(path, [mainTopicSpace], usersCopy);
-        // return new GRepository(path, [mainTopicSpace], usersCopy);
-        // commit the protbuf info into each workspace for the first topicspace
-        return await commitRepoInfo(newRepo, 0);
     }
+
+    const workspaces = await createWorkSpaces(repo, users, firstCommit, "master");
+    const mainTopicSpace = new TopicSpace("Main",
+        users, workspaces, firstCommit, undefined);
+    const usersCopy = users.map((value) => {
+        return value;
+    });
+    // The tip should already be checked-out
+    await orphanCheckout(repo, "GG", workspaces[workspaces.length - 1].tip.SHA);
+    const gRepo = new GRepository(path, [mainTopicSpace], usersCopy, "GG");
+    await writeRepoInfo(gRepo);
+    await commit(repo, "Meta-User", "NA", "Meta Commit", "");
+
+    return gRepo;
 }

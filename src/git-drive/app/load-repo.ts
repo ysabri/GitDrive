@@ -97,5 +97,5 @@ export async function loadGRepo(
     console.log("this is the info read about the repo");
     console.log(repoInfo.id());
 
-    return new GRepository(repo.path, [], []);
+    return new GRepository(repo.path, [], [], "GG");
 }

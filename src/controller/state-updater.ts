@@ -66,7 +66,7 @@ export async function changeTS(
             return value;
         }
     });
-    return new GRepository(repo.path, newArr, repo.users);
+    return new GRepository(repo.path, newArr, repo.users, repo.metaBranch);
 }
 /** Create a new repo with the new topicspace added */
 export async function addTS(
@@ -81,7 +81,7 @@ export async function addTS(
             newUserArr.push(user);
         }
     }
-    return new GRepository(repo.path, newTSArr, newUserArr);
+    return new GRepository(repo.path, newTSArr, newUserArr, repo.metaBranch);
 }
 /** create a new repo object without the victim topicspace  */
 export async function removeTS(
@@ -91,7 +91,7 @@ export async function removeTS(
     const newArr = repo.topicSpaces.filter((value) => {
         return value.name !== victimTS.name;
     });
-    return new GRepository(repo.path, newArr, repo.users);
+    return new GRepository(repo.path, newArr, repo.users, repo.metaBranch);
 }
 /** Create a new repo object with the new user added */
 export async function addUser(
@@ -100,7 +100,7 @@ export async function addUser(
 ): Promise<GRepository> {
     const newUserArr = repo.users as User[];
     newUserArr.push(newUser);
-    return new GRepository(repo.path, repo.topicSpaces, newUserArr);
+    return new GRepository(repo.path, repo.topicSpaces, newUserArr, repo.metaBranch);
 }
 /** Create a new repo object without the victim user */
 export async function removeUser(
@@ -110,5 +110,5 @@ export async function removeUser(
     const newUserArr = repo.users.filter((value) => {
         return value.name !== victimUser.name;
     });
-    return new GRepository(repo.path, repo.topicSpaces, newUserArr);
+    return new GRepository(repo.path, repo.topicSpaces, newUserArr, repo.metaBranch);
 }

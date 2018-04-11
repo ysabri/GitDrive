@@ -1,6 +1,5 @@
 import { writeFile } from "fs-extra";
 import { join } from "path";
-import { changeTS } from "../controller/state-updater";
 import {
     checkoutBranch,
     commit,
@@ -9,13 +8,11 @@ import {
     getCommit,
     git,
     renameBranch } from "../git-drive/git";
-import { GRepository } from "../model/app/g-repository";
-import { TopicSpace } from "../model/app/topicspace";
 import { User } from "../model/app/user";
 import { IChangeList, WorkSpace } from "../model/app/workspace";
 import { Branch } from "../model/git/branch";
 import { Commit } from "../model/git/commit";
-import { writeRepoInfo } from "./metafile";
+import { Repository } from "../model/git/repository";
 
 /**
  * Writes the .CURRENT_USER file given the username. The file will contain just
@@ -42,7 +39,7 @@ export async function writeUserFile(
  * branches are based on.
  */
 export async function createWorkSpaces(
-    repo: GRepository,
+    repo: Repository,
     users: ReadonlyArray<User>,
     firstCommit: Commit,
     tempBranchName: string,
@@ -113,32 +110,15 @@ export async function createWorkSpaces(
 }
 
 
-export async function commitRepoInfo(
-    repo: GRepository,
-    topicSpaceIndex: number,
-): Promise<GRepository> {
-    const topicspace = repo.topicSpaces[topicSpaceIndex];
-    const workspaces = topicspace.workSpaces;
+// export async function commitStructureChange(
+//     repo: Repository,
+// ): Promise<void> {
+//     await checkoutBranch(repo,);
 
-    // we don't assume that any branch checkedout belongs to the topicspace,
-    // this could be the case and it could save us a checkout. Even if we
-    // save a checkout, we still have to do a test/check and that might be as
-    // expensive if not more than just checking out the branches.
-    const newWSs: WorkSpace[] = [];
-    for (const currWS of workspaces) {
-            await checkoutBranch(repo, currWS);
-            await writeRepoInfo(repo);
-            await commit(repo, currWS.tip.committer.name, currWS.tip.committer.email,
-                "Dummy commit - to be ignored", "");
-            const newFirstCommit = await getCommit(repo, currWS.name);
-            if (!newFirstCommit) {
-                throw new Error("This did not commit");
-            }
-            newWSs.push(new WorkSpace(currWS.name, currWS.remoteUpstream,
-                newFirstCommit, [...currWS.commits, newFirstCommit], currWS.changeList, currWS.originCommit));
+//     await writeRepoInfo(repo);
 
-    }
-    const newTS = new TopicSpace(topicspace.name, topicspace.users, newWSs,
-        topicspace.firstCommit, topicspace.originCommit);
-    return changeTS(repo, newTS);
-}
+//     await commit(repo, "Meta-user", "NA", "Meta Commit", "");
+//     // notice how we did not update the tip of the branch here as there is no
+//     // need for us to keep track of such info as long as we have the name.
+//     return;
+// }
