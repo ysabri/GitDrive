@@ -60,6 +60,12 @@ export class Branch {
         return new Commit(this.branchProtoBuf.getTip());
     }
 
+    public toPrint(): string[] {
+        return [this.name,
+            this.remoteUpstream === null ? "" : this.remoteUpstream,
+            ...this.tip.toPrint()];
+    }
+
     public serialize(): Uint8Array {
         return this.branchProtoBuf.serializeBinary();
     }

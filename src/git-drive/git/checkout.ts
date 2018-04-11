@@ -13,9 +13,14 @@ import { git } from "./core-git";
  */
 export async function checkoutBranch(
     repo: Repository,
-    branch: Branch,
+    branch: Branch | string,
 ): Promise<void> {
-    const args = ["checkout", branch.name];
+    let args: string[];
+    if (typeof branch === "string") {
+        args = ["checkout", branch];
+    } else {
+        args = ["checkout", branch.name];
+    }
     await git(args, repo.path);
 }
 
