@@ -1,6 +1,6 @@
 import { writeFileSync } from "fs";
 import { join, normalize } from "path";
-import { addTS, addWS, changeWS } from "../controller/state-updater";
+import { changeWS } from "../controller/state-updater";
 import { createTopicSpace } from "../git-drive/app/add-topicspace";
 import { createWorkSpace } from "../git-drive/app/add-workspace";
 import { loadGRepo } from "../git-drive/app/load-repo";
@@ -58,30 +58,31 @@ export async function startEx(): Promise<void> {
   const fourthWS = await measure("Create WorkSpace",
       () => createWorkSpace(newRepo, fourthUser, topicSpace, workSpace));
   // add the change to a new repo obj
-  const newerRepo = await addWS(newRepo, topicSpace, fourthWS, fourthUser);
+  // const newerRepo = await addWS(newRepo, topicSpace, fourthWS[0], fourthUser);
   // tslint:disable-next-line:no-console
-  console.log(newerRepo.id());
+  console.log(fourthWS[0].id());
   const fifthUser = new User("bob benson", "benson@bob.com", []);
   const sixthUser = new User("jack sparrow", "sparrow@jack.com", []);
   const seventhUser = new User("hp", "hp@hp.hp", []);
-  let newTS;
+  // let newTS;
   try {
-    newTS = await measure("Create TS", () => createTopicSpace(newerRepo,
-    [fifthUser, sixthUser, seventhUser], newerRepo.topicSpaces[0].workSpaces[0].tip, "Bug Fix"));
+    const newTS = await measure("Create TS", () => createTopicSpace(fourthWS[0],
+    [fifthUser, sixthUser, seventhUser], fourthWS[0].topicSpaces[0].workSpaces[0].tip, "Bug Fix"));
+    // newestRepo = await addTS(fourthWS[1], newTS);
+    // tslint:disable-next-line:no-console
+    console.log(newTS[0].id());
+    await checkoutBranch(newTS[0], newTS[1].workSpaces[0]);
+    const afterSync = await measure("Running sync on bob benson's WS", () =>
+      sync(newTS[0], newTS[1].workSpaces[0], fifthUser,
+        "First commit on Bob benson's branch", "hopefully this doesn't show"));
+    console.log("The repo after committing on bob benson's");
+    const syncRepo = await changeWS(newTS[0], newTS[1], afterSync);
+    console.log(syncRepo.id());
+    const repoReadout = await measure("loading a Repo", () => loadGRepo(newTS[0].path));
+    console.log("Repo we read out using load");
+    console.log(repoReadout.id());
   } catch (err) {
     if (err) {
-      // tslint:disable-next-line:no-console
-      console.log(err);
-    }
-  }
-  let newestRepo: GRepository;
-  if (newTS) {
-    newestRepo = await addTS(newerRepo, newTS);
-    // tslint:disable-next-line:no-console
-    console.log(newestRepo.id());
-    try {
-      await measure("loading a Repo", () => loadGRepo(newestRepo.path));
-    } catch (err) {
       // tslint:disable-next-line:no-console
       console.log(err);
     }
