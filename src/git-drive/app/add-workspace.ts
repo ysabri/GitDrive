@@ -1,3 +1,4 @@
+import { addWS } from "../../controller/state-updater";
 import { GRepository } from "../../model/app/g-repository";
 import { TopicSpace } from "../../model/app/topicspace";
 import { User } from "../../model/app/user";
@@ -7,6 +8,7 @@ import { writeRepoInfo } from "../../util/metafile";
 import { writeUserFile } from "../../util/repo-creation";
 import {
     checkoutAndCreateBranch,
+    checkoutBranch,
     commit,
     getCommit,
     renameBranch,
@@ -27,7 +29,7 @@ export async function createWorkSpace(
     user: User,
     topicSpace: TopicSpace,
     basedOn: WorkSpace,
-): Promise<WorkSpace> {
+): Promise<[GRepository, WorkSpace]> {
     // check if the user in the topicspace already, each user has only one
     // workspace per topicspace
     const exists = topicSpace.users.filter((usr) => {
@@ -62,5 +64,12 @@ export async function createWorkSpace(
         [firstCommit], emptyChangeList, basedOn.tip.SHA);
     await renameBranch(repo, new Branch("temp", null, firstCommit) , tempWS.name);
     user.addWorkspace(tempWS);
-    return tempWS;
+
+    const newRepo = await addWS(repo, topicSpace, tempWS, user);
+
+    await checkoutBranch(repo, repo.metaBranch);
+    await writeRepoInfo(newRepo);
+    await commit(newRepo, "Meta-User", "NA", "Meta Commit", "");
+
+    return [newRepo, tempWS];
 }
