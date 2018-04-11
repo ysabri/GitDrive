@@ -7,18 +7,6 @@ const protoTopicSpace = require("../../../static/topicspace_pb");
 
 /** An immutable TopicSpace */
 export class TopicSpace {
-    /**  */
-    // public readonly name: string;
-    /**  */
-    // public readonly users: ReadonlyArray<User>;
-    /**  */
-    // public readonly workSpaces: ReadonlyArray<WorkSpace>;
-    /**  */
-    // public readonly firstCommit: Commit;
-    /**
-     *
-     */
-    // public readonly originCommit?: Commit;
 
     /** Deserialize the byte array read from the proto message */
     public static deserialize(uint8Arr: Uint8Array): TopicSpace {

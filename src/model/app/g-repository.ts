@@ -19,6 +19,7 @@ export class GRepository extends Repository {
      * - A list of TopicSpace in the repo:
      *  topicspaces: ReadonlyArray<TopicSpace>
      * - The global list of users in the repo: users: ReadonlyArray<User>
+     * - The global structure meta branch name
      */
     public readonly gRepositoryProtoBuf: any;
 
@@ -29,11 +30,13 @@ export class GRepository extends Repository {
         path: string,
         topicspaces: ReadonlyArray<TopicSpace>,
         users: ReadonlyArray<User>,
+        metaBranch: string,
     )
     constructor(
         pathOrRepoOrProtoMsg: string | Repository | any,
         topicspaces?: ReadonlyArray<TopicSpace>,
         users?: ReadonlyArray<User>,
+        metaBranch?: string,
     ) {
         if (typeof pathOrRepoOrProtoMsg === "string") {
             super(pathOrRepoOrProtoMsg);
@@ -52,6 +55,7 @@ export class GRepository extends Repository {
         this.gRepositoryProtoBuf.setUsersList(users!.map((value) => {
             return value.userProtoBuf;
         }));
+        this.gRepositoryProtoBuf.setMetabranch(metaBranch);
     }
 
     public id(): string {
@@ -74,6 +78,10 @@ export class GRepository extends Repository {
         return protoArr.map((value) => {
             return new User(value);
         });
+    }
+    /** The global structure meta branch name */
+    public get metaBranch(): string {
+        return this.gRepositoryProtoBuf.getMetabranch();
     }
 
     public serialize(): Uint8Array {

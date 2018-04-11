@@ -73,7 +73,8 @@ proto.GRepo.GRepo.toObject = function(includeInstance, msg) {
     topicspacesList: jspb.Message.toObjectList(msg.getTopicspacesList(),
     topicspace_pb.TopicSpace.toObject, includeInstance),
     usersList: jspb.Message.toObjectList(msg.getUsersList(),
-    user_pb.User.toObject, includeInstance)
+    user_pb.User.toObject, includeInstance),
+    metabranch: jspb.Message.getFieldWithDefault(msg, 4, "")
   };
 
   if (includeInstance) {
@@ -124,6 +125,10 @@ proto.GRepo.GRepo.deserializeBinaryFromReader = function(msg, reader) {
       var value = new user_pb.User;
       reader.readMessage(value,user_pb.User.deserializeBinaryFromReader);
       msg.addUsers(value);
+      break;
+    case 4:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setMetabranch(value);
       break;
     default:
       reader.skipField();
@@ -176,6 +181,13 @@ proto.GRepo.GRepo.serializeBinaryToWriter = function(message, writer) {
       3,
       f,
       user_pb.User.serializeBinaryToWriter
+    );
+  }
+  f = message.getMetabranch();
+  if (f.length > 0) {
+    writer.writeString(
+      4,
+      f
     );
   }
 };
@@ -270,6 +282,21 @@ proto.GRepo.GRepo.prototype.addUsers = function(opt_value, opt_index) {
 
 proto.GRepo.GRepo.prototype.clearUsersList = function() {
   this.setUsersList([]);
+};
+
+
+/**
+ * optional string metaBranch = 4;
+ * @return {string}
+ */
+proto.GRepo.GRepo.prototype.getMetabranch = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/** @param {string} value */
+proto.GRepo.GRepo.prototype.setMetabranch = function(value) {
+  jspb.Message.setProto3StringField(this, 4, value);
 };
 
 
