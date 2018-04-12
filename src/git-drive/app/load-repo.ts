@@ -45,6 +45,7 @@ export async function loadGRepo(
     // Used to check if a branch matches our branch naming schema
     const branchNamePattern = new RegExp(`^G[0-9a-f]{10}$`);
     const metaBranchPattern = new RegExp(`^GG$`);
+    // filter out the meta data branch "GG"
     let refs = allRefs.filter((value) => {
         return !metaBranchPattern.test(value.name);
     });
@@ -107,17 +108,25 @@ export async function loadGRepo(
         }
         topicSpaceCounter++;
     }
+    // checkout and read the repo structure
     await checkoutBranch(repo, "GG");
     const repoInfo = await readRepoInfo(repo);
-    console.log("this is the info read about the repo");
-    console.log(repoInfo.id());
-
-    // This will throw if anything doesn't checkout
+    // This will throw if anything is not valid
     await checkTheState(repoInfo, topicSpaces);
-
+    // refs would be empty otherwise given that we filtered it above, we need
+    // all the refs - the "GG" ref.
+    refs = allRefs.filter((value) => {
+        return !metaBranchPattern.test(value.name);
+    });
+    // update all the branch tips and return that latest state back
     return await getThelatestState(repoInfo, refs);
 }
-
+/**
+ * Verify that the structure parsed out from the repo in the 2D array
+ * matches the structure we read from the protofile in branch "GG"
+ * @param repo The repo to check against
+ * @param commits The suspected 2D array of commits.
+ */
 async function checkTheState(
     repo: GRepository,
     commits: Commit[][],
@@ -166,10 +175,12 @@ async function checkTheState(
     }
 }
 /**
- * By the time this gets called, we know that branches are unique and that they
- * match.
- * @param repo
- * @param refs
+ * Update all the workspaces (branches) tips and thus the number of commits on
+ * them. By the time this gets called, we should know that branches are unique
+ * and that they match the workspaces in a one-to-one matching. Ie. we have
+ * called checkTheState beforehand.
+ * @param repo that it's state will get updated, refs have to belong to it
+ * @param refs the generic refs parsed by git, they have the latest state
  */
 async function getThelatestState(
     repo: GRepository,
@@ -181,12 +192,22 @@ async function getThelatestState(
             const foundRef = refs.find((value) => {
                 return value.name === WS.name;
             });
-            // the tips don't match, meaning that what we read is behind
+            // the tips don't match, meaning that what we read from "GG" is behind
             if (foundRef && (foundRef.tip.SHA !== WS.tip.SHA)) {
-                console.log("We found a tip that is behind: " + foundRef.name);
+                // we are reading the state from the workspace's point of view
+                // as we might be behind more than one commit, we trust the
+                // branch's perspective to have all the commits in it.
+                const buffer = await getBlobBinaryContents(repo, foundRef.tip.SHA, "repo.proto");
+                const protoStateBasedonRefTip = GRepository.deserialize(new Uint8Array(buffer));
+                // get the workspace from the proto state repo
+                const protoWS = await getWSfromTS(protoStateBasedonRefTip, TS.name, foundRef.name);
+                if (protoWS.tip === foundRef.tip) {
+                    throw new Error("[getThelatestState] For some reason the proto state is not behind" +
+                    " the branch's state, this should not be happening...");
+                }
                 // They have the same name, we matched them based on that
-                const newWS = new WorkSpace(WS.name, foundRef.remoteUpstream, foundRef.tip,
-                    [foundRef.tip, ...WS.commits], WS.changeList, WS.originCommit);
+                const newWS = new WorkSpace(protoWS.name, foundRef.remoteUpstream, foundRef.tip,
+                    [foundRef.tip, ...protoWS.commits], protoWS.changeList, protoWS.originCommit);
                 newRepo = await changeWS(newRepo, TS, newWS);
             }
         }
