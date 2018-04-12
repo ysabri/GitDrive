@@ -6,7 +6,12 @@ import { Commit } from "../../model/git/commit";
 import { writeRepoInfo } from "../../util/metafile";
 import { createWorkSpaces } from "../../util/repo-creation";
 import { writeUserFile } from "../../util/repo-creation";
-import { checkoutBranch, commit, getCommit, orphanCheckout } from "../git";
+import {
+    checkoutBranch,
+    commit,
+    getCommit,
+    orphanCheckout,
+} from "../git";
 /**
  * Create a new topicspace in a repo. And adds new users to the repo if they do
  * not exist already.

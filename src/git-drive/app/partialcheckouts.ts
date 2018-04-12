@@ -1,4 +1,4 @@
-import { existsSync, lstatSync, readdir } from "fs";
+import { lstatSync, pathExists, readdir } from "fs-extra";
 import { join } from "path";
 import { GFile } from "../../model/app/g-file";
 import { GRepository } from "../../model/app/g-repository";
@@ -42,7 +42,7 @@ export async function checkoutDir(
     // stage everything to avoid losing them
     addAllToIndex(repo);
     // check if the path exists
-    if (!existsSync(path)) {
+    if (! await pathExists(path)) {
         throw new Error("Path passed to checkoutDir doesn't exist");
     }
     // read the directory, both files and paths

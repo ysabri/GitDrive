@@ -1,18 +1,29 @@
-import { existsSync } from "fs";
+import { pathExists } from "fs-extra";
 import { changeWS } from "../../controller/state-updater";
 import { GRepository } from "../../model/app/g-repository";
 import { IChangeList, WorkSpace } from "../../model/app/workspace";
 import { Branch } from "../../model/git/branch";
 import { Commit } from "../../model/git/commit";
 import { Repository } from "../../model/git/repository";
+import { getWSfromTS } from "../../util/lookups";
 import { readRepoInfo } from "../../util/metafile";
-import { checkoutBranch, getBranches, getCommit, isGitRepository } from "../git";
-
+import {
+    checkoutBranch,
+    getBlobBinaryContents,
+    getBranches,
+    getCommit,
+    isGitRepository,
+} from "../git";
+/**
+ * Given a path load the repo and return its latest state after verifying it
+ * is structurally sound.
+ * @param path The path of the repo to load
+ */
 export async function loadGRepo(
     path: string,
 ): Promise<GRepository> {
     // check if path exists, as one should
-    if (!existsSync(path)) {
+    if (! await pathExists(path)) {
         throw new Error(`[loadGRepo] path: ${path} does not exist`);
     }
     // check if the path is a git repo, again as one should

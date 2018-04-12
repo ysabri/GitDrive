@@ -9,12 +9,9 @@ import { sync } from "../git-drive/app/sync";
 import { checkoutBranch } from "../git-drive/git/checkout";
 import { GRepository } from "../model/app/g-repository";
 import { User } from "../model/app/user";
-// import { Branch } from "../model/git/branch";
-// import { Commit } from "../model/git/commit";
-// import { CommitterID } from "../model/git/committer-id";
 import { EnclosedVariant, IPublicVariant, PublicVariant, Variant } from "../model/POST";
 import { measure } from "../util/git-perf";
-// import { getVal } from "../util/keyVal";
+
 
 // show an example to start repo, this might pass as a test but not quite,
 // the info to check is left for user.
