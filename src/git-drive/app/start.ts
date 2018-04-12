@@ -76,7 +76,7 @@ export async function startRepo(
     await orphanCheckout(repo, "GG", workspaces[workspaces.length - 1].tip.SHA);
     const gRepo = new GRepository(path, [mainTopicSpace], usersCopy, "GG");
     await writeRepoInfo(gRepo);
-    await commit(repo, "Meta-User", "NA", "Meta Commit", "");
+    await commit(gRepo, "Meta-User", "NA", "Meta Commit", "");
 
     return gRepo;
 }

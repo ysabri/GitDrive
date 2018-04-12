@@ -55,28 +55,36 @@ export async function startEx(): Promise<void> {
   const fourthWS = await measure("Create WorkSpace",
       () => createWorkSpace(newRepo, fourthUser, topicSpace, workSpace));
   // add the change to a new repo obj
-  // const newerRepo = await addWS(newRepo, topicSpace, fourthWS[0], fourthUser);
   // tslint:disable-next-line:no-console
   console.log(fourthWS[0].id());
   const fifthUser = new User("bob benson", "benson@bob.com", []);
   const sixthUser = new User("jack sparrow", "sparrow@jack.com", []);
   const seventhUser = new User("hp", "hp@hp.hp", []);
-  // let newTS;
   try {
     const newTS = await measure("Create TS", () => createTopicSpace(fourthWS[0],
     [fifthUser, sixthUser, seventhUser], fourthWS[0].topicSpaces[0].workSpaces[0].tip, "Bug Fix"));
-    // newestRepo = await addTS(fourthWS[1], newTS);
     // tslint:disable-next-line:no-console
     console.log(newTS[0].id());
+
+    // checkout bob's branch, we know he is the first user in the TS we just created
     await checkoutBranch(newTS[0], newTS[1].workSpaces[0]);
+
     const afterSync = await measure("Running sync on bob benson's WS", () =>
       sync(newTS[0], newTS[1].workSpaces[0], fifthUser,
         "First commit on Bob benson's branch", "hopefully this doesn't show"));
-    console.log("The repo after committing on bob benson's");
     const syncRepo = await changeWS(newTS[0], newTS[1], afterSync);
-    console.log(syncRepo.id());
+    // notice how we call changeWS after each one, it is not done for us in sync
+    // because sync has no knowledge of the TS it is operating in.
+    const lastSync = await measure("Another sync on bob's branch", () =>
+      sync(syncRepo, afterSync , fifthUser, "Second sync on bob's", ""));
+    const secondSyncRepo = await changeWS(syncRepo, newTS[1], lastSync);
+
+    // tslint:disable-next-line:no-console
+    console.log(secondSyncRepo.id());
+    // load the repo we just created, the printout from the console log after should
+    // match the one prior
     const repoReadout = await measure("loading a Repo", () => loadGRepo(newTS[0].path));
-    console.log("Repo we read out using load");
+    // tslint:disable-next-line:no-console
     console.log(repoReadout.id());
   } catch (err) {
     if (err) {
