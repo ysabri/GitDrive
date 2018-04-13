@@ -15,8 +15,8 @@ import {
     isGitRepository,
 } from "../git";
 /**
- * Given a path load the repo and return its latest state after verifying it
- * is structurally sound.
+ * Given the root path load the repo and return its latest state after
+ * verifying it is structurally sound.
  * @param path The path of the repo to load
  */
 export async function loadGRepo(

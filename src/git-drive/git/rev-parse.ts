@@ -1,5 +1,5 @@
 import { RepositoryDoesNotExistErrorCode } from "dugite";
-import { resolve } from "path";
+// import { resolve } from "path";
 import { git } from "./core-git";
 
 /**
@@ -45,7 +45,8 @@ export async function getTopLevelWorkingDirectory(
     return path;
   }
 
-  return resolve(path, relativePath);
+  return null;
+  // return resolve(path, relativePath);
 }
 
 /** Is the path a git repository? */
