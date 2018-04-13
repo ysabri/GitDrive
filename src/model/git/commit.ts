@@ -93,7 +93,7 @@ export class Commit {
      */
     public get historySHA(): ReadonlyArray<string> | null {
         const historyArr = this.commitProtoBuf.getHistoryshaList();
-        return historyArr.length() > 0 ? historyArr : null;
+        return historyArr.length > 0 ? historyArr : null;
     }
 
     public addHistorySHA(oldSHA: string): void {
