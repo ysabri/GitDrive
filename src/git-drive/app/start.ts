@@ -26,15 +26,23 @@ export async function startRepo(
     path: string,
     users: ReadonlyArray<User>,
 ): Promise<GRepository> {
-
+    // check if the path exists
     if (!(await pathExists(path))) {
         throw new Error("[startRepo] The path doesn't exist: " + path);
     }
-
+    // check if the path is a repo root
     if ((await isGitRepository(path))) {
         throw new Error(`[startRepo] ${path} already has a git repo`);
     }
-
+    const dupUsers = users.every((usr, i, arr) => {
+        return arr.filter((val) => {
+            return usr.name === val.name;
+        }).length === 1;
+    });
+    if (!dupUsers) {
+        throw new Error("[startRepo] Users must have unique names" +
+         ". The array passed has duplicate users");
+    }
     // init the repo, with name basename(path)
     await init(path);
 
