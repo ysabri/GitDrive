@@ -37,9 +37,17 @@ export async function addWS(
     const newUsers = topicSpace.users as User[];
     newUsers.push(newUser);
 
-    // const AddUserToRepo = await addUser(repo, newUser);
+    // check if the user exist in the repo so we don't add them
+    const exists = repo.users.find((value) => {
+        return value.name === newUser.name;
+    });
+    if (exists) {
+        return await changeTS(repo, new TopicSpace(topicSpace.name, newUsers,
+            newWSs, topicSpace.firstCommit, topicSpace.originCommit));
+    }
 
-    return await changeTS(repo, new TopicSpace(topicSpace.name, newUsers,
+    const AddUserToRepo = await addUser(repo, newUser);
+    return await changeTS(AddUserToRepo, new TopicSpace(topicSpace.name, newUsers,
         newWSs, topicSpace.firstCommit, topicSpace.originCommit));
 }
 /** Create a new repo object without the victim workspace */
@@ -51,7 +59,11 @@ export async function removeWS(
     const newWSArr = topicSpace.workSpaces.filter((value) => {
         return value.name !== victimWS.name;
     });
-    return await changeTS(repo, new TopicSpace(topicSpace.name, topicSpace.users,
+    const newUserArr = topicSpace.users.filter((value) => {
+        return value.name !== victimWS.tip.committer.name;
+    });
+    // TODO: add check in the repo users arr
+    return await changeTS(repo, new TopicSpace(topicSpace.name, newUserArr,
         newWSArr, topicSpace.firstCommit, topicSpace.originCommit));
 }
 /** Create a new repo object with the change topicspace */
