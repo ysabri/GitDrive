@@ -32,16 +32,12 @@ export async function sync(
     // }
     // see if branch exists by getting its tip commit, I could do the same
     // thing using for-each-ref
-    const tip = workspace.tip;
-    if (!tip) {
-        throw new Error("[sync] Branch: " + workspace.name + " doesn't exit" +
-            " or was deleted from repository: " + repo.name);
-    }
+
     // check if the tip commit belongs to user, something got really messed up
     // if this error gets thrown.
-    if (tip.committer.name !== user.name) {
-        throw new Error("[sync] Based on the last commit, user: " + user.name +
-            " doesn't own branch: " + workspace.name);
+    if (workspace.tip.committer.name !== user.name) {
+        throw new Error("[sync] Based on the tip commit, user: " + user.name +
+            " doesn't own workspace: " + workspace.name);
     }
     // check if the current checked out branch is the one that belong to user
     // i.e check if the caller messed up
@@ -56,7 +52,7 @@ export async function sync(
     await commit(repo, user.name, user.email, summary, body);
     const newCommitArr: Commit[] = workspace.commits as Commit[];
     const newTip = await getCommit(repo, workspace.name);
-    if (newTip && newTip.SHA === tip.SHA) {
+    if (newTip && newTip.SHA === workspace.tip.SHA) {
         throw new Error(`[sync] Could not commit on ${user.name}'s branch`);
     } else if (newTip)  {
         newCommitArr.push(newTip);
