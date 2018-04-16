@@ -30,7 +30,18 @@ export async function createTopicSpace(
     if (repo.topicSpaces.some((value) => {
         return value.name === name;
     })) {
-        throw Error(`The name: ${name} exists already in repo: ${repo.name}`);
+        throw Error(`[createTopicSpace] The topicspace name: ${name}`
+        + ` exists already in repo: ${repo.name}`);
+    }
+    // check for duplicate users
+    const dupUsers = users.every((usr, i, arr) => {
+        return arr.filter((val) => {
+            return usr.name === val.name;
+        }).length === 1;
+    });
+    if (!dupUsers) {
+        throw new Error("[createTopicSpace] Users must have unique names" +
+         ". The array passed has duplicate users");
     }
     // create the branch
     await orphanCheckout(repo, "temp", origin.SHA);
