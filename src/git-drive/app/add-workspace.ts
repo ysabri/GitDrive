@@ -39,7 +39,7 @@ export async function createWorkSpace(
         throw new Error(`[createWorkSpace] User: ${user.name} exists already` +
             ` in topicSpace: ${topicSpace.name}`);
     }
-    // checkout a temp branch that will get renamed one the workspace is made
+    // checkout a temp branch that will get renamed once the workspace is made
     await checkoutAndCreateBranch(repo, "temp", basedOn.tip.SHA);
     // mixed reset to the global first commit in the topicspace,
     // this means that the state we reset-ed from is un-staged now

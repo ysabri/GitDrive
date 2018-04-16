@@ -49,7 +49,7 @@ export async function getTopLevelWorkingDirectory(
   // return resolve(path, relativePath);
 }
 
-/** Is the path a git repository? */
+/** Is the path a root for a git repository? */
 export async function isGitRepository(path: string): Promise<boolean> {
   return (await getTopLevelWorkingDirectory(path)) !== null;
 }

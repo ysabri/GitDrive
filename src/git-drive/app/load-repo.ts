@@ -119,7 +119,7 @@ export async function loadGRepo(
         return !metaBranchPattern.test(value.name);
     });
     // update all the branch tips and return that latest state back
-    return await getThelatestState(repoInfo, refs);
+    return await getTheLatestState(repoInfo, refs);
 }
 /**
  * Verify that the structure parsed out from the repo in the 2D array
@@ -132,7 +132,7 @@ async function checkTheState(
     commits: Commit[][],
 ): Promise<void> {
     if (commits.length !== repo.topicSpaces.length) {
-        throw new Error("The number of topicspace found does't match with" +
+        throw new Error("[checkTheState] The number of topicspace found doesn't match with" +
             "what the meta data says");
     }
 
@@ -170,7 +170,7 @@ async function checkTheState(
     // If this is not exact it means that either one or more did not match
     // or at least one matched multiple WSs meaning there are duplicates
     if (match.length !== repo.topicSpaces.length) {
-        throw new Error("The wokspaces read from the repo don't match the" +
+        throw new Error("[checkTheState] The workspaces read from the repo don't match the" +
             " info we read from the meta data");
     }
 }
@@ -182,7 +182,7 @@ async function checkTheState(
  * @param repo that it's state will get updated, refs have to belong to it
  * @param refs the generic refs parsed by git, they have the latest state
  */
-async function getThelatestState(
+async function getTheLatestState(
     repo: GRepository,
     refs: Branch[],
 ): Promise<GRepository> {
@@ -202,7 +202,7 @@ async function getThelatestState(
                 // get the workspace from the proto state repo
                 const protoWS = await getWSfromTS(protoStateBasedonRefTip, TS.name, foundRef.name);
                 if (protoWS.tip === foundRef.tip) {
-                    throw new Error("[getThelatestState] For some reason the proto state is not behind" +
+                    throw new Error("[getTheLatestState] For some reason the proto state is not behind" +
                     " the branch's state, this should not be happening...");
                 }
                 // They have the same name, we matched them based on that
