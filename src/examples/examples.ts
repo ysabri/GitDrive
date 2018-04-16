@@ -1,4 +1,4 @@
-import { writeFileSync } from "fs";
+import { outputFile } from "fs-extra";
 import { join, normalize } from "path";
 import { changeWS } from "../controller/state-updater";
 import { createTopicSpace } from "../git-drive/app/add-topicspace";
@@ -32,7 +32,7 @@ export async function startEx(): Promise<void> {
     console.log("The startRepo promise got rejected with: " + err);
     return undefined;
   }
-  writeFileSync(join(repo.path, "sync.txt"), "testFile");
+  await outputFile(join(repo.path, "sync.txt"), "testFile");
   // notice how the same indexes map to the user to their workspace
   let topicSpace = repo.topicSpaces[0];
   let user = topicSpace.users[0];
