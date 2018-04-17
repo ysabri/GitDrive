@@ -2,7 +2,7 @@ import { Commit } from "../git/commit";
 import { User } from "./user";
 import { WorkSpace } from "./workspace";
 // tslint:disable-next-line:no-var-requires
-const protoTopicSpace = require("../../../static/topicspace_pb");
+const protoTopicSpace = require("../../../static/proto-models/topicspace_pb");
 
 
 /** An immutable TopicSpace */

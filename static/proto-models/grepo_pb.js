@@ -38,7 +38,7 @@ if (goog.DEBUG && !COMPILED) {
  * @private {!Array<number>}
  * @const
  */
-proto.GRepo.GRepo.repeatedFields_ = [2,3];
+proto.GRepo.GRepo.repeatedFields_ = [2];
 
 
 
@@ -72,8 +72,7 @@ proto.GRepo.GRepo.toObject = function(includeInstance, msg) {
     parent: (f = msg.getParent()) && repo_pb.Repository.toObject(includeInstance, f),
     topicspacesList: jspb.Message.toObjectList(msg.getTopicspacesList(),
     topicspace_pb.TopicSpace.toObject, includeInstance),
-    usersList: jspb.Message.toObjectList(msg.getUsersList(),
-    user_pb.User.toObject, includeInstance),
+    usersMap: (f = msg.getUsersMap()) ? f.toObject(includeInstance, proto.User.toObject) : [],
     metabranch: jspb.Message.getFieldWithDefault(msg, 4, "")
   };
 
@@ -122,9 +121,10 @@ proto.GRepo.GRepo.deserializeBinaryFromReader = function(msg, reader) {
       msg.addTopicspaces(value);
       break;
     case 3:
-      var value = new user_pb.User;
-      reader.readMessage(value,user_pb.User.deserializeBinaryFromReader);
-      msg.addUsers(value);
+      var value = msg.getUsersMap();
+      reader.readMessage(value, function(message, reader) {
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readString, jspb.BinaryReader.prototype.readMessage, proto.User.deserializeBinaryFromReader);
+         });
       break;
     case 4:
       var value = /** @type {string} */ (reader.readString());
@@ -175,13 +175,9 @@ proto.GRepo.GRepo.serializeBinaryToWriter = function(message, writer) {
       topicspace_pb.TopicSpace.serializeBinaryToWriter
     );
   }
-  f = message.getUsersList();
-  if (f.length > 0) {
-    writer.writeRepeatedMessage(
-      3,
-      f,
-      user_pb.User.serializeBinaryToWriter
-    );
+  f = message.getUsersMap(true);
+  if (f && f.getLength() > 0) {
+    f.serializeBinary(3, writer, jspb.BinaryWriter.prototype.writeString, jspb.BinaryWriter.prototype.writeMessage, proto.User.serializeBinaryToWriter);
   }
   f = message.getMetabranch();
   if (f.length > 0) {
@@ -255,33 +251,20 @@ proto.GRepo.GRepo.prototype.clearTopicspacesList = function() {
 
 
 /**
- * repeated User users = 3;
- * @return {!Array.<!proto.User>}
+ * map<string, User> users = 3;
+ * @param {boolean=} opt_noLazyCreate Do not create the map if
+ * empty, instead returning `undefined`
+ * @return {!jspb.Map<string,!proto.User>}
  */
-proto.GRepo.GRepo.prototype.getUsersList = function() {
-  return /** @type{!Array.<!proto.User>} */ (
-    jspb.Message.getRepeatedWrapperField(this, user_pb.User, 3));
+proto.GRepo.GRepo.prototype.getUsersMap = function(opt_noLazyCreate) {
+  return /** @type {!jspb.Map<string,!proto.User>} */ (
+      jspb.Message.getMapField(this, 3, opt_noLazyCreate,
+      proto.User));
 };
 
 
-/** @param {!Array.<!proto.User>} value */
-proto.GRepo.GRepo.prototype.setUsersList = function(value) {
-  jspb.Message.setRepeatedWrapperField(this, 3, value);
-};
-
-
-/**
- * @param {!proto.User=} opt_value
- * @param {number=} opt_index
- * @return {!proto.User}
- */
-proto.GRepo.GRepo.prototype.addUsers = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 3, opt_value, proto.User, opt_index);
-};
-
-
-proto.GRepo.GRepo.prototype.clearUsersList = function() {
-  this.setUsersList([]);
+proto.GRepo.GRepo.prototype.clearUsersMap = function() {
+  this.getUsersMap().clear();
 };
 
 

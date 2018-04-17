@@ -2,7 +2,7 @@ import { Repository } from "../git/repository";
 import { TopicSpace } from "./topicspace";
 import { User } from "./user";
 // tslint:disable-next-line:no-var-requires
-const protoGRepo = require("../../../static/grepo_pb");
+const protoGRepo = require("../../../static/proto-models/grepo_pb");
 
 
 /** An immutable repository object */

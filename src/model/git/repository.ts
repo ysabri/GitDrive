@@ -1,6 +1,6 @@
 import { basename } from "path";
 // tslint:disable-next-line:no-var-requires
-const protoRepository = require("../../../static/repo_pb");
+const protoRepository = require("../../../static/proto-models/repo_pb");
 
 /**
  * An immutable object to keep track of local repos.

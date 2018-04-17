@@ -7,6 +7,6 @@ import "topicspace.proto";
 message GRepo {
     Repository parent = 1;
     repeated TopicSpace topicSpaces = 2;
-    repeated User users = 3;
+    map<string, User> users = 3;
     string metaBranch = 4;
 }
