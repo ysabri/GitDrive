@@ -1,16 +1,8 @@
-// tslint:disable-next-line:no-var-requires
-// require("module-alias/register");
-
 import { app, BrowserWindow } from "electron";
 import { join } from "path";
 import { format } from "url";
 import { startEx } from "../examples/examples";
-// import loadAwesomeProto from "../examples/protobuf-example";
-// import { startEx, userTest } from "../examples/examples";
-// import { keyValPair, startEx, variant } from "./examples/examples";
 import { git } from "../git-drive/git/core-git";
-// import { measure } from "../util/git-perf";
-// import { sync } from "../git-drive/app/sync";
 
 // YS:The null here is for the sake of dereferencing the object when the window
 // is closed.
@@ -45,6 +37,7 @@ function createWindow() {
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
     mainWindow = null;
+    app.quit();
   });
 
   const result = git(["config", "--list"], join(__dirname, "./"));

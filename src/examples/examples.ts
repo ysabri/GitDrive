@@ -10,6 +10,7 @@ import { checkoutBranch } from "../git-drive/git/checkout";
 import { GRepository } from "../model/app/g-repository";
 import { User } from "../model/app/user";
 import { EnclosedVariant, IPublicVariant, PublicVariant, Variant } from "../model/POST";
+import { removeRepo } from "../tests/helpers";
 import { measure } from "../util/git-perf";
 
 
@@ -92,6 +93,7 @@ export async function startEx(): Promise<void> {
       console.log(err);
     }
   }
+  await removeRepo(normalize("C:\\Users\\hacoo\\Desktop\\repo-with-files"));
 }
 
 // Show an example of how to use the Variant types
