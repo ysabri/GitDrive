@@ -29,13 +29,13 @@ export class GRepository extends Repository {
     public constructor(
         path: string,
         topicspaces: ReadonlyArray<TopicSpace>,
-        users: ReadonlyArray<User>,
+        users: Map<string, User>,
         metaBranch: string,
     )
     constructor(
         pathOrRepoOrProtoMsg: string | Repository | any,
         topicspaces?: ReadonlyArray<TopicSpace>,
-        users?: ReadonlyArray<User>,
+        users?: Map<string, User>,
         metaBranch?: string,
     ) {
         if (typeof pathOrRepoOrProtoMsg === "string") {
@@ -52,18 +52,17 @@ export class GRepository extends Repository {
         this.gRepositoryProtoBuf.setTopicspacesList(topicspaces!.map((value) => {
             return value.topicspaceProtoBuf;
         }));
-        this.gRepositoryProtoBuf.setUsersList(users!.map((value) => {
-            return value.userProtoBuf;
-        }));
+        const userMap = this.gRepositoryProtoBuf.getUsersMap() as Map<string, any>;
+        users!.forEach((value) => {
+            userMap.set(value.name, value.userProtoBuf);
+        });
         this.gRepositoryProtoBuf.setMetabranch(metaBranch);
     }
 
     public id(): string {
         return `**(Repository: ${super.id()}\n\t with TopicSpace: ${this.topicSpaces.map((val) => {
             return val.id();
-        }).join("\n\t, TopicSpace: ")}\n\t and Users:(${this.users.map((val) => {
-            return val.id();
-        }).toString()})\n)**`;
+        }).join("\n\t, TopicSpace: ")}\n\t and Users:(${this.users}).toString()})\n)**`;
     }
     /** A list of TopicSpace in the repo */
     public get topicSpaces(): ReadonlyArray<TopicSpace> {
@@ -73,11 +72,13 @@ export class GRepository extends Repository {
         });
     }
     /** The global list of users in the repo */
-    public get users(): ReadonlyArray<User> {
-        const protoArr = this.gRepositoryProtoBuf.getUsersList() as any[];
-        return protoArr.map((value) => {
-            return new User(value);
+    public get users(): Map<string, User> {
+        const protoMap = this.gRepositoryProtoBuf.getUsersMap() as Map<string, any>;
+        const usersMap: Map<string, User> = new Map<string, User>();
+        protoMap.forEach((value, key) => {
+            usersMap.set(key, new User(value));
         });
+        return usersMap;
     }
     /** The global structure meta branch name */
     public get metaBranch(): string {

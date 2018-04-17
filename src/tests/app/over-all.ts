@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { outputFile, remove } from "fs-extra";
+import { outputFile } from "fs-extra";
 import { join } from "path";
 import { changeWS } from "../../controller/state-updater";
 import { createTopicSpace } from "../../git-drive/app/add-topicspace";
@@ -11,6 +11,7 @@ import { checkoutBranch, getChangedFiles, getCommit, getStatus } from "../../git
 import { GRepository } from "../../model/app/g-repository";
 import { User } from "../../model/app/user";
 import { readRepoInfo } from "../../util/metafile";
+import { errMsgMatch, removeRepo } from "../helpers";
 
 describe(("Testing overall app commands"), () => {
     let repoWithFilesPath: string;
@@ -58,7 +59,7 @@ describe(("Testing overall app commands"), () => {
         // wrong branch checked before performing sync
         expect( await errMsgMatch(`The current checked-out branch is not the one`, () =>
         sync(newRepo, newRepo.topicSpaces[0].workSpaces[1],
-            newRepo.users[1], "Doesn't matter", ""),
+            newRepo.users.get("User1"), "Doesn't matter", ""),
         )).to.not.equal(null);
         // wrong user given for the workspace
         expect( await errMsgMatch(`Based on the tip commit, user:`, () =>
@@ -129,7 +130,7 @@ describe(("Testing overall app commands"), () => {
         const loadedRepo = await loadGRepo(repoWithFilesPath);
         // verify the first TS
         expect(loadedRepo.topicSpaces.length).to.equal(2);
-        expect(loadedRepo.users.length).to.equal(7);
+        expect(loadedRepo.users.size).to.equal(7);
         expect(loadedRepo.topicSpaces[0].name).to.equal("Main");
         expect(loadedRepo.users[0].name).to.equal("User1");
         expect(loadedRepo.topicSpaces[0].workSpaces.length).to.equal(4);
@@ -198,7 +199,7 @@ async function verifyTwoTSRepo(
     repo: GRepository,
 ): Promise<void> {
     expect(repo.topicSpaces.length).to.equal(2);
-    expect(repo.users.length).to.equal(7);
+    expect(repo.users.size).to.equal(7);
     expect(repo.topicSpaces[1].name).to.equal("Bug Fix");
     expect(repo.users[6].name).to.equal("User7");
     expect(repo.topicSpaces[1].workSpaces.length).to.equal(3);
@@ -217,7 +218,7 @@ async function verifyRepo(
     wsLength: number,
 ): Promise<void> {
     expect(repo.topicSpaces.length).to.equal(1);
-    expect(repo.users.length).to.equal(wsLength);
+    expect(repo.users.size).to.equal(wsLength);
     expect(repo.topicSpaces[0].name).to.equal("Main");
     expect(repo.users[0].name).to.equal("User1");
     expect(repo.topicSpaces[0].workSpaces.length).to.equal(wsLength);
@@ -229,27 +230,4 @@ async function verifyRepo(
     expect(repo.topicSpaces[0].workSpaces[1].tip.SHA.slice(0, 10)).to.equal(
         repo.topicSpaces[0].workSpaces[1].firstCommit,
     );
-}
-
-/** Clean up the repo after the test */
-async function removeRepo(
-    repoPath: string,
-): Promise<void> {
-    await remove(join(repoPath, ".git/"));
-    await remove(join(repoPath, ".CURRENT_USER"));
-    await remove(join(repoPath, "repo.proto"));
-    await remove(join(repoPath, ".gitignore"));
-    await remove(join(repoPath, "sync.txt"));
-}
-
-async function errMsgMatch(
-    str: string,
-    fn: () => Promise<any>,
-): Promise<any> {
-    try {
-        await fn();
-    } catch (err) {
-        return err.message.match(str);
-    }
-    return null;
 }

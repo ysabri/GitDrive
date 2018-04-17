@@ -28,16 +28,23 @@ export function copyVal<T>(arr: T): T {
     }
     return R;
 }
+export function copyMap<T, K>(map: Map<T, K>): Map<T, K> {
+    const R: Map<T, K> = new Map<T, K>();
+    map.forEach((value, key) => {
+        R.set(key, value);
+    });
+    return R;
+}
 /**
  * A generic copy then delete function. Will return null if the key does
  * not exist in arr.
  */
-export function safeDelete<T, K extends keyof T>(arr: T, key: K): T | null {
-    if (!arr.hasOwnProperty(key)) {
-        return null;
-    }
-    const copy = copyVal(arr);
+export function safeDelete<T, K>(arr: Map<T, K>, key: K): Map<T, K> | null {
+    // if (!arr.hasOwnProperty(key)) {
+    //     return null;
+    // }
+    const copy = copyMap(arr);
     // no need to check since we already did that before.
-    delete copy[key];
+    copy.delete(key);
     return copy;
 }

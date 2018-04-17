@@ -110,8 +110,8 @@ export async function addUser(
     repo: GRepository,
     newUser: User,
 ): Promise<GRepository> {
-    const newUserArr = repo.users as User[];
-    newUserArr.push(newUser);
+    const newUserArr = repo.users as Map<string, User>;
+    newUserArr.set(newUser.name, newUser);
     return new GRepository(repo.path, repo.topicSpaces, newUserArr, repo.metaBranch);
 }
 /** Create a new repo object without the victim user */
