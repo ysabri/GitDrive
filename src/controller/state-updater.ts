@@ -46,8 +46,8 @@ export async function addWS(
             newWSs, topicSpace.firstCommit, topicSpace.originCommit));
     }
 
-    const AddUserToRepo = await addUser(repo, newUser);
-    return await changeTS(AddUserToRepo, new TopicSpace(topicSpace.name, newUsers,
+    const addUserToRepo = await addUser(repo, newUser);
+    return await changeTS(addUserToRepo, new TopicSpace(topicSpace.name, newUsers,
         newWSs, topicSpace.firstCommit, topicSpace.originCommit));
 }
 /** Create a new repo object without the victim workspace */
@@ -62,9 +62,34 @@ export async function removeWS(
     const newUserArr = topicSpace.users.filter((value) => {
         return value.name !== victimWS.tip.committer.name;
     });
-    // TODO: add check in the repo users arr
+    // check if the user exists in any other topicspaces cause if not we should
+    // remove them from being a repo user
+    const userExists = await checkUserInOtherTSs(repo, topicSpace, victimWS.tip.committer.name);
+    if (!userExists) {
+        const removedUserRepo = await removeUser(repo, victimWS.tip.committer.name);
+        return await changeTS(removedUserRepo, new TopicSpace(topicSpace.name, newUserArr,
+            newWSArr, topicSpace.firstCommit, topicSpace.originCommit));
+    }
     return await changeTS(repo, new TopicSpace(topicSpace.name, newUserArr,
         newWSArr, topicSpace.firstCommit, topicSpace.originCommit));
+}
+
+async function checkUserInOtherTSs(
+    repo: GRepository,
+    ts: TopicSpace,
+    user: string,
+): Promise<boolean> {
+    for (const TS of repo.topicSpaces) {
+        if (TS.name !== ts.name) {
+            const findRes = TS.users.find((usr) => {
+                return usr.name === user;
+            });
+            if (findRes) {
+                return true;
+            }
+        }
+    }
+    return false;
 }
 /** Create a new repo object with the change topicspace */
 export async function changeTS(
@@ -103,10 +128,19 @@ export async function removeTS(
     const newArr = repo.topicSpaces.filter((value) => {
         return value.name !== victimTS.name;
     });
-    return new GRepository(repo.path, newArr, repo.users, repo.metaBranch);
+    // check if the victimTS's users exits in other topicspaces, cause if they
+    // don't we have to remove them from being repo users
+    let tempRepo: GRepository = repo;
+    for (const tsUser of victimTS.users) {
+        const exists = await checkUserInOtherTSs(tempRepo, victimTS, tsUser.name);
+        if (!exists) {
+            tempRepo = await removeUser(tempRepo, tsUser.name);
+        }
+    }
+    return new GRepository(repo.path, newArr, tempRepo.users, repo.metaBranch);
 }
 /** Create a new repo object with the new user added */
-export async function addUser(
+async function addUser(
     repo: GRepository,
     newUser: User,
 ): Promise<GRepository> {
@@ -115,12 +149,12 @@ export async function addUser(
     return new GRepository(repo.path, repo.topicSpaces, newUserArr, repo.metaBranch);
 }
 /** Create a new repo object without the victim user */
-export async function removeUser(
+async function removeUser(
     repo: GRepository,
-    victimUser: User,
+    victimUser: string,
 ): Promise<GRepository> {
     const newUserArr = repo.users.filter((value) => {
-        return value.name !== victimUser.name;
+        return value.name !== victimUser;
     });
     return new GRepository(repo.path, repo.topicSpaces, newUserArr, repo.metaBranch);
 }
