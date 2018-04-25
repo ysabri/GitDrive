@@ -1,8 +1,6 @@
-import { app, BrowserWindow } from "electron";
-import { join } from "path";
-import { format } from "url";
-import { startEx } from "../examples/examples";
-import { git } from "../git-drive/git/core-git";
+import { app, BrowserWindow, ipcMain } from "electron";
+// import { startEx } from "../examples/examples";
+// import { git } from "../git-drive/git/core-git";
 
 // YS:The null here is for the sake of dereferencing the object when the window
 // is closed.
@@ -11,6 +9,7 @@ let mainWindow: Electron.BrowserWindow | null = null;
 const windowOptions: Electron.BrowserWindowConstructorOptions = {
   backgroundColor: "#fff",
   darkTheme: true,
+  frame: true,
   height: 600,
   minHeight: 600,
   minWidth: 600,
@@ -20,13 +19,17 @@ const windowOptions: Electron.BrowserWindowConstructorOptions = {
 function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow(windowOptions);
+  const winURL = process.env.NODE_ENV === "development"
+  ? "http://localhost:9080"
+  : `file://${__dirname}/index.html`;
 
   // and load the index.html of the app.
-  mainWindow.loadURL(format({
-      pathname: join(__dirname, "../../index.html"),
-      protocol: "file:",
-      slashes: true,
-  }));
+  mainWindow.loadURL(winURL);
+  // mainWindow.loadURL(format({
+  //     pathname: join(__dirname, "../../index.html"),
+  //     protocol: "file:",
+  //     slashes: true,
+  // }));
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools();
@@ -40,27 +43,31 @@ function createWindow() {
     app.quit();
   });
 
-  const result = git(["config", "--list"], join(__dirname, "./"));
-
-  result.then((res) => {
-    // tslint:disable-next-line:no-console
-    // console.log(res.stdout);
-    if (mainWindow) {
-      mainWindow.setSize(500, 400);
-    }
-  }).catch((err) => {
-    // tslint:disable-next-line:no-console
-    console.log("why did this got rejected: " + err);
+  ipcMain.on("reload", () => {
+    app.relaunch();
+    app.exit(0);
   });
+  // const result = git(["config", "--list"], join(__dirname, "./"));
+
+  // result.then((res) => {
+  //   // tslint:disable-next-line:no-console
+  //   // console.log(res.stdout);
+  //   if (mainWindow) {
+  //     mainWindow.setSize(500, 400);
+  //   }
+  // }).catch((err) => {
+  //   // tslint:disable-next-line:no-console
+  //   console.log("why did this got rejected: " + err);
+  // });
   // variant();
   // keyValPair();
   // measure("Start Repo", () => startEx());
-  try {
-    startEx();
-  } catch (err) {
-    // tslint:disable-next-line:no-console
-    console.log(err);
-  }
+  // try {
+  //   startEx();
+  // } catch (err) {
+  //   // tslint:disable-next-line:no-console
+  //   console.log(err);
+  // }
 
   // measure("loading proto", () => loadAwesomeProto());
 

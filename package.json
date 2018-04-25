@@ -10,7 +10,7 @@
     "compile": "electron-webpack",
     "build": "tsc",
     "lint": "tslint -c tslint.json build/**/* -p tsconfig.json",
-    "start": "yarn clean && yarn build && yarn lint && electron-webpack dev",
+    "start": "yarn clean && yarn build && yarn lint && node .electron-vue/dev-runner.js",
     "test": "mocha -t 10000 -r ts-node/register --full-trace --check-leaks ./src/tests/**/*.ts ./src/tests/*.ts",
     "clean": "rimraf build/*",
     "dist": "yarn compile && electron-builder"
@@ -26,43 +26,116 @@
     "email": "ysabri@wisc.edu",
     "url": "https://github.com/ysabri"
   },
+  "build": {
+    "productName": "git-drive",
+    "addId": "ysabri.git-drive",
+    "directories": {
+      "output": "build"
+    },
+    "files": [
+      "dist/electron/**/*"
+    ],
+    "dmg": {
+      "contents": [
+        {
+          "x": 410,
+          "y": 150,
+          "type": "link",
+          "path": "/Applications"
+        },
+        {
+          "x": 130,
+          "y": 150,
+          "type": "file"
+        }
+      ]
+    },
+    "mac": {
+      "icon": "static/icons/icon.icns"
+    },
+    "win": {
+      "icon": "static/icons/icon.ico"
+    },
+    "linux": {
+      "icon": "static/icons"
+    }
+  },
   "baseUrl": "./src",
   "license": "MIT",
   "devDependencies": {
     "@types/chai": "^4.1.2",
+    "@types/fs-extra": "^5.0.1",
+    "@types/google-protobuf": "^3.2.7",
     "@types/mocha": "^2.2.44",
     "@types/node": "^8.0.53",
     "@types/source-map-support": "^0.4.0",
+    "babel-core": "^6.25.0",
+    "babel-eslint": "^7.2.3",
+    "babel-loader": "^7.1.1",
+    "babel-plugin-istanbul": "^4.1.1",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-env": "^1.6.0",
+    "babel-preset-stage-0": "^6.24.1",
+    "babel-register": "^6.24.1",
+    "babili-webpack-plugin": "^0.1.2",
+    "cfonts": "^1.1.3",
     "chai": "^4.1.2",
+    "chalk": "^2.1.0",
+    "copy-webpack-plugin": "^4.0.1",
+    "cross-env": "^5.0.5",
+    "css-loader": "^0.28.4",
+    "del": "^3.0.0",
+    "devtron": "^1.4.0",
     "dugite": "^1.57.0",
-    "electron": "1.8.4",
     "electron-builder": "^20.5.1",
-    "electron-webpack": "^1.13.0",
+    "electron-debug": "^1.4.0",
+    "electron-devtools-installer": "^2.2.0",
+    "eslint": "^4.4.1",
+    "eslint-config-airbnb-base": "^11.2.0",
+    "eslint-friendly-formatter": "^3.0.0",
+    "eslint-import-resolver-webpack": "^0.8.1",
+    "eslint-loader": "^1.9.0",
+    "eslint-plugin-html": "^3.1.1",
+    "eslint-plugin-import": "^2.2.0",
+    "extract-text-webpack-plugin": "2.1.2",
+    "file-loader": "^0.11.2",
+    "html-webpack-plugin": "^2.30.1",
+    "inject-loader": "^3.0.0",
+    "karma": "^1.3.0",
+    "karma-chai": "^0.1.0",
+    "karma-coverage": "^1.1.1",
+    "karma-electron": "^5.1.1",
+    "karma-mocha": "^1.2.0",
+    "karma-sourcemap-loader": "^0.3.7",
+    "karma-spec-reporter": "^0.0.31",
+    "karma-webpack": "^2.0.1",
     "mocha": "^5.0.4",
+    "multispinner": "^0.2.1",
+    "node-loader": "^0.6.0",
     "performance-now": "^2.1.0",
+    "require-dir": "^0.3.0",
     "rimraf": "^2.6.2",
+    "spectron": "^3.7.1",
+    "style-loader": "^0.18.2",
+    "ts-loader": "3.5.0",
     "ts-node": "^5.0.1",
     "tslint": "^5.9.1",
     "typescript": "^2.6.2",
-    "webpack": "^3.11.0"
+    "url-loader": "^0.5.9",
+    "vue-html-loader": "^1.2.4",
+    "vue-loader": "^15.0.1",
+    "vue-style-loader": "^3.0.1",
+    "vue-template-compiler": "^2.4.2",
+    "webpack": "^3.11.0",
+    "webpack-dev-server": "^2.7.1",
+    "webpack-hot-middleware": "^2.18.2",
+    "webpack-merge": "^4.1.0"
   },
   "dependencies": {
-    "@types/fs-extra": "^5.0.1",
-    "@types/google-protobuf": "^3.2.7",
     "fs-extra": "^5.0.0",
+    "electron": "^1.8.4",
     "google-protobuf": "^3.5.0",
-    "source-map-support": "^0.5.4"
-  },
-  "resolutions": {
-    "webpack-sources": "1.0.1"
-  },
-  "electronWebpack": {
-    "commonSourceDirectory": "build/common",
-    "main": {
-      "sourceDirectory": "build/main"
-    },
-    "renderer": {
-      "sourceDirectory": "build/renderer"
-    }
+    "source-map-support": "^0.5.4",
+    "vue": "^2.5.16"
   }
 }
