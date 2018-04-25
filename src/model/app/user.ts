@@ -1,6 +1,6 @@
 import { WorkSpace } from "./workspace";
 // tslint:disable-next-line:no-var-requires
-const protoUser = require("../../../static/user_pb");
+const protoUser = require("../../../static/proto-models/user_pb");
 
 
 /** An immutable user object */

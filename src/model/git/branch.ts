@@ -1,6 +1,6 @@
 import {Commit} from "./commit";
 // tslint:disable-next-line:no-var-requires
-const protoBranch = require("../../../static/branch_pb");
+const protoBranch = require("../../../static/proto-models/branch_pb");
 /**
  * An immutable Git branch.
  * If the branch's remoteUpstream is null, it means it is a local branch.

@@ -1,6 +1,6 @@
 import {CommitterID} from "./committer-id";
 // tslint:disable-next-line:no-var-requires
-const protoCommit = require("../../../static/commit_pb");
+const protoCommit = require("../../../static/proto-models/commit_pb");
 
 /** An immutable Git Commit. */
 export class Commit {

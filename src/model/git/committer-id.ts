@@ -1,7 +1,7 @@
 // The base of this code was taken from: https://github.com/desktop/desktop
 // project, it was mainly written by: https://github.com/niik
 // tslint:disable-next-line:no-var-requires
-const protoCommitterID = require("../../../static/committerid_pb");
+const protoCommitterID = require("../../../static/proto-models/committerid_pb");
 /**
  * A tuple of name, email, and date for the author or commit
  * info in a commit.

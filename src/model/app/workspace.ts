@@ -2,7 +2,7 @@ import { Branch } from "../git/branch";
 import { Commit } from "../git/commit";
 import { GFile } from "./g-File";
 // tslint:disable-next-line:no-var-requires
-const workSpaceProto = require("../../../static/workspace_pb");
+const workSpaceProto = require("../../../static/proto-models/workspace_pb");
 
 export interface IChangeList {
     [key: string]: GFile;
