@@ -1,7 +1,11 @@
 <template>
   <div id="app">
     <div class="grid-container">
-      <div class="header">Header Menue</div>
+      <div class="header">
+        Header Menue
+        <br>
+        <!-- <button v-on:click="changeTitle">toggleTitle</button> -->
+        </div>
       <div class="ts-ws-pane">TSs and WSs</div>
       <div class="file-explorer">File explorer</div>
     </div>
@@ -9,10 +13,10 @@
 </template>
 
 <script lang="ts">
-const {ipcRenderer} = require("electron");
+// const {ipcRenderer} = require("electron");
 
   export default {
-    name: 'electron-vue',
+    name: 'app',
     data() {
       return {
          message: "Hi GDrive",
@@ -33,9 +37,6 @@ const {ipcRenderer} = require("electron");
       }
     },
     methods: {
-      reloadApp: function() {
-        ipcRenderer.send("reload");
-      }
     },
   };
 </script>

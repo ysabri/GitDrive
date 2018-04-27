@@ -1,11 +1,10 @@
-// This file is required by the index.html file and will
-// be executed in the renderer process for that window.
-// All of the Node.js APIs are available in this process.
-// Initial welcome page. Delete the following line to remove it.
-
 import Vue from "vue";
-
+// this might look weird but think of this import from this file being inside
+// the ./build dir, thus why we walk back.
 import App from "../../src/components/App.vue";
+import { Loader } from "../controller/loader";
+
+const loaded = new Loader();
 
 Vue.config.productionTip = false;
 
@@ -14,6 +13,5 @@ new Vue({
   components: { App },
   template: "<App/>",
 }).$mount("#app");
-
 
 
