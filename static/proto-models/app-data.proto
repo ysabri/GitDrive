@@ -1,0 +1,11 @@
+syntax = "proto3";
+package appData;
+import "grepo.proto";
+import "user.proto";
+
+message appData {
+    GRepo currentRepo = 1;
+    User currentUser = 2;
+    map<string, GRepo> repos = 3;
+}
+

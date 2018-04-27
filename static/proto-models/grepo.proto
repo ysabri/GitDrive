@@ -1,5 +1,4 @@
 syntax = "proto3";
-package GRepo;
 import "repo.proto";
 import "user.proto";
 import "topicspace.proto";
