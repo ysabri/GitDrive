@@ -1,6 +1,4 @@
 import { app, BrowserWindow, ipcMain } from "electron";
-// import { startEx } from "../examples/examples";
-// import { git } from "../git-drive/git/core-git";
 
 // YS:The null here is for the sake of dereferencing the object when the window
 // is closed.
@@ -10,8 +8,8 @@ const windowOptions: Electron.BrowserWindowConstructorOptions = {
   backgroundColor: "#fff",
   darkTheme: true,
   frame: true,
-  height: 600,
-  minHeight: 600,
+  height: 800,
+  minHeight: 800,
   minWidth: 600,
   width: 1000,
 };
@@ -22,7 +20,7 @@ function createWindow() {
   const winURL = process.env.NODE_ENV === "development"
   ? "http://localhost:9080"
   : `file://${__dirname}/index.html`;
-
+  mainWindow.maximize();
   // and load the index.html of the app.
   mainWindow.loadURL(winURL);
   // mainWindow.loadURL(format({
@@ -30,9 +28,6 @@ function createWindow() {
   //     protocol: "file:",
   //     slashes: true,
   // }));
-
-  // Open the DevTools.
-  // mainWindow.webContents.openDevTools();
 
   // Emitted when the window is closed.
   mainWindow.on("closed", () => {
@@ -47,29 +42,6 @@ function createWindow() {
     app.relaunch();
     app.exit(0);
   });
-  // const result = git(["config", "--list"], join(__dirname, "./"));
-
-  // result.then((res) => {
-  //   // tslint:disable-next-line:no-console
-  //   // console.log(res.stdout);
-  //   if (mainWindow) {
-  //     mainWindow.setSize(500, 400);
-  //   }
-  // }).catch((err) => {
-  //   // tslint:disable-next-line:no-console
-  //   console.log("why did this got rejected: " + err);
-  // });
-  // variant();
-  // keyValPair();
-  // measure("Start Repo", () => startEx());
-  // try {
-  //   startEx();
-  // } catch (err) {
-  //   // tslint:disable-next-line:no-console
-  //   console.log(err);
-  // }
-
-  // measure("loading proto", () => loadAwesomeProto());
 
 }
 
