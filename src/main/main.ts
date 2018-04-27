@@ -1,6 +1,14 @@
 import { app, BrowserWindow, ipcMain } from "electron";
 
-// YS:The null here is for the sake of dereferencing the object when the window
+// TODO: add error handler here
+function handleUncaughtException(err: Error) {
+  console.log("-----unchaghtException----");
+  console.error(err);
+  console.log("--------------------------");
+}
+
+
+// The null here is for the sake of dereferencing the object when the window
 // is closed.
 let mainWindow: Electron.BrowserWindow | null = null;
 
@@ -28,6 +36,7 @@ function createWindow() {
   //     protocol: "file:",
   //     slashes: true,
   // }));
+  mainWindow.setTitle("GitDrive");
 
   // Emitted when the window is closed.
   mainWindow.on("closed", () => {
@@ -37,19 +46,28 @@ function createWindow() {
     mainWindow = null;
     app.quit();
   });
-
-  ipcMain.on("reload", () => {
-    app.relaunch();
-    app.exit(0);
-  });
-
 }
-
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on("ready", () => {
   createWindow();
+  // register event listeners for the icpRenderer events
+  ipcMain.on("reload", () => {
+      app.relaunch();
+      app.exit(0);
+    });
+
+  ipcMain.on("uncaught-exception",
+  (event: Electron.IpcMessageEvent, error: Error) => {
+    handleUncaughtException(error);
+  });
+
+  ipcMain.on("changeTitle", (title: string) => {
+    if (mainWindow) {
+      mainWindow.setTitle(`${title} - GitDrive`);
+    }
+  });
 });
 
 // Quit when all windows are closed.
@@ -69,5 +87,8 @@ app.on("activate", () => {
   }
 });
 
-// In this file you can include the rest of your app"s specific main process
-// code. You can also put them in separate files and require them here.
+process.on("uncaughtException", (error: Error) => {
+  handleUncaughtException(error);
+});
+
+
