@@ -5,7 +5,7 @@
 
 import Vue from "vue";
 
-import App from "../../src/renderer/App.vue";
+import App from "../../src/components/App.vue";
 
 Vue.config.productionTip = false;
 
