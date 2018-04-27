@@ -7,14 +7,19 @@
   },
   "description": "A typescript Git cloud drive app",
   "scripts": {
-    "compile": "electron-webpack",
     "build": "tsc",
     "lint": "tslint -c tslint.json build/**/* -p tsconfig.json",
     "start": "yarn clean && yarn build && yarn lint && node .electron-vue/dev-runner.js",
     "test": "mocha -t 10000 -r ts-node/register --full-trace --check-leaks ./src/tests/**/*.ts ./src/tests/*.ts",
     "clean": "rimraf build/*",
-    "dist": "yarn compile && electron-builder"
+    "dist": "yarn dist:clean && yarn build && node .electron-vue/build.js && electron-builder",
+    "dist:clean": "cross-env BUILD_TARGET=clean node .electron-vue/build.js",
+    "dist:web": "cross-env BUILD_TARGET=web node .electron-vue/build.js",
+    "pack": "yarn pack:main && yarn pack:renderer",
+    "pack:main": "cross-env NODE_ENV=production webpack --progress --colors --config .electron-vue/webpack.main.config.js",
+    "pack:renderer": "cross-env NODE_ENV=production webpack --progress --colors --config .electron-vue/webpack.renderer.config.js"
   },
+  "main": "build/main/main.js",
   "keywords": [
     "Git",
     "drive",
@@ -28,9 +33,9 @@
   },
   "build": {
     "productName": "git-drive",
-    "addId": "ysabri.git-drive",
+    "appId": "ysabri.git-drive",
     "directories": {
-      "output": "build"
+      "output": "packaged"
     },
     "files": [
       "dist/electron/**/*"
@@ -87,6 +92,7 @@
     "del": "^3.0.0",
     "devtron": "^1.4.0",
     "dugite": "^1.57.0",
+    "electron": "^1.8.4",
     "electron-builder": "^20.5.1",
     "electron-debug": "^1.4.0",
     "electron-devtools-installer": "^2.2.0",
@@ -133,7 +139,6 @@
   },
   "dependencies": {
     "fs-extra": "^5.0.0",
-    "electron": "^1.8.4",
     "google-protobuf": "^3.5.0",
     "source-map-support": "^0.5.4",
     "vue": "^2.5.16"
