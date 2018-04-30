@@ -2,7 +2,7 @@ import { GRepository } from "../app/g-repository";
 import { User } from "../app/user";
 
 // tslint:disable-next-line:no-var-requires
-const protoAppData = require("../../../static/proto-models/app-data-pb");
+const protoAppData = require("../../../static/proto-models/app-data_pb");
 
 
 export class AppData {

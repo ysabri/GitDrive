@@ -1,20 +1,16 @@
-import { remote } from "electron";
-import { pathExistsSync } from "fs-extra";
-import { AppData } from "../model/controller/appData";
+import { AppState } from "./app-state";
 
 export class Dispatcher {
+    private readonly appState: AppState;
 
-
-    public constructor() {
-        // get the path where the electron executable resides
-        const electronPath = remote.app.getPath("exe");
-        if (firstTimer(electronPath)) {
-
-        }
+    public constructor(
+        appState: AppState,
+    ) {
+        this.appState = appState;
     }
 
-}
-
-async function firstTimer(electronPath: string): Promise<boolean> {
+    public get fistTime(): boolean {
+        return this.appState.FirstTimer;
+    }
 
 }

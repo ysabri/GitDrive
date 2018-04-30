@@ -13,32 +13,30 @@
 </template>
 
 <script lang="ts">
-// const {ipcRenderer} = require("electron");
-
-  export default {
-    name: 'app',
-    data() {
-      return {
-         message: "Hi GDrive",
-      }
+export default {
+  name: 'app',
+  data() {
+    return {
+        message: "Hi GDrive",
+    }
+  },
+  computed: {
+    nodeVersion: function(): string {
+      return process.versions.node;
     },
-    computed: {
-      nodeVersion: function(): string {
-        return process.versions.node;
-      },
-      chromeVersion: function(): string {
-        return process.versions.chrome;
-      },
-      electronVersion: function(): string {
-        return process.versions.electron;
-      },
-      electronPath: function(): string {
-        return require.resolve("electron");
-      }
+    chromeVersion: function(): string {
+      return process.versions.chrome;
     },
-    methods: {
+    electronVersion: function(): string {
+      return process.versions.electron;
     },
-  };
+    electronPath: function(): string {
+      return require.resolve("electron");
+    },
+  },
+  methods: {
+  },
+}
 </script>
 
 <style>

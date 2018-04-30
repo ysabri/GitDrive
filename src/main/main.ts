@@ -2,8 +2,11 @@ import { app, BrowserWindow, ipcMain } from "electron";
 
 // TODO: add error handler here
 function handleUncaughtException(err: Error) {
+  // tslint:disable-next-line:no-console
   console.log("-----unchaghtException----");
+  // tslint:disable-next-line:no-console
   console.error(err);
+  // tslint:disable-next-line:no-console
   console.log("--------------------------");
 }
 

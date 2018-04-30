@@ -8,6 +8,7 @@
     "noFallthroughCasesInSwitch": true,
     "noUnusedLocals": true,
     "strict": true,
+    "experimentalDecorators": true,
     "sourceMap": true,
     "outDir": "./build",
     "declaration": true,
