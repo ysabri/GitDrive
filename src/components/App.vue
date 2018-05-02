@@ -5,6 +5,7 @@
         Header Menue
         <br>
         <!-- <button v-on:click="changeTitle">toggleTitle</button> -->
+        FirstTime? {{fTime}} ??
         </div>
       <div class="ts-ws-pane">TSs and WSs</div>
       <div class="file-explorer">File explorer</div>
@@ -13,29 +14,14 @@
 </template>
 
 <script lang="ts">
-export default {
-  name: 'app',
-  data() {
-    return {
-        message: "Hi GDrive",
-    }
-  },
-  computed: {
-    nodeVersion: function(): string {
-      return process.versions.node;
-    },
-    chromeVersion: function(): string {
-      return process.versions.chrome;
-    },
-    electronVersion: function(): string {
-      return process.versions.electron;
-    },
-    electronPath: function(): string {
-      return require.resolve("electron");
-    },
-  },
-  methods: {
-  },
+import Vue from "vue";
+import { readFtime } from "../store"
+import Component from "vue-class-component";
+@Component
+export default class App extends Vue {
+  get fTime(): boolean {
+    return readFtime(this.$store);
+  }
 }
 </script>
 
