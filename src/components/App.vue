@@ -6,8 +6,9 @@
         <br>
         <!-- <button v-on:click="changeTitle">toggleTitle</button> -->
         FirstTime? {{fTime}} ??
-        </div>
-      <div class="ts-ws-pane">TSs and WSs</div>
+      </div>
+      <TwsPane v-if="fTime" class="ts-ws-pane" v-bind:TSs="[]"></TwsPane>
+      <TwsPane v-else class="ts-ws-pane" v-bind:TSs="TSs"></TwsPane>
       <div class="file-explorer">File explorer</div>
     </div>
   </div>
@@ -15,17 +16,32 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { readFtime } from "../store"
+import { readFtime, readTSs } from "../store"
 import Component from "vue-class-component";
-@Component
+import TwsPane from "./twssPane.vue";
+import { TopicSpace } from "model/app/topicspace";
+
+@Component({
+  components: {
+    TwsPane,
+  }
+})
 export default class App extends Vue {
+
   get fTime(): boolean {
     return readFtime(this.$store);
+  }
+  get TSs(): TopicSpace[] | undefined {
+    return readTSs(this.$store) as TopicSpace[];
+  }
+  get testCompute(): any {
+    return this.$store.state;
   }
 }
 </script>
 
-<style>
+
+<style scoped>
   #app {
     height: 100%;
     width: 100%;
@@ -34,7 +50,13 @@ export default class App extends Vue {
     overflow: hidden;
   }
   .header { grid-area: head; }
-  .ts-ws-pane { grid-area: pane; }
+  .ts-ws-pane {
+    grid-area: pane;
+    background-color: forestgreen;
+    text-align: center;
+    padding: 20px 0;
+    font-size: 20px;
+  }
   .file-explorer { grid-area: explorer; }
   .grid-container {
     height: 100%;

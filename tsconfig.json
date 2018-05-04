@@ -6,6 +6,7 @@
     "noImplicitReturns": true,
     "noImplicitAny": true,
     "noFallthroughCasesInSwitch": true,
+    "strictPropertyInitialization": false,
     "noUnusedLocals": true,
     "strict": true,
     "experimentalDecorators": true,
