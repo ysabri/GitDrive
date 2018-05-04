@@ -1,3 +1,4 @@
+import { TopicSpace } from "../model/app/topicspace";
 import { AppState } from "./app-state";
 
 export class Dispatcher {
@@ -11,6 +12,14 @@ export class Dispatcher {
 
     public get fistTime(): boolean {
         return this.appState.FirstTimer;
+    }
+
+    public get TSs(): ReadonlyArray<TopicSpace> | undefined {
+        if (this.appState.appData.currentRepo) {
+            return this.appState.appData.currentRepo.topicSpaces;
+        } else {
+            return undefined;
+        }
     }
 
 }
