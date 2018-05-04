@@ -45,11 +45,17 @@ export class AppData {
     }
     /** The current Repo to show in the app */
     public get currentRepo(): GRepository | undefined {
-        return new GRepository(this.appDataProtoBuf.getCurrentrepo());
+        if (this.appDataProtoBuf.hasCurrentrepo()) {
+            return new GRepository(this.appDataProtoBuf.getCurrentrepo());
+        }
+        return undefined;
     }
     /** The current user of the app */
     public get currentUser(): User | undefined {
-        return new User(this.appDataProtoBuf.getCurrentUser());
+        if (this.appDataProtoBuf.hasCurrentuser()) {
+            return new User(this.appDataProtoBuf.getCurrentUser());
+        }
+        return undefined;
     }
     /** The list of repos in the app */
     public get repos(): Map<string, GRepository> {
