@@ -12,6 +12,7 @@ const store = new Vuex.Store<RootState>({
   modules: {
     dispaVuex,
   },
+  strict: process.env.NODE_ENV !== "production",
 });
 
 new Vue({
@@ -19,6 +20,4 @@ new Vue({
   store,
   template: "<App/>",
 }).$mount("#app");
-
-
 
