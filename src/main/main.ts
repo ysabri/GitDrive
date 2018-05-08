@@ -66,7 +66,7 @@ app.on("ready", () => {
     handleUncaughtException(error);
   });
 
-  ipcMain.on("changeTitle", (title: string) => {
+  ipcMain.on("changeTitle", (event: any, title: string) => {
     if (mainWindow) {
       mainWindow.setTitle(`${title} - GitDrive`);
     }
