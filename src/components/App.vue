@@ -1,15 +1,9 @@
 <template>
   <div id="app">
     <div class="grid-container">
-      <div class="header">
-        Header Menue
-        <br>
-        <!-- <button v-on:click="changeTitle">toggleTitle</button> -->
-        FirstTime? {{fTime}} ??
-      </div>
-      <TwsPane v-if="fTime" class="ts-ws-pane" v-bind:TSs="[]"></TwsPane>
-      <TwsPane v-else class="ts-ws-pane" v-bind:TSs="TSs"></TwsPane>
-      <div class="file-explorer">File explorer</div>
+      <HeaderMenue class="header"></HeaderMenue>
+      <TwsPane class="ts-ws-pane" v-bind:TSs="TSs"></TwsPane>
+      <Fsexplorer class="file-explorer"></Fsexplorer>
     </div>
   </div>
 </template>
@@ -19,11 +13,15 @@ import Vue from "vue";
 import { readFtime, readTSs } from "../store"
 import Component from "vue-class-component";
 import TwsPane from "./twssPane.vue";
+import Fsexplorer from "./fsExplorer.vue";
+import HeaderMenue from "./headerMenue.vue";
 import { TopicSpace } from "model/app/topicspace";
 
 @Component({
   components: {
     TwsPane,
+    Fsexplorer,
+    HeaderMenue
   }
 })
 export default class App extends Vue {
@@ -31,11 +29,9 @@ export default class App extends Vue {
   get fTime(): boolean {
     return readFtime(this.$store);
   }
-  get TSs(): TopicSpace[] | undefined {
-    return readTSs(this.$store) as TopicSpace[];
-  }
-  get testCompute(): any {
-    return this.$store.state;
+  get TSs(): TopicSpace[] {
+    const res = readTSs(this.$store)
+    return res === undefined ? []: res as TopicSpace[];
   }
 }
 </script>
@@ -49,13 +45,15 @@ export default class App extends Vue {
     padding: 0;
     overflow: hidden;
   }
-  .header { grid-area: head; }
+  .header {
+    grid-area: head;
+  }
   .ts-ws-pane {
     grid-area: pane;
     background-color: forestgreen;
     text-align: center;
-    padding: 20px 0;
     font-size: 20px;
+    overflow-y: auto;
   }
   .file-explorer { grid-area: explorer; }
   .grid-container {
@@ -66,7 +64,7 @@ export default class App extends Vue {
       "head head head head head head"
       "pane pane explorer explorer explorer explorer"
       "pane pane explorer explorer explorer explorer";
-    grid-auto-rows: 100px auto auto;
+    grid-auto-rows: 70px auto auto;
     grid-auto-columns: 12% 12% auto auto auto auto;
     grid-gap: 10px;
     background-color: green;
@@ -74,7 +72,7 @@ export default class App extends Vue {
   .grid-container > div {
     background-color: forestgreen;
     text-align: center;
-    padding: 20px 0;
+    padding: 10px 5px;
     font-size: 20px;
   }
 </style>

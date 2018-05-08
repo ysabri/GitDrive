@@ -1,7 +1,6 @@
 <template>
     <div>
         <ul>
-            <li>cool</li>
             <li v-for="TS of TSs">
                 {{TS.name}}
             </li>
