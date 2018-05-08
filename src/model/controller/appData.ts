@@ -21,12 +21,12 @@ export class AppData {
     public constructor(
         currentRepo: GRepository,
         currentUser: User,
-        repos: ReadonlyArray<GRepository>,
+        repos: Map<string, GRepository>,
     )
     constructor(
         currentRepoOrAppDataProtoMsg?: GRepository | any,
         currentUser?: User,
-        repos?: ReadonlyArray<GRepository>,
+        repos?: Map<string, GRepository>,
     ) {
         // if nothing was passed to the constructor
         if (!currentRepoOrAppDataProtoMsg) {
@@ -36,8 +36,8 @@ export class AppData {
             this.appDataProtoBuf.setCurrentrepo(currentRepoOrAppDataProtoMsg.gRepositoryProtoBuf);
             this.appDataProtoBuf.setCurrentuser(currentUser!.userProtoBuf);
             const reposMap: Map<string, any> = this.appDataProtoBuf.getReposMap();
-            repos!.forEach((value) => {
-                reposMap.set(value.name, value.gRepositoryProtoBuf);
+            repos!.forEach((val, key) => {
+                reposMap.set(key, val.gRepositoryProtoBuf);
             });
         } else {
             this.appDataProtoBuf = currentRepoOrAppDataProtoMsg;
