@@ -2,6 +2,7 @@ import { ActionContext, Store } from "vuex";
 import { getStoreAccessors } from "vuex-typescript";
 import { AppState } from "../controller/app-state";
 import { Dispatcher } from "../controller/dispatcher";
+import { GRepository } from "../model/app/g-repository";
 import { TopicSpace } from "../model/app/topicspace";
 import { DispatchState, RootState } from "./";
 
@@ -14,10 +15,11 @@ const appState = new Dispatcher(new AppState());
 export const dispaVuex = {
   namespaced: true,
 
-  state: {
-    dispatch: appState,
+  actions: {
+    async loadRepo(context: dispatchContext): Promise<GRepository> {
+      return await context.state.dispatch.loadNewRepo();
+    },
   },
-
   getters: {
     getFTime(state: DispatchState): boolean {
       return state.dispatch.fistTime;
@@ -25,10 +27,32 @@ export const dispaVuex = {
     getTSs(state: DispatchState): ReadonlyArray<TopicSpace> | undefined {
         return state.dispatch.TSs;
     },
+    getCurrentRepo(state: DispatchState): GRepository | undefined {
+      return state.dispatch.currentRepo;
+    },
+  },
+  mutations: {
+    changeCurrRepo(state: DispatchState, repo: GRepository) {
+      state.dispatch.changeCurrRepo(repo);
+    },
+  },
+  state: {
+    dispatch: appState,
   },
 };
 
-const {read} = getStoreAccessors<DispatchState, RootState>("dispaVuex");
+const {commit, read, dispatch} = getStoreAccessors<DispatchState, RootState>("dispaVuex");
 
-export const readFtime = read(dispaVuex.getters.getFTime);
-export const readTSs = read(dispaVuex.getters.getTSs);
+const getters = dispaVuex.getters;
+
+export const readFtime = read(getters.getFTime);
+export const readTSs = read(getters.getTSs);
+export const readCurrRepo = read(getters.getCurrentRepo);
+
+const actions = dispaVuex.actions;
+
+export const dispatchloadRepo = dispatch(actions.loadRepo);
+
+const mutations = dispaVuex.mutations;
+
+export const commitCurrRepo = commit(mutations.changeCurrRepo);
