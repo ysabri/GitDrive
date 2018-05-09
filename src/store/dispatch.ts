@@ -2,8 +2,7 @@ import { ActionContext, Store } from "vuex";
 import { getStoreAccessors } from "vuex-typescript";
 import { AppState } from "../controller/app-state";
 import { Dispatcher } from "../controller/dispatcher";
-import { GRepository } from "../model/app/g-repository";
-import { TopicSpace } from "../model/app/topicspace";
+import { GRepository, TopicSpace, User } from "../model/app";
 import { DispatchState, RootState } from "./";
 
 export type dispatchContext = ActionContext<DispatchState, RootState>;

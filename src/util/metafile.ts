@@ -1,7 +1,10 @@
-import { readFile, writeFile} from "fs-extra";
+import {
+    readFile,
+    writeFile,
+} from "fs-extra";
 import { join } from "path";
-import { GRepository } from "../model/app/g-repository";
-import { Repository } from "../model/git/repository";
+import { GRepository } from "../model/app";
+import { Repository } from "../model/git";
 
 export async function writeRepoInfo(repo: GRepository, path?: string): Promise<void> {
     if (path) {

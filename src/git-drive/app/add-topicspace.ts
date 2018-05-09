@@ -1,11 +1,15 @@
 import { addTS } from "../../controller/state-updater";
-import { GRepository } from "../../model/app/g-repository";
-import { TopicSpace } from "../../model/app/topicspace";
-import { User } from "../../model/app/user";
-import { Commit } from "../../model/git/commit";
-import { writeRepoInfo } from "../../util/metafile";
-import { createWorkSpaces } from "../../util/repo-creation";
-import { writeUserFile } from "../../util/repo-creation";
+import {
+    GRepository,
+    TopicSpace,
+    User,
+} from "../../model/app";
+import { Commit } from "../../model/git";
+import {
+    createWorkSpaces,
+    writeRepoInfo,
+    writeUserFile,
+} from "../../util";
 import {
     checkoutBranch,
     commit,

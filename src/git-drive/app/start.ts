@@ -1,17 +1,28 @@
-import { copy, pathExists } from "fs-extra";
+import {
+    copy,
+    pathExists,
+} from "fs-extra";
 import { join } from "path";
-import { GRepository } from "../../model/app/g-repository";
-import { TopicSpace } from "../../model/app/topicspace";
-import { User } from "../../model/app/user";
-import { Commit } from "../../model/git/commit";
-import { Repository } from "../../model/git/repository";
-import { writeRepoInfo } from "../../util/metafile";
-import { createWorkSpaces, writeUserFile } from "../../util/repo-creation";
-import {    commit,
-            getCommit,
-            isGitRepository,
-            orphanCheckout,
-        } from "../git";
+import {
+    GRepository,
+    TopicSpace,
+    User,
+} from "../../model/app";
+import {
+    Commit,
+    Repository,
+} from "../../model/git";
+import {
+    createWorkSpaces,
+    writeRepoInfo,
+    writeUserFile,
+} from "../../util";
+import {
+    commit,
+    getCommit,
+    isGitRepository,
+    orphanCheckout,
+} from "../git";
 import init from "../git/init";
 
 // path to the global .gitignore file

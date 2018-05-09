@@ -1,9 +1,17 @@
-import { lstatSync, pathExists, readdir } from "fs-extra";
+import {
+    lstatSync,
+    pathExists,
+    readdir,
+} from "fs-extra";
 import { join } from "path";
-import { GFile } from "../../model/app/g-file";
-import { GRepository } from "../../model/app/g-repository";
-import { addAllToIndex } from "../git/add";
-import { partialCheckout } from "../git/checkout";
+import {
+    GFile,
+    GRepository,
+} from "../../model/app";
+import {
+    addAllToIndex,
+    partialCheckout,
+} from "../git";
 
 /**
  * This is not as strict as it should be since it is not harmful without the

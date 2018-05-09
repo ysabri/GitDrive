@@ -7,9 +7,13 @@ import { loadGRepo } from "../git-drive/app/load-repo";
 import { startRepo } from "../git-drive/app/start";
 import { sync } from "../git-drive/app/sync";
 import { checkoutBranch } from "../git-drive/git/checkout";
-import { GRepository } from "../model/app/g-repository";
-import { User } from "../model/app/user";
-import { EnclosedVariant, IPublicVariant, PublicVariant, Variant } from "../model/POST";
+import { GRepository, User } from "../model/app";
+import {
+  EnclosedVariant,
+  IPublicVariant,
+  PublicVariant,
+  Variant,
+} from "../model/POST";
 import { removeRepo } from "../tests/helpers";
 import { measure } from "../util/git-perf";
 

@@ -12,7 +12,11 @@
 import Vue from 'vue'
 // import { readTSs } from "../store";
 import Component  from "vue-class-component";
-import { TopicSpace } from '../model/app/topicspace';
+import {
+    TopicSpace,
+    User,
+} from '../model/app';
+import Wspane  from "./wspane.vue";
 
 @Component({
     props: {

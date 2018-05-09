@@ -8,11 +8,16 @@ import {
     getCommit,
     git,
     renameBranch } from "../git-drive/git";
-import { User } from "../model/app/user";
-import { IChangeList, WorkSpace } from "../model/app/workspace";
-import { Branch } from "../model/git/branch";
-import { Commit } from "../model/git/commit";
-import { Repository } from "../model/git/repository";
+import {
+    IChangeList,
+    User,
+    WorkSpace,
+} from "../model/app";
+import {
+    Branch,
+    Commit,
+} from "../model/git";
+import { Repository } from "../model/git";
 
 /**
  * Writes the .CURRENT_USER file given the username. The file will contain just

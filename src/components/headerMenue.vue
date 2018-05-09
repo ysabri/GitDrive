@@ -12,9 +12,12 @@
 <script lang="ts">
 import Vue from 'vue'
 import Component  from "vue-class-component";
-import { TopicSpace } from '../model/app/topicspace';
-import { GRepository } from 'model/app/g-repository';
-import { commitCurrRepo, readCurrRepo, dispatchloadRepo } from "../store";
+import { GRepository } from 'model/app';
+import {
+    commitCurrRepo,
+    readCurrRepo,
+    dispatchloadRepo,
+} from "../store";
 
 @Component({
     props: {

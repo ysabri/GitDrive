@@ -1,7 +1,10 @@
 import { remote } from "electron";
-import { pathExistsSync, readFileSync } from "fs-extra";
+import {
+    pathExistsSync,
+    readFileSync,
+} from "fs-extra";
 import { join } from "path";
-import { GRepository } from "../model/app/g-repository";
+import { GRepository } from "../model/app";
 import { AppData } from "../model/controller/appData";
 
 export class AppState {

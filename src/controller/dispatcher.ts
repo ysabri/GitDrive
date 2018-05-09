@@ -1,9 +1,20 @@
-import { ipcRenderer, OpenDialogOptions, remote } from "electron";
+import {
+    ipcRenderer,
+    OpenDialogOptions,
+    remote,
+} from "electron";
 import { loadGRepo } from "../git-drive/app/load-repo";
-import { GRepository } from "../model/app/g-repository";
-import { TopicSpace } from "../model/app/topicspace";
+import {
+    GRepository,
+    TopicSpace, User,
+} from "../model/app";
 import { AppState } from "./app-state";
-const changeTitle = "changeTitle";
+
+export enum IpcRendererChannles {
+    changeTitle = "changeTitle",
+    uncaughtEx = "uncaught-exception",
+}
+
 export class Dispatcher {
     private readonly appState: AppState;
 

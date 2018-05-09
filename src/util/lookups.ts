@@ -1,6 +1,8 @@
-import { GRepository } from "../model/app/g-repository";
-import { TopicSpace } from "../model/app/topicspace";
-import { WorkSpace } from "../model/app/workspace";
+import {
+    GRepository,
+    TopicSpace,
+    WorkSpace,
+} from "../model/app";
 
 /**
  * A bunch of retrieval function to abstract our lookups. The main reason is

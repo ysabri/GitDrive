@@ -1,6 +1,7 @@
-import { Branch } from "../../model/git/branch";
-// import {Commit} from "../model/commit";
-import { Repository } from "../../model/git/repository";
+import {
+    Branch,
+    Repository,
+} from "../../model/git";
 import { git } from "./core-git";
 import { getBranches } from "./for-each-ref";
 

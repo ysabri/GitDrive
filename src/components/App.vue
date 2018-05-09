@@ -10,12 +10,16 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { readFtime, readTSs } from "../store"
+import {
+  readFtime,
+  readTSs,
+  readUsers,
+} from "../store"
 import Component from "vue-class-component";
 import TwsPane from "./twssPane.vue";
 import Fsexplorer from "./fsExplorer.vue";
 import HeaderMenue from "./headerMenue.vue";
-import { TopicSpace } from "model/app/topicspace";
+import { TopicSpace, User } from "../model/app";
 
 @Component({
   components: {

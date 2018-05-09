@@ -1,11 +1,16 @@
 import { addWS } from "../../controller/state-updater";
-import { GRepository } from "../../model/app/g-repository";
-import { TopicSpace } from "../../model/app/topicspace";
-import { User } from "../../model/app/user";
-import { IChangeList, WorkSpace } from "../../model/app/workspace";
-import { Branch } from "../../model/git/branch";
-import { writeRepoInfo } from "../../util/metafile";
-import { writeUserFile } from "../../util/repo-creation";
+import {
+    GRepository,
+    IChangeList,
+    TopicSpace,
+    User,
+    WorkSpace,
+} from "../../model/app";
+import { Branch } from "../../model/git";
+import {
+    writeRepoInfo,
+    writeUserFile,
+} from "../../util";
 import {
     checkoutAndCreateBranch,
     checkoutBranch,

@@ -1,7 +1,9 @@
-import { GRepository } from "../model/app/g-repository";
-import { TopicSpace } from "../model/app/topicspace";
-import { User } from "../model/app/user";
-import { WorkSpace } from "../model/app/workspace";
+import {
+    GRepository,
+    TopicSpace,
+    User,
+    WorkSpace,
+} from "../model/app";
 
 /**
  * These functions do not do almost any form of checking on the correctness of

@@ -1,12 +1,19 @@
 import { pathExists } from "fs-extra";
 import { changeWS } from "../../controller/state-updater";
-import { GRepository } from "../../model/app/g-repository";
-import { IChangeList, WorkSpace } from "../../model/app/workspace";
-import { Branch } from "../../model/git/branch";
-import { Commit } from "../../model/git/commit";
-import { Repository } from "../../model/git/repository";
-import { getWSfromTS } from "../../util/lookups";
-import { readRepoInfo } from "../../util/metafile";
+import {
+    GRepository,
+    IChangeList,
+    WorkSpace,
+} from "../../model/app";
+import {
+    Branch,
+    Commit,
+    Repository,
+} from "../../model/git";
+import {
+    getWSfromTS,
+    readRepoInfo,
+} from "../../util";
 import {
     checkoutBranch,
     getBlobBinaryContents,
