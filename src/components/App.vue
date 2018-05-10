@@ -9,11 +9,13 @@
 </template>
 
 <script lang="ts">
+// import "bootstrap-vue/dist/bootstrap-vue.css";
+// import "bootstrap/dist/css/bootstrap.css";
 import Vue from "vue";
 import {
   readFtime,
   readTSs,
-  readUsers,
+  readCurrUsers,
 } from "../store"
 import Component from "vue-class-component";
 import TwsPane from "./twssPane.vue";
@@ -36,6 +38,10 @@ export default class App extends Vue {
   get TSs(): TopicSpace[] {
     const res = readTSs(this.$store)
     return res === undefined ? []: res as TopicSpace[];
+  }
+  get users(): User[] {
+    const res = readCurrUsers(this.$store);
+    return res === undefined ? []: res as User[];
   }
 }
 </script>

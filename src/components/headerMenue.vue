@@ -20,12 +20,8 @@ import {
 } from "../store";
 
 @Component({
-    props: {
-        TSs: Array,
-        }
 })
 export default class HeaderMenue extends Vue{
-    TSs: TopicSpace[];
     get currRepo(): GRepository | undefined {
         return readCurrRepo(this.$store);
     }

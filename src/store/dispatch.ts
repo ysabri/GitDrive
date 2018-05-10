@@ -29,6 +29,9 @@ export const dispaVuex = {
     getCurrentRepo(state: DispatchState): GRepository | undefined {
       return state.dispatch.currentRepo;
     },
+    getCurrUsers(state: DispatchState): ReadonlyArray<User> | undefined {
+      return state.dispatch.currUsers;
+    },
   },
   mutations: {
     changeCurrRepo(state: DispatchState, repo: GRepository) {
@@ -47,6 +50,7 @@ const getters = dispaVuex.getters;
 export const readFtime = read(getters.getFTime);
 export const readTSs = read(getters.getTSs);
 export const readCurrRepo = read(getters.getCurrentRepo);
+export const readCurrUsers = read(getters.getCurrUsers);
 
 const actions = dispaVuex.actions;
 

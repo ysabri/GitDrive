@@ -31,9 +31,15 @@ export class Dispatcher {
     public get TSs(): ReadonlyArray<TopicSpace> | undefined {
         if (this.appState.currentRepo) {
             return this.appState.currentRepo.topicSpaces;
-        } else {
-            return undefined;
         }
+        return undefined;
+    }
+
+    public get currUsers(): ReadonlyArray<User> | undefined {
+        if (this.appState.currentRepo) {
+            return this.appState.currentRepo.users;
+        }
+        return undefined;
     }
 
     public get currentRepo(): GRepository | undefined {
@@ -51,7 +57,7 @@ export class Dispatcher {
     }
 
     public changeCurrRepo(repo: GRepository) {
-        ipcRenderer.send(changeTitle, repo.name);
+        ipcRenderer.send(IpcRendererChannles.changeTitle, repo.name);
         this.appState.changeSelectedRepo(repo);
     }
 
