@@ -1,0 +1,526 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.15b.dev: http://docutils.sourceforge.net/" />
+<title>index.rst</title>
+<style type="text/css">
+
+/*
+:Author: David Goodger (goodger@python.org)
+:Id: $Id$
+:Copyright: This stylesheet has been placed in the public domain.
+
+Default cascading style sheet for the HTML output of Docutils.
+
+See http://docutils.sf.net/docs/howto/html-stylesheets.html for how to
+customize this style sheet.
+*/
+
+/* used to remove borders from tables and images */
+.borderless, table.borderless td, table.borderless th {
+  border: 0 }
+
+table.borderless td, table.borderless th {
+  /* Override padding for "table.docutils td" with "! important".
+     The right padding separates the table cells. */
+  padding: 0 0.5em 0 0 ! important }
+
+.first {
+  /* Override more specific margin styles with "! important". */
+  margin-top: 0 ! important }
+
+.last, .with-subtitle {
+  margin-bottom: 0 ! important }
+
+.hidden {
+  display: none }
+
+.subscript {
+  vertical-align: sub;
+  font-size: smaller }
+
+.superscript {
+  vertical-align: super;
+  font-size: smaller }
+
+a.toc-backref {
+  text-decoration: none ;
+  color: black }
+
+blockquote.epigraph {
+  margin: 2em 5em ; }
+
+dl.docutils dd {
+  margin-bottom: 0.5em }
+
+object[type="image/svg+xml"], object[type="application/x-shockwave-flash"] {
+  overflow: hidden;
+}
+
+/* Uncomment (and remove this text!) to get bold-faced definition list terms
+dl.docutils dt {
+  font-weight: bold }
+*/
+
+div.abstract {
+  margin: 2em 5em }
+
+div.abstract p.topic-title {
+  font-weight: bold ;
+  text-align: center }
+
+div.admonition, div.attention, div.caution, div.danger, div.error,
+div.hint, div.important, div.note, div.tip, div.warning {
+  margin: 2em ;
+  border: medium outset ;
+  padding: 1em }
+
+div.admonition p.admonition-title, div.hint p.admonition-title,
+div.important p.admonition-title, div.note p.admonition-title,
+div.tip p.admonition-title {
+  font-weight: bold ;
+  font-family: sans-serif }
+
+div.attention p.admonition-title, div.caution p.admonition-title,
+div.danger p.admonition-title, div.error p.admonition-title,
+div.warning p.admonition-title, .code .error {
+  color: red ;
+  font-weight: bold ;
+  font-family: sans-serif }
+
+/* Uncomment (and remove this text!) to get reduced vertical space in
+   compound paragraphs.
+div.compound .compound-first, div.compound .compound-middle {
+  margin-bottom: 0.5em }
+
+div.compound .compound-last, div.compound .compound-middle {
+  margin-top: 0.5em }
+*/
+
+div.dedication {
+  margin: 2em 5em ;
+  text-align: center ;
+  font-style: italic }
+
+div.dedication p.topic-title {
+  font-weight: bold ;
+  font-style: normal }
+
+div.figure {
+  margin-left: 2em ;
+  margin-right: 2em }
+
+div.footer, div.header {
+  clear: both;
+  font-size: smaller }
+
+div.line-block {
+  display: block ;
+  margin-top: 1em ;
+  margin-bottom: 1em }
+
+div.line-block div.line-block {
+  margin-top: 0 ;
+  margin-bottom: 0 ;
+  margin-left: 1.5em }
+
+div.sidebar {
+  margin: 0 0 0.5em 1em ;
+  border: medium outset ;
+  padding: 1em ;
+  background-color: #ffffee ;
+  width: 40% ;
+  float: right ;
+  clear: right }
+
+div.sidebar p.rubric {
+  font-family: sans-serif ;
+  font-size: medium }
+
+div.system-messages {
+  margin: 5em }
+
+div.system-messages h1 {
+  color: red }
+
+div.system-message {
+  border: medium outset ;
+  padding: 1em }
+
+div.system-message p.system-message-title {
+  color: red ;
+  font-weight: bold }
+
+div.topic {
+  margin: 2em }
+
+h1.section-subtitle, h2.section-subtitle, h3.section-subtitle,
+h4.section-subtitle, h5.section-subtitle, h6.section-subtitle {
+  margin-top: 0.4em }
+
+h1.title {
+  text-align: center }
+
+h2.subtitle {
+  text-align: center }
+
+hr.docutils {
+  width: 75% }
+
+img.align-left, .figure.align-left, object.align-left, table.align-left {
+  clear: left ;
+  float: left ;
+  margin-right: 1em }
+
+img.align-right, .figure.align-right, object.align-right, table.align-right {
+  clear: right ;
+  float: right ;
+  margin-left: 1em }
+
+img.align-center, .figure.align-center, object.align-center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+table.align-center {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.align-left {
+  text-align: left }
+
+.align-center {
+  clear: both ;
+  text-align: center }
+
+.align-right {
+  text-align: right }
+
+/* reset inner alignment in figures */
+div.align-right {
+  text-align: inherit }
+
+/* div.align-center * { */
+/*   text-align: left } */
+
+.align-top    {
+  vertical-align: top }
+
+.align-middle {
+  vertical-align: middle }
+
+.align-bottom {
+  vertical-align: bottom }
+
+ol.simple, ul.simple {
+  margin-bottom: 1em }
+
+ol.arabic {
+  list-style: decimal }
+
+ol.loweralpha {
+  list-style: lower-alpha }
+
+ol.upperalpha {
+  list-style: upper-alpha }
+
+ol.lowerroman {
+  list-style: lower-roman }
+
+ol.upperroman {
+  list-style: upper-roman }
+
+p.attribution {
+  text-align: right ;
+  margin-left: 50% }
+
+p.caption {
+  font-style: italic }
+
+p.credits {
+  font-style: italic ;
+  font-size: smaller }
+
+p.label {
+  white-space: nowrap }
+
+p.rubric {
+  font-weight: bold ;
+  font-size: larger ;
+  color: maroon ;
+  text-align: center }
+
+p.sidebar-title {
+  font-family: sans-serif ;
+  font-weight: bold ;
+  font-size: larger }
+
+p.sidebar-subtitle {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+p.topic-title {
+  font-weight: bold }
+
+pre.address {
+  margin-bottom: 0 ;
+  margin-top: 0 ;
+  font: inherit }
+
+pre.literal-block, pre.doctest-block, pre.math, pre.code {
+  margin-left: 2em ;
+  margin-right: 2em }
+
+pre.code .ln { color: grey; } /* line numbers */
+pre.code, code { background-color: #eeeeee }
+pre.code .comment, code .comment { color: #5C6576 }
+pre.code .keyword, code .keyword { color: #3B0D06; font-weight: bold }
+pre.code .literal.string, code .literal.string { color: #0C5404 }
+pre.code .name.builtin, code .name.builtin { color: #352B84 }
+pre.code .deleted, code .deleted { background-color: #DEB0A1}
+pre.code .inserted, code .inserted { background-color: #A3D289}
+
+span.classifier {
+  font-family: sans-serif ;
+  font-style: oblique }
+
+span.classifier-delimiter {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+span.interpreted {
+  font-family: sans-serif }
+
+span.option {
+  white-space: nowrap }
+
+span.pre {
+  white-space: pre }
+
+span.problematic {
+  color: red }
+
+span.section-subtitle {
+  /* font-size relative to parent (h1..h6 element) */
+  font-size: 80% }
+
+table.citation {
+  border-left: solid 1px gray;
+  margin-left: 1px }
+
+table.docinfo {
+  margin: 2em 4em }
+
+table.docutils {
+  margin-top: 0.5em ;
+  margin-bottom: 0.5em }
+
+table.footnote {
+  border-left: solid 1px black;
+  margin-left: 1px }
+
+table.docutils td, table.docutils th,
+table.docinfo td, table.docinfo th {
+  padding-left: 0.5em ;
+  padding-right: 0.5em ;
+  vertical-align: top }
+
+table.docutils th.field-name, table.docinfo th.docinfo-name {
+  font-weight: bold ;
+  text-align: left ;
+  white-space: nowrap ;
+  padding-left: 0 }
+
+/* "booktabs" style (no vertical lines) */
+table.docutils.booktabs {
+  border: 0px;
+  border-top: 2px solid;
+  border-bottom: 2px solid;
+  border-collapse: collapse;
+}
+table.docutils.booktabs * {
+  border: 0px;
+}
+table.docutils.booktabs th {
+  border-bottom: thin solid;
+  text-align: left;
+}
+
+h1 tt.docutils, h2 tt.docutils, h3 tt.docutils,
+h4 tt.docutils, h5 tt.docutils, h6 tt.docutils {
+  font-size: 100% }
+
+ul.auto-toc {
+  list-style-type: none }
+
+</style>
+</head>
+<body>
+<div class="document">
+
+
+<div class="section" id="gitdrive">
+<h1>GitDrive</h1>
+<p>This is the documentation for GitDrive. The documentation will detail the
+intended use of the different parts in the project, along with any limitations,
+issues, and missing parts/features.</p>
+<p>Each section should be stand alone as much as possible. Meaning that no knowledge
+of other sections is required to understand the functionality of a section.
+That being said knowledge of the entire program is structured is helpful in understanding
+the purpose or the decisions that were made in designing each section.</p>
+</div>
+<div class="section" id="the-tech-stack">
+<h1>The Tech Stack</h1>
+<p>Knowing the tech stack is helpful for understanding the structure. GitDrive is an Electron
+app written in TypeScript. The Electron part means that the app has two parts. The <em>main process</em>
+and the <em>renderer process</em>.</p>
+<dl class="docutils">
+<dt>The main process:</dt>
+<dd>Is what the app launches first, it's where the node run environment is and
+it's responsible for launching the renderer process/s.</dd>
+<dt>The renderer process:</dt>
+<dd>Contains the Chrome V8 engine along with access to the node environment APIs.</dd>
+</dl>
+<p>This should be enough for an overall idea, for a more in depth look, the <a class="reference external" href="https://electronjs.org/docs">Electron</a> documentation
+does a fantastic job. Also make sure to check <a class="reference external" href="https://github.com/sindresorhus/awesome-electron">awesome-electron</a> for everything Electron related.</p>
+<p>TypeScript is a super set of javascript that is structurally typed. This means that the app is transpiled
+into javascript. It also means the code is type checked. This makes our code easier to refractor and write
+with an IDE that supports TypeScript. It is recommended to look at the TypeScript <a class="reference external" href="https://www.typescriptlang.org/docs/handbook/basic-types.html">handbook</a> before diving
+into reading/writing any code.</p>
+<dl class="docutils">
+<dt>The rest of the stack without build related dependencies is as follows:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference external" href="https://github.com/desktop/dugite">Dugite</a>: A Typescript binder to Git's command line.</li>
+<li><a class="reference external" href="https://mochajs.org/">Mocha</a>: A test suite for javascript node applications.</li>
+<li><a class="reference external" href="http://www.chaijs.com/">Chai</a>: Chai is a BDD / TDD assertion library to be used in mocha tests.</li>
+<li><a class="reference external" href="https://developers.google.com/protocol-buffers/">Google-protobuf</a>: A language-neutral, platform-neutral mechanism for serializing structured data.</li>
+<li><a class="reference external" href="https://vuejs.org">Vue</a>: A <em>progressive framework</em> for building responsive user interfaces. A bunch of vue related libraries are used as well.</li>
+<li><a class="reference external" href="https://github.com/jprichardson/node-fs-extra">Fs-extra</a>: Adds to the native node fs module methods and add promise support to existing ones.</li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="the-structure">
+<h1>The structure</h1>
+<p>The application is an Model-View-Controller (MVC). The Model consists of the main Git commands that are
+wrapped into the app commands. The app commands are listed in <a class="reference internal" href="#the-app">The App</a>. <a class="reference internal" href="#the-controller">The controller</a> part consists of
+some state-hub logic integrated into the Vuex store then components. Then <a class="reference internal" href="#the-view">the view</a> is specified per Vue component. This
+makes parts of the view (components) reuseable in whichever context the user desires.</p>
+<p>The file tree structure is explained below:</p>
+<ul class="simple">
+<li><strong>docs</strong>: Is where this file resides, ie. the documentation.</li>
+<li><strong>build</strong>: It is where the app gets transpiled.</li>
+<li><dl class="first docutils">
+<dt><strong>src</strong>: Where the app resides.</dt>
+<dd><ul class="first last">
+<li><strong>components</strong>: Where we keep the Vue components.</li>
+<li><strong>examples</strong>: A bunch of examples for how the code should be used.</li>
+<li><dl class="first docutils">
+<dt><strong>git-drive</strong>: The logic for the app models is kept here.</dt>
+<dd><ul class="first last">
+<li><strong>app</strong>: The logic behind the main app commands: add-topicspace, ..., load-repo, start, ...</li>
+<li><strong>controller</strong>: Where the logic for the controller is kept.</li>
+<li><strong>git</strong>: The logic behind the core git commands is kept here.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><strong>main</strong>: The entry point for the main process, this is where webpack will look.</li>
+<li><dl class="first docutils">
+<dt><strong>model</strong>: The model class object abstraction is kept here.</dt>
+<dd><ul class="first last">
+<li><strong>app</strong>: The app classes/models.</li>
+<li><strong>controller</strong>: The controller classes/models.</li>
+<li><strong>git</strong>: The git classes/models.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><strong>renderer</strong>: The entry point for the renderer process/s, webpack will look here.</li>
+<li><strong>store</strong>: The Vuex store lies here, all the mutation, actions, and getters logic is here.</li>
+<li><dl class="first docutils">
+<dt><strong>tests</strong>: The app tests, they are not transpiled like the rest of the dirs in src.</dt>
+<dd><ul class="first last">
+<li><strong>app</strong>: Tests for the app logic.</li>
+<li><strong>controller</strong>: Tests for the controller logic.</li>
+<li><strong>git</strong>: Tests for the core git commands.</li>
+<li><strong>testRepos</strong>: Toys repos for testing stuff on.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><strong>util</strong>: Utility functions that might be useful for any other parts in the app.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><strong>static</strong>: Files that are used as is.</li>
+<li><strong>.electron-vue</strong>: The webpack config and run scripts are here.</li>
+<li><strong>template</strong>: Like static but it is meant to be used by users not the app itself.</li>
+</ul>
+<hr class="docutils" />
+<p>Notice how the <em>git-drive</em>, <em>model</em> and <em>tests</em> directories share the same structure.</p>
+<p>The <a class="reference internal" href="#protobuf">protobuf</a> coupling/abstraction is specified within each model.</p>
+</div>
+<div class="section" id="the-build-process">
+<h1>The Build Process</h1>
+<p>Our build process is not that involved but not trivial at the same time. Looking at the <a class="reference external" href="../package.json">package.json</a>
+scripts we notice 11 of them, most are not stand alone callable, here is the layout:</p>
+<div class="section" id="dev-build">
+<h2>Dev-Build</h2>
+<p>The start script is the one responsible this and has four steps. The first one is just cleaning the
+build directory. The second step transpiles the app from TypeScript to javascript into the build
+directory. The third runs the linter, based on the rules in <a class="reference external" href="../tsconfig.json">tsconfig.json</a>. The fourth and last,
+actually launches the app using webpack from the build/main and build/renderer directories</p>
+</div>
+<div class="section" id="production-build">
+<h2>Production-Build</h2>
+<p>The dist (short for distribute) scripts are responsible for this. So far this is not functional.
+I will finalize this and update the section accordingly.</p>
+</div>
+<div class="section" id="app-packaging">
+<h2>App-Packaging</h2>
+<p>The pack scripts are responsible for this. So far this is not functional as well. Will update
+the section once it is functional.</p>
+</div>
+<div class="section" id="testing">
+<h2>Testing</h2>
+<p>The test script is the one responsible for this. The script runs any tests specified in the
+src/test directory. The test assume the ts-node npm module to be installed globally as it is
+responsible for transpiling the TypeScript tests in runtime thus it is not possible to run the
+tests without it.</p>
+<hr class="docutils" />
+<p>Notice how I did not go through any of the webpack setup or build configs. They are very standard
+and self explaining to whoever knows anything about webpack. I know enough to make what is there now
+work.</p>
+<p>One thing worth mentioning is that none of the components are actually transpiled, they are compiled
+in runtime using vue-loader and a bunch of other modules. This means when any of these are referenced,
+ie. imported, they are referenced with respect to them existing in src/components directory not build/*
+directory like the rest of the code.</p>
+</div>
+</div>
+<div class="section" id="terminology">
+<h1>Terminology</h1>
+</div>
+<div class="section" id="the-git-core">
+<h1>The Git Core</h1>
+</div>
+<div class="section" id="protobuf">
+<h1>Protobuf</h1>
+</div>
+<div class="section" id="the-app">
+<h1>The App</h1>
+</div>
+<div class="section" id="the-controller">
+<h1>The Controller</h1>
+</div>
+<div class="section" id="the-view">
+<h1>The View</h1>
+</div>
+</div>
+</body>
+</html>
