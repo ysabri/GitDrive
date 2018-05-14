@@ -1,5 +1,4 @@
 import { pathExists } from "fs-extra";
-import { changeWS } from "../../controller/state-updater";
 import {
     GRepository,
     IChangeList,
@@ -14,6 +13,7 @@ import {
     getWSfromTS,
     readRepoInfo,
 } from "../../util";
+import { changeWS } from "../controller/state-updater";
 import {
     checkoutBranch,
     getBlobBinaryContents,

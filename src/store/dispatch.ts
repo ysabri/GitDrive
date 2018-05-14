@@ -1,7 +1,7 @@
 import { ActionContext, Store } from "vuex";
 import { getStoreAccessors } from "vuex-typescript";
-import { AppState } from "../controller/app-state";
-import { Dispatcher } from "../controller/dispatcher";
+import { AppState } from "../git-drive/controller/app-state";
+import { Dispatcher } from "../git-drive/controller/dispatcher";
 import { GRepository, TopicSpace, User } from "../model/app";
 import { DispatchState, RootState } from "./";
 

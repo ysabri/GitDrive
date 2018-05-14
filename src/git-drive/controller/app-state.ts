@@ -4,8 +4,8 @@ import {
     readFileSync,
 } from "fs-extra";
 import { join } from "path";
-import { GRepository } from "../model/app";
-import { AppData } from "../model/controller/appData";
+import { GRepository } from "../../model/app";
+import { AppData } from "../../model/controller/appData";
 
 export class AppState {
     public readonly FirstTimer: boolean;

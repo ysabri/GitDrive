@@ -1,4 +1,3 @@
-import { addTS } from "../../controller/state-updater";
 import {
     GRepository,
     TopicSpace,
@@ -10,6 +9,7 @@ import {
     writeRepoInfo,
     writeUserFile,
 } from "../../util";
+import { addTS } from "../controller/state-updater";
 import {
     checkoutBranch,
     commit,

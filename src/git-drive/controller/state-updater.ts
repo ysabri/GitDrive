@@ -3,7 +3,7 @@ import {
     TopicSpace,
     User,
     WorkSpace,
-} from "../model/app";
+} from "../../model/app";
 
 /**
  * These functions do not do almost any form of checking on the correctness of

@@ -1,4 +1,3 @@
-import { addWS } from "../../controller/state-updater";
 import {
     GRepository,
     IChangeList,
@@ -11,6 +10,7 @@ import {
     writeRepoInfo,
     writeUserFile,
 } from "../../util";
+import { addWS } from "../controller/state-updater";
 import {
     checkoutAndCreateBranch,
     checkoutBranch,

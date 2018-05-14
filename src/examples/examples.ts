@@ -1,11 +1,11 @@
 import { outputFile } from "fs-extra";
 import { join, normalize } from "path";
-import { changeWS } from "../controller/state-updater";
 import { createTopicSpace } from "../git-drive/app/add-topicspace";
 import { createWorkSpace } from "../git-drive/app/add-workspace";
 import { loadGRepo } from "../git-drive/app/load-repo";
 import { startRepo } from "../git-drive/app/start";
 import { sync } from "../git-drive/app/sync";
+import { changeWS } from "../git-drive/controller/state-updater";
 import { checkoutBranch } from "../git-drive/git/checkout";
 import { GRepository, User } from "../model/app";
 import {

@@ -1,4 +1,4 @@
-import { Dispatcher } from "../controller/dispatcher";
+import { Dispatcher } from "../git-drive/controller/dispatcher";
 // tslint:disable-next-line:interface-name
 export interface DispatchState {
   dispatch: Dispatcher;

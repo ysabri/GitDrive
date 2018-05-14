@@ -3,11 +3,11 @@ import {
     OpenDialogOptions,
     remote,
 } from "electron";
-import { loadGRepo } from "../git-drive/app/load-repo";
 import {
     GRepository,
     TopicSpace, User,
-} from "../model/app";
+} from "../../model/app";
+import { loadGRepo } from "../app/load-repo";
 import { AppState } from "./app-state";
 
 export enum IpcRendererChannles {
@@ -52,6 +52,7 @@ export class Dispatcher {
             properties: ["openDirectory"],
         };
         const files = await remote.dialog.showOpenDialog(options);
+        // tslint:disable-next-line:no-console
         console.log(files[0]);
         return await loadGRepo(files[0]);
     }
