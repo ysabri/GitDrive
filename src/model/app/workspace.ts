@@ -40,7 +40,7 @@ export class WorkSpace extends Branch {
      * makes sense once you remember typescript is a structurally typed
      * language. The last constructor is the actual one that gets called, the
      * types of arg1-6 is a union of all the types of each argument in the
-     * constructors above them in order, thus the optionality of some arg2-6.
+     * constructors above them in order, thus the optionality of arg2-6.
      *
      * Key for the args:
      * arg1: protoMsg | branch | name
