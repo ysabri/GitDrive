@@ -13,8 +13,8 @@ export interface IAddToIndexOptions {
  * So this will stage all changes to the indexing area. I don't think we will
  * ever partially stage files as that will be done using partial checkout and
  * path resets. Not using update-index is for the better since we need to pass
- * a list of all the files if we do. I think it is safe to say --all option or
- * --update are not going anywhere else.
+ * a list of all the files if we do. I think it is safe to say --all or
+ * --update options are not going anywhere anytime soon.
  * TODO: Look into update and how it works with renames.
  * @param repo Where to stage the changes
  * @param addOptions Whether there is a rename or not in this stage

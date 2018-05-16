@@ -3,6 +3,7 @@ import { git, overrideCredentialHelper } from "./core-git";
 
 /**
  * Fetch all changes from remote to local repo. Will likely use all the time.
+ * This does not check whether the remote repo exists for the repo.
  * TODO: progress.
  * TODO: authentication.
  * TODO: look into adding prune to this and pull.
@@ -24,7 +25,7 @@ export async function fetchAll(
  * @param repo repo where to fetch the refspace from.
  * @param refspec the refspace to get from the repo
  */
-export async function fetchRefspec(
+export async function fetchRefspece(
     repo: Repository,
     refspec: string,
 ): Promise<void> {

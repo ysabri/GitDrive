@@ -40,7 +40,6 @@ export async function getRemote(
 
 /**
  * Add the one and only repo.
- * The git process will reject the promise with an error.
  * @param repo The repo at which to add the remote
  * @param url url of the remote repo
  */
@@ -51,9 +50,14 @@ export async function addRemote(
     await git(["remote", "add", "origin", url], repo.path);
 }
 
+/**
+ * Change the remote repo of a repository.
+ * @param repo The repo to change the remote in
+ * @param newUrl The new remote repo url
+ */
 export async function changeUrl(
     repo: Repository,
-    url: string,
+    newUrl: string,
 ): Promise<void> {
-    await git(["remote", "set-url", "origin", url], repo.path);
+    await git(["remote", "set-url", "origin", newUrl], repo.path);
 }

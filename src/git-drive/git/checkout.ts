@@ -44,16 +44,17 @@ export async function partialCheckout(
 }
 
 /**
- * Creates an orphan branch based on a checkout of the HEAD state,
+ * Creates an orphan branch based on a checkout of the startPoint state,
  * the branch points to no commits.
  * IMPORTANT: I would have created a branch obj but an orphan branch has no tip
  * commit yet. The caller should be responsible for creating the first commit
  * obj on the branch and then the branch obj. Make sure that this is done
  * before checking out any other branch because git for-each-ref will not list
- * the orphan branch unless there is a commit on it and checking out another
+ * the orphan branch unless there is a commit on it since checking out another
  * branch before committing on an orphan branch discards the orphan branch.
  * @param repo Repo where the orphan branch will get created.
  * @param branchName Name of the orphan branch.
+ * @param startPoint The SHA to base the orphan checkout on.
  */
 export async function orphanCheckout(
     repo: Repository,

@@ -16,7 +16,6 @@ import { git, overrideCredentialHelper } from "./core-git";
 export async function pushBranch(
     repo: Repository,
     localBranch: string,
-
 ): Promise<void> {
     const args = [...overrideCredentialHelper,
         "push",

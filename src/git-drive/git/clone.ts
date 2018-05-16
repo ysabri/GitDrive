@@ -17,7 +17,6 @@ import { git, overrideCredentialHelper } from "./core-git";
 export async function clone(
     url: string,
     path: string,
-    ): Promise<void> {
-        // find out why the __dirname works?
+): Promise<void> {
     await git([...overrideCredentialHelper, "clone", url, path], __dirname);
 }

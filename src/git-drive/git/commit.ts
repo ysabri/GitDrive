@@ -8,6 +8,8 @@ import { unstageResetAll } from "./reset";
  * does no error handling. I have to actually do error handling in the core-git
  * first then figure this out and so on.
  * @param repo Repo to create commit in.
+ * @param name Author's name
+ * @param email Author's email
  * @param summary Commit summary, has to be less than 73 chars.
  * @param message Message to attach to commit.
  */
