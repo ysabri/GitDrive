@@ -513,10 +513,12 @@ directory like the rest of the code.</p>
 <h1>Terminology</h1>
 <p>Below are formal definitions of each concept. Use this to help reason about and understand them.</p>
 <dl class="docutils">
-<dt><strong>Repository</strong></dt>
-<dd>A group of one or more TopicSpaces. Each repository has a Main topicspace among other ones.
-The repo has a name that cannot be longer than a 100 character. Also each user in the
-repository must have a unique name.</dd>
+<dt><strong>GRepository</strong></dt>
+<dd>Our own definition of a repository. It will consist of a group of one or more TopicSpaces.
+Each repository has a &quot;Main&quot; topicspace among other ones. The repository has a name that
+cannot be longer than a 100 character. Also each user in the repository must have a unique
+name. Finally, each repository can have none or only one remote repository linked to it. The
+name of the remote repository if it exists is &quot;origin&quot;.</dd>
 <dt><strong>TopicSpace</strong></dt>
 <dd>A group of one or more WorkSpaces. Since each workspace can only have one user, the number
 of users has to match the number of workspaces. The name as well has to be less than a 100
@@ -525,7 +527,7 @@ characters.</dd>
 <dd>A single branch for one user only. Meaning that only the user is allowed to commit on this branch.
 This way we can get who the user is by reading the tip's commit author information. The name of
 the branch starts with a capital &quot;G&quot; letter then the first 10 characters in the first
-commit's SHAs. The &quot;G&quot; is added to avoid ambiguity in Git when referencing the branch ref and
+commitish. The &quot;G&quot; is added to avoid ambiguity in Git when referencing the branch ref and
 actual commit SHAs. This naming schema grants us unique names for quite a long time, a proof way
 is to make the length of the SHA characters adapt to the total number of workspaces, maybe one
 day in the future.</dd>
@@ -578,7 +580,7 @@ follow and thus debug.</dd>
 these are inspired or sometimes copied from the <a class="reference external" href="https://github.com/desktop/desktop">GitHub Desktop</a> project, thanks to them
 for that.</p>
 <p>The list below will have commands that are exposed in multiple ways that depend on the
-options given to the command. So in reality we have an 7 amount of Git commands/behaviors
+options given to the command. So in reality we have an 19 amount of Git commands/behaviors
 exposed. Each command will also have an explanation of the purpose from including it along
 with an explanation of why its exposed in such a way.</p>
 <p>Also all the commands will not attempt to handle any error they encounter and will throw it
@@ -601,29 +603,223 @@ to be explicitly specified to avoid ambiguity.</p>
 will rename the branch to that name. We use rename while creating workspaces after we
 create the first commit on them since we need the first 10 SHAs characters from it.</p>
 </dd>
-<dt>3.Checkout:</dt>
-<dd>We have four actions from the checkout command. The first is just a normal checkout of
-a ref. Usually the ref will be a branch object and this command is only used to checkout
-branches actually. The reason behind accepting a string is because of metadata branches.
-It is a lot of headache to keep track of the metadata branch in a branch object so we only
-keep track of its ref name per repository.</dd>
+<dt><strong>3.Checkout:</strong></dt>
+<dd><p class="first">We have four actions from the checkout command.</p>
+<p>The first is just a normal checkout of a ref. Usually the ref will be a branch object,
+in fact this command is only used to checkout branches. The reason behind accepting
+a string is because of metadata branches. It turned out its a lot of headache to keep
+track of the metadata branch in a branch object so we only keep track of its ref name
+per repository and we used that name (string) to checkout when needed.</p>
+<p>The second is our beloved partial checkout. Given a list of paths and ref, the command
+will checkout the state of those paths based on the ref into the current working tree.
+This operation should be run on an empty workspace.</p>
+<p>The third is orphan checkout. Given a new branch name and a starting point, it will
+create an orphan branch based on the point. An orphan branch points to not commits,
+effectively breaking the history. This will be used when we create a new topicspace
+to ensure their independence.</p>
+<p class="last">The fourth is to checkout and create a branch. Given a branch name and a start point
+it creates a branch at that point and checks it out. This is just here to save us a
+shell-out call, its two birds one stone.</p>
+</dd>
+<dt><strong>4.Clone:</strong></dt>
+<dd><p class="first">We have one action from the clone command.</p>
+<p class="last">Its your normal clone call. Given a valid url and a path, it will clone the url
+repository into that path. There is a bit of work to be done on that command. We still
+need to figure out authentication. We disable the use of any default authentication
+handlers in order to implement ours. Will update the section once its done.</p>
+</dd>
+<dt><strong>5.Commit:</strong></dt>
+<dd><p class="first">We have one acton from the commit command.</p>
+<p class="last">Its a commit but with stuff baked in it. So given an author's name and email, a summary
+and a message, it will create a commit under HEAD with author and email set. Before
+committing, it will unstage everything then stage it all again.</p>
+</dd>
+<dt><strong>6.core-git:</strong></dt>
+<dd>This is just a wrapper around the dugite exec command. The wrapper is meant to be used
+to extend on the error handling and result of dugite's api. The class GitError defines
+our errors in which each error has a human readable description of the error,
+the errored command's arguments, the error enum from dugite/errors.ts, and the
+actual text of the error. An error is triggered whenever the process returns with a none
+zero exit code. The wrapper does not attempt to handle any errors, its all left to the
+caller.</dd>
+<dt><strong>7.Diff-index:</strong></dt>
+<dd><p class="first">We have one action from the command. The code for this was taken from the
+<a class="reference external" href="https://github.com/desktop/desktop">GitHub Desktop</a> project.</p>
+<p class="last">As the name suggests, the command will return a list of of files who have changes in the
+indexing are when compared against HEAD.</p>
+</dd>
+<dt><strong>8.Diff:</strong></dt>
+<dd><p class="first">We have five actions from the diff command. The code for this was take from the
+<a class="reference external" href="https://github.com/desktop/desktop">GitHub Desktop</a> project.</p>
+<p>The first is for getting a commit's diff. Given a file and a commitish, it will return
+the diff of the file between the commit and the commit's parent. This could be used to
+check if a commit introduces a change to a file. This command is actually an exception in
+the fact that it uses log instead of the diff command, it returns a diff though and that is
+what matters.</p>
+<p>The second is for getting a diff between a file and the working tree. Given a file, the
+command renders the diff for a file within the repository working tree. The file
+will be compared against HEAD if it's tracked, if not it'll be compared to an empty
+file meaning that all content in the file will be treated as additions.</p>
+<p>The third for getting an image diff. This is not going to be used for now, it is there
+since I didn't write this code.</p>
+<p>The fourth is a utility function that converts rawDiff or changes to an IDiff object. This
+is implementation specific, its exported since it might be useful given the type of diff
+a user posses. Explaining the command is tedious and not necessary.</p>
+<p class="last">The fifth is for getting a binary blob of an image. Again for now this is not used.</p>
+</dd>
+<dt><strong>9.Fetch:</strong></dt>
+<dd><p class="first">There are two actions from the fetch command.</p>
+<p>The first is to just fetch all the refs in a repository. Given that our repositories will
+only have one remote branch called origin then we fetch all the refs from it. Notice how the
+command does not check whether the remote repository exist in the given repository. This
+check if left for the caller to do as it might become redundant.</p>
+<p>The second is for fetching a specific ref. Given the name of the ref the function will fetch
+it down. Again this does fetch from origin and does not check whether the remote repository
+exists. This also does not check the existance of the given ref.</p>
+<table class="last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Notice:</th><td class="field-body">The authentication is not implemented for this as well, in fact it is not
+implemented for any network related command.</td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt><strong>10.For-each-ref:</strong></dt>
+<dd><p class="first">There is one action from this command.</p>
+<p class="last">Its a getter for refs in the repository based on a namespace. So given a namespace, the
+command will return an array with all the refs under the namespace. For example, giving
+the command refs/heads will return all the local branches. Another example is giving the
+command remotes/origin will return all the remote refs in remote repository origin. Call
+the function with just a repository to get all the refs.</p>
+</dd>
+<dt><strong>11.Init:</strong> 19</dt>
+<dd><p class="first">There is one action from this command.</p>
+<p class="last">Its just an init of a repo given a path that exists. Notice that the function does not
+check if the path exists, this is left for the caller.</p>
+</dd>
+<dt><strong>12.Log:</strong></dt>
+<dd><p class="first">There are three actions from this command. This code was taken from the <a class="reference external" href="https://github.com/desktop/desktop">GitHub Desktop</a>
+project.</p>
+<p>The first is a getter of commits. Given a revision range (a git defined concept), and a
+limit the command will return an array of the commits that fall within the range.</p>
+<p>The second gets the changed files per commit. Given a commitish, the command will
+return an array the files that were changed by the commit.</p>
+<p class="last">The third retrieves a single commit based on a ref. Given a ref, the command will return
+the commit the ref is pointing to or null if the ref doesn't point to a commit.</p>
+</dd>
+<dt><strong>13.Pull:</strong></dt>
+<dd><p class="first">There is one action from the pull command.</p>
+<p>Its just a normal pull of the current HEAD. This should not be used and is there only for the
+possibility of needing it. The main problem is that users can make commits through GitHub,
+commits that won't follow our rules and we have to deal with it. We will see. We maybe able to
+tolerate the owner of the branch rebasing some remote commits made on their own branch.</p>
+<table class="last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Notice:</th><td class="field-body">Authentication is not implemented.</td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt><strong>14.Push:</strong></dt>
+<dd><p class="first">Similar to fetch, there are two actions from the push command.</p>
+<p>The first is just a push of a branch. Given a branch name, the command will push it to its
+tracked upstream branch, origin in our case.</p>
+<p>The second is a push of all refs. Again this will push to origin.</p>
+<table class="last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Notice:</th><td class="field-body"><dl class="first last docutils">
+<dt>None of these commands checks if origin is setup, this is left to the caller.</dt>
+<dd><p class="first last">Also authentication is not implemented.</p>
+</dd>
 </dl>
-<p>4.Clone:</p>
-<p>5.Commit:</p>
-<p>6.core-git:</p>
-<p>7.Diff-index:</p>
-<p>8.Diff:</p>
-<p>9.Fetch:</p>
-<p>10.For-each-ref:</p>
-<p>11.Init:</p>
-<p>12.Log:</p>
-<p>13.Pull:</p>
-<p>14.Push:</p>
-<p>15.Remote:</p>
-<p>16.Reset:</p>
-<p>17.Rev-parse:</p>
-<p>18.Show:</p>
-<p>19.Statue:</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt><strong>15.Remote:</strong></dt>
+<dd><p class="first">There are three actions from the remote command.</p>
+<p>The first is a getter of a remote. Given a repository, the command will return the one and
+only remote as an IRemote object, the object will contain the name and url.</p>
+<p>The second is to add origin. Given a url, the command will add origin with the url into the
+remote repositories list.</p>
+<p class="last">The third is to change the remote repo. Given new url, the command will change the url of
+origin to the url given.</p>
+</dd>
+<dt><strong>16.Reset:</strong></dt>
+<dd><p class="first">There are three actions from the reset command.</p>
+<p>The first is a ref based reset. Given a ref and a reset mode, the command will reset the
+current working tree to that ref based on the mode given.</p>
+<p>The second is a path based reset. Given a ref, a mode and a list of paths, the command will
+reset the current working tree's paths to the state in the ref based on the mode.</p>
+<p>The third is a HEAD based reset. When called on a repo, the command will effectively
+un-stage all the changes in the current working tree.</p>
+<table class="last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Notice:</th><td class="field-body">Given the ResetMode enum, there are only two reset modes possible to use,
+soft and mixed resets. Hard resets are not possible.</td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt><strong>17.Rev-parse:</strong></dt>
+<dd><p class="first">There are two actions from the rev-parse command.</p>
+<p>The first is a getter of the top level path of a repository. Given a path, the function
+will return the top level absolute path of that git repository or null if it isn't a
+git repository.</p>
+<p class="last">The second verifies wether the path is a root of git repository. Given a path, the
+function will use the one above to return whether the path is the root path in a
+repository or it isn't. This is used to determine whether we can start a repository
+at a path or not, because if its already a repository we cannot. The fact that we
+only care about the root path is because we want the user to be able to nest their
+repositories within each other. Nesting repositories is easy as long as the
+.gitignore files are updated correctly.</p>
+</dd>
+<dt><strong>18.Show:</strong></dt>
+<dd><p class="first">There are two closely related actions from the show command.</p>
+<p>The first gets the binary blob content of a file based on a commit. Given a commitish,
+and a path, the function will return a buffer that contains the contents of the file
+based on the commitish. This function is super helpful when reading from the metadata
+branch for example. Using it we are able to read the metadata protobuf file without
+having to checkout the branch.</p>
+<p class="last">The second is just like the first except that it takes a length argument. The length
+represents the maximum amount of bytes to be read from the file. This is helpful if
+its anticipated the file is going to be too big.</p>
+</dd>
+<dt><strong>19.Statue:</strong></dt>
+<dd><p class="first">There is one action from the statue command. This code was taken from the
+<a class="reference external" href="https://github.com/desktop/desktop">GitHub Desktop</a> project.</p>
+<p>Its a getters for the current working tree status based from the top level of the
+repository. When run on a repository the command will return an IStatusResult object
+that contains: The name of the current branch, the current upstream branch
+(if it exists), the current tip commit's SHA, whether the branch is ahead or
+behind its upstream, if the repository exists, and lastly a WorkingDirectoryStatus
+object that has a list of WorkingDirectroyFileChanges of the current files to be
+staged in the current working tree.</p>
+<table class="last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Notice:</th><td class="field-body"><p class="first">There is no explicit notion of partial staging, the way to do it is to give
+the WorkingDirectoryStatus class (in model/status.ts) a selected list of
+WorkingDirectroyFileChanges.</p>
+<p class="last">Also the command will not have any relative paths for the files it returns
+since it is run from the top level of the repository. The status command's
+output changes based on the current working directory.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
 </blockquote>
 </div>
 <div class="section" id="protobuf">
