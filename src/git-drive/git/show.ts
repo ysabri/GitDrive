@@ -20,7 +20,7 @@ export async function getBlobBinaryContents(
     repo: Repository,
     commitish: string,
     filePath: string,
-) {
+): Promise<Buffer> {
     // This is the callback child of type childProcess returning void,
     // Whenever it is used, it takes the child process and sets its encoding
     // to binary. It is a dynamic way of setting the ChildProcess encoding.
