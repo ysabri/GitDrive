@@ -935,18 +935,18 @@ simplified. Read the rest of the section for the full picture.</td>
 </tr>
 </tbody>
 </table>
-<p>Let's say we have three users working on a topicspace and the commit graph looks like this::</p>
+<p>Let's say we have three users working on a topicspace and the commit graph looks like this:</p>
 <pre class="literal-block">
      __[2]--[3]
     /
 [1]-- --[4]
     \
-     --[5]--[6]--[7]                                            Each [x] represents a commit.
+     --[5]--[6]--[7]              Each [x] represents a commit.
 </pre>
 <p>For the sake of simplicity let's assume that all the users are aware of each other's existence,
 meaning that reading the &quot;repo.proto&quot; file from any commit on any workspace, ie. commits
 {2,3,4,5,6,7}, will result in a deserialized object that has one topicspace with three workspaces.</p>
-<p>Now lets say we have a fourth user who joins the topicspace as such::</p>
+<p>Now lets say we have a fourth user who joins the topicspace as such:</p>
 <pre class="literal-block">
      __[2]--[3]
     /
@@ -954,7 +954,7 @@ meaning that reading the &quot;repo.proto&quot; file from any commit on any work
     \
      --[5]--[6]--[7]
         \
-         --[8]                                                      Each [x] represents a commit.
+         --[8]                     Each [x] represents a commit.
 </pre>
 <p>Since we save the protobuf file with each commit, only commit [8] is aware of the existence of
 the new workspace. Its simple for other users to become aware of the addition, since
@@ -973,18 +973,18 @@ we don't have a merge command. I will update the section once its done.</p>
 createWorkSpace.</p>
 <p>So I sort of lied in the last example. There is yet another problem when saving metadata upon committing.
 The metadata has no way of recording metadata about the commit its read from. The example below explains
-why::</p>
+why:</p>
+<blockquote>
 <pre class="literal-block">
 [1]--[2]
-
-Let's assume our metadata keeps track of the commits in the history above. This information
-would look something like the SHA of the commit, author, data, time, summary, and message.
-Most of this information is not available before making the actual commit.
-
-Meaning if the metadata file was written to disk before committing [1], it will only have
-info about the author, summary and message. This metadata is incomplete. Commit [2] works
-similarly except that it has full information about commit [1].
 </pre>
+<p>Let's assume our metadata keeps track of the commits in the history above. This information
+would look something like the SHA of the commit, author, data, time, summary, and message.
+Most of this information is not available before making the actual commit.</p>
+<p>Meaning if the metadata file was written to disk before committing [1], it will only have
+info about the author, summary and message. This metadata is incomplete. Commit [2] works
+similarly except that it has full information about commit [1].</p>
+</blockquote>
 <p>As the example above showed, the metadata about the commit to be made is incomplete. This is why
 I chose not to save the any metadata about the commit that's about to be made. This means:</p>
 <blockquote>
@@ -995,27 +995,26 @@ workspaces that the current repo.proto file has no information about. So:</p>
 <blockquote>
 (2) A repo.proto file read from a workspace is <em>exactly</em> one behind the ref (branch) pointer
 for that workspace.</blockquote>
-<p>All this is a headache to deal with when it comes to creating a topicspace. That is why::</p>
+<p>All this is a headache to deal with when it comes to creating a topicspace. This is why:</p>
+<blockquote>
 <pre class="literal-block">
      __[2]
     /
 [1]-- --[3]
     \
-     --[4]                                                 Each [x] represents a commit.
-
-Here we have commit [1] as the initial state, it can be retrieved by reading the firstCommit
+     --[4]                           Each [x] represents a commit.
+</pre>
+<p>Here we have commit [1] as the initial state, it can be retrieved by reading the firstCommit
 property of the topicspace class. Given all the above, commit [2] metadata has knowledge of
-commit [1] only. Commit [3]'s metadata has knowledge of commit [1] and [2] only. And so on.
-
-Since we don't keep partial metadata, we don't write any &quot;repo.proto&quot; files in the first commits
+commit [1] only. Commit [3]'s metadata has knowledge of commit [1] and [2] only. And so on.</p>
+<p>Since we don't keep partial metadata, we don't write any &quot;repo.proto&quot; files in the first commits
 of workspaces that were created using startRepo. The main reason is that throughout the execution
 of startRepo, we don't have a GRepository object to serialize until the end of the method.
 This is not the case for any workspace created using createWorkSpace. It is inconsistent but
-its kept since the distinguishing information might be useful down the line.
-
-There is another reason why metadata should not be read from first commits on workspaces, its
-left for the reader to reason about. Hint: it has to do with adding topicspaces.
-</pre>
+its kept since the distinguishing information might be useful down the line.</p>
+<p>There is another reason why metadata should not be read from first commits on workspaces, its
+left for the reader to reason about. Hint: it has to do with adding topicspaces.</p>
+</blockquote>
 <p>Speaking of startRepo, we have another exception to a rule. The committer and author of a commit
 should match with maybe the exception of the first commits on a workspace. This happens when a user
 specifies the users for a topicspace they are about to create. Since the author of a commit can be
@@ -1026,30 +1025,60 @@ introduce commits that we believe are valid. This is fixable with enforcing GPG 
 <p>The exception is fixable if we find a way of communicating an invite to a topicspace, that way only
 when a user accepts the invite they will create their workspace. This will happen down the line, for
 now it is not necessary.</p>
+<p>Finally, we also keep track of the current user in a file called &quot;.CURRENT_USER&quot; located at the root
+of the repository. The reason behind this file's existence is mainly to introduce a change in
+between workspaces when they are created. If we have no changes we cannot commit. The file just
+includes the user's name and nothing else.</p>
 </div>
 </div>
 <div class="section" id="the-app">
 <h1>The App</h1>
 <div class="section" id="startrepo">
 <h2>StartRepo</h2>
+<p>Creates a repository in the given path with the given users. Meaning that each user will have a
+workspace in the default &quot;Main&quot; topicspace. A path is valid if it exists and has no repository
+initialized in it. The method also copies the default .gitignore file from the static directory.</p>
+<p>The method returns the new repository.</p>
+<p>The &quot;GG&quot; branch will be checked-out at the end of the method's execution.</p>
 </div>
 <div class="section" id="createtopicspace">
 <h2>CreateTopicSpace</h2>
+<p>Creates a topicspace with the given users based on a commit. The new topicspace will be an orphan
+checkout based on the given commit's state.</p>
+<p>The method returns a pair of objects, the first is the repository with the new topicspace added
+to it, and the second is the topicspace created.</p>
+<p>The &quot;GG&quot; branch will be checked-out at the end of the method's execution.</p>
 </div>
 <div class="section" id="createworkspace">
 <h2>CreateWorkSpace</h2>
+<p>Creates a workspace in the given topicspace based on a workspace. The new workspace being based on
+the latest state of another workspace is for simplicity. In fact, I will also add the ability to
+base the new workspace on the initial state of the topicspace or just an empty state.</p>
+<p>The method returns a pair of objects, the first is the repository with the new workspace added to
+it, and the second is the workspace created.</p>
+<p>The &quot;GG&quot; branch will be checked-out at the end of the method's execution.</p>
 </div>
 <div class="section" id="download">
 <h2>download</h2>
+<p>Downloads the repo. To be implemented.</p>
 </div>
 <div class="section" id="loadgrepo">
 <h2>loadGRepo</h2>
+<p>Given a path, checks whether it adheres to our rules then reads it out, if it doesn't it will
+error out. Even though its tedious to check for all the rules, this method doesn't take long
+to execute.</p>
 </div>
 <div class="section" id="partialcheckouts">
 <h2>partialCheckouts</h2>
+<p>Partially checkout a file or a directory along with its sub-directories or not.</p>
 </div>
 <div class="section" id="id1">
 <h2>Sync</h2>
+<p>Writes the repository state to memory then commits in the given workspace for the given user,
+with the given commit summary and message. This method does the necessary checks to ensure
+only the user who owns the workspace is committing in it. This method will also push the changes
+and fetch the rest of the branches if the remote repository exists. Handling the new changes
+from pulled branches is yet to be implemented.</p>
 </div>
 </div>
 <div class="section" id="the-controller">

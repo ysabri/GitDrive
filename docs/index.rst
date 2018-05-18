@@ -554,19 +554,19 @@ because of the following example:
         The following example is not representative of how the protobuf data is stored, its
         simplified. Read the rest of the section for the full picture.
 
-    Let's say we have three users working on a topicspace and the commit graph looks like this:::
+    Let's say we have three users working on a topicspace and the commit graph looks like this::
 
              __[2]--[3]
             /
         [1]-- --[4]
             \
-             --[5]--[6]--[7]                                            Each [x] represents a commit.
+             --[5]--[6]--[7]              Each [x] represents a commit.
 
     For the sake of simplicity let's assume that all the users are aware of each other's existence,
     meaning that reading the "repo.proto" file from any commit on any workspace, ie. commits
     {2,3,4,5,6,7}, will result in a deserialized object that has one topicspace with three workspaces.
 
-    Now lets say we have a fourth user who joins the topicspace as such:::
+    Now lets say we have a fourth user who joins the topicspace as such::
 
              __[2]--[3]
             /
@@ -574,7 +574,7 @@ because of the following example:
             \
              --[5]--[6]--[7]
                 \
-                 --[8]                                                      Each [x] represents a commit.
+                 --[8]                     Each [x] represents a commit.
 
     Since we save the protobuf file with each commit, only commit [8] is aware of the existence of
     the new workspace. Its simple for other users to become aware of the addition, since
@@ -596,9 +596,11 @@ createWorkSpace.
 
 So I sort of lied in the last example. There is yet another problem when saving metadata upon committing.
 The metadata has no way of recording metadata about the commit its read from. The example below explains
-why:::
+why:
 
-    [1]--[2]
+    ::
+
+        [1]--[2]
 
     Let's assume our metadata keeps track of the commits in the history above. This information
     would look something like the SHA of the commit, author, data, time, summary, and message.
@@ -620,13 +622,15 @@ workspaces that the current repo.proto file has no information about. So:
     (2) A repo.proto file read from a workspace is *exactly* one behind the ref (branch) pointer
     for that workspace.
 
-All this is a headache to deal with when it comes to creating a topicspace. That is why:::
+All this is a headache to deal with when it comes to creating a topicspace. This is why:
 
-         __[2]
-        /
-    [1]-- --[3]
-        \
-         --[4]                                                 Each [x] represents a commit.
+    ::
+
+             __[2]
+            /
+        [1]-- --[3]
+            \
+             --[4]                           Each [x] represents a commit.
 
     Here we have commit [1] as the initial state, it can be retrieved by reading the firstCommit
     property of the topicspace class. Given all the above, commit [2] metadata has knowledge of
@@ -653,10 +657,10 @@ The exception is fixable if we find a way of communicating an invite to a topics
 when a user accepts the invite they will create their workspace. This will happen down the line, for
 now it is not necessary.
 
-
-
-
-
+Finally, we also keep track of the current user in a file called ".CURRENT_USER" located at the root
+of the repository. The reason behind this file's existence is mainly to introduce a change in
+between workspaces when they are created. If we have no changes we cannot commit. The file just
+includes the user's name and nothing else.
 
 
 =======
@@ -665,24 +669,56 @@ The App
 
 StartRepo
 ---------
+Creates a repository in the given path with the given users. Meaning that each user will have a
+workspace in the default "Main" topicspace. A path is valid if it exists and has no repository
+initialized in it. The method also copies the default .gitignore file from the static directory.
+
+The method returns the new repository.
+
+The "GG" branch will be checked-out at the end of the method's execution.
 
 CreateTopicSpace
 -----------------
+Creates a topicspace with the given users based on a commit. The new topicspace will be an orphan
+checkout based on the given commit's state.
+
+The method returns a pair of objects, the first is the repository with the new topicspace added
+to it, and the second is the topicspace created.
+
+The "GG" branch will be checked-out at the end of the method's execution.
 
 CreateWorkSpace
 ----------------
+Creates a workspace in the given topicspace based on a workspace. The new workspace being based on
+the latest state of another workspace is for simplicity. In fact, I will also add the ability to
+base the new workspace on the initial state of the topicspace or just an empty state.
+
+The method returns a pair of objects, the first is the repository with the new workspace added to
+it, and the second is the workspace created.
+
+The "GG" branch will be checked-out at the end of the method's execution.
 
 download
 ---------
+Downloads the repo. To be implemented.
 
 loadGRepo
 ----------
+Given a path, checks whether it adheres to our rules then reads it out, if it doesn't it will
+error out. Even though its tedious to check for all the rules, this method doesn't take long
+to execute.
 
 partialCheckouts
 -----------------
+Partially checkout a file or a directory along with its sub-directories or not.
 
 Sync
 ----
+Writes the repository state to memory then commits in the given workspace for the given user,
+with the given commit summary and message. This method does the necessary checks to ensure
+only the user who owns the workspace is committing in it. This method will also push the changes
+and fetch the rest of the branches if the remote repository exists. Handling the new changes
+from pulled branches is yet to be implemented.
 
 ==============
 The Controller
