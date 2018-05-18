@@ -34,7 +34,7 @@ export async function createWorkSpace(
     user: User,
     topicSpace: TopicSpace,
     basedOn: WorkSpace,
-): Promise<[GRepository, WorkSpace]> {
+): Promise<{repo: GRepository, workspace: WorkSpace}> {
     // check if the user in the topicspace already, each user has only one
     // workspace per topicspace
     const exists = topicSpace.users.filter((usr) => {
@@ -76,5 +76,5 @@ export async function createWorkSpace(
     await writeRepoInfo(newRepo);
     await commit(newRepo, "Meta-User", "NA", "Meta Commit", "");
 
-    return [newRepo, tempWS];
+    return {repo: newRepo, workspace: tempWS};
 }

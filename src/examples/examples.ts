@@ -61,34 +61,34 @@ export async function startEx(): Promise<void> {
       () => createWorkSpace(newRepo, fourthUser, topicSpace, workSpace));
   // add the change to a new repo obj
   // tslint:disable-next-line:no-console
-  console.log(fourthWS[0].id());
+  console.log(fourthWS.repo.id());
   const fifthUser = new User("bob benson", "benson@bob.com", []);
   const sixthUser = new User("jack sparrow", "sparrow@jack.com", []);
   const seventhUser = new User("hp", "hp@hp.hp", []);
   try {
-    const newTS = await measure("Create TS", () => createTopicSpace(fourthWS[0],
-    [fifthUser, sixthUser, seventhUser], fourthWS[0].topicSpaces[0].workSpaces[0].tip, "Bug Fix"));
+    const newTS = await measure("Create TS", () => createTopicSpace(fourthWS.repo,
+    [fifthUser, sixthUser, seventhUser], fourthWS.repo.topicSpaces[0].workSpaces[0].tip, "Bug Fix"));
     // tslint:disable-next-line:no-console
-    console.log(newTS[0].id());
+    console.log(newTS.repo.id());
 
     // checkout bob's branch, we know he is the first user in the TS we just created
-    await checkoutBranch(newTS[0], newTS[1].workSpaces[0]);
+    await checkoutBranch(newTS.repo, newTS.topicspace.workSpaces[0]);
 
     const afterSync = await measure("Running sync on bob benson's WS", () =>
-      sync(newTS[0], newTS[1].workSpaces[0], fifthUser,
+      sync(newTS.repo, newTS.topicspace.workSpaces[0], fifthUser,
         "First commit on Bob benson's branch", "hopefully this doesn't show"));
-    const syncRepo = await changeWS(newTS[0], newTS[1], afterSync);
+    const syncRepo = await changeWS(newTS.repo, newTS.topicspace, afterSync);
     // notice how we call changeWS after each one, it is not done for us in sync
     // because sync has no knowledge of the TS it is operating in.
     const lastSync = await measure("Another sync on bob's branch", () =>
       sync(syncRepo, afterSync , fifthUser, "Second sync on bob's", ""));
-    const secondSyncRepo = await changeWS(syncRepo, newTS[1], lastSync);
+    const secondSyncRepo = await changeWS(syncRepo, newTS.topicspace, lastSync);
 
     // tslint:disable-next-line:no-console
     console.log(secondSyncRepo.id());
     // load the repo we just created, the printout from the console log after should
     // match the one prior
-    const repoReadout = await measure("loading a Repo", () => loadGRepo(newTS[0].path));
+    const repoReadout = await measure("loading a Repo", () => loadGRepo(newTS.repo.path));
     // tslint:disable-next-line:no-console
     console.log(repoReadout.id());
   } catch (err) {

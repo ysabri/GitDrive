@@ -29,7 +29,7 @@ export async function createTopicSpace(
     users: ReadonlyArray<User>,
     origin: Commit,
     name: string,
-): Promise<[GRepository, TopicSpace]> {
+): Promise<{repo: GRepository, topicspace: TopicSpace}> {
     // check that the new TS name doesn't exist already in the repo
     if (repo.topicSpaces.some((value) => {
         return value.name === name;
@@ -83,5 +83,5 @@ export async function createTopicSpace(
     await writeRepoInfo(newRepo);
     await commit(newRepo, "Meta-User", "NA", "Meta Commit", "");
 
-    return [newRepo, newTS];
+    return {repo: newRepo, topicspace: newTS};
 }
