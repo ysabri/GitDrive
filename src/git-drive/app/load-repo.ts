@@ -71,7 +71,9 @@ export async function loadGRepo(
         emptyChangeList = {};
         const refWS = new WorkSpace(refs[0], [refs[0].tip], emptyChangeList,
                 undefined);
-        // get the first commit on the workspace
+        // get the first commit on the workspace, we are guaranteed this is
+        // actually the first commit since the information is derived from
+        // the name of the branch. No need to any tree traversal.
         const refCommit = await getCommit(repo, refWS.firstCommit);
         if (!refCommit) {
             throw new Error("[loadRepo] couldn't find the first commit under" +

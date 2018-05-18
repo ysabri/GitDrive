@@ -23,8 +23,9 @@ The main process:
     part where the logic is kept.
 
 The renderer process:
-    Contains the Chrome V8 engine along with access to the node environment APIs. This is what
-    user interacts with and could consist of more than one window.
+    Contains Chromium along with access to the node environment APIs. This is what
+    user interacts with and could consist of more than one window. Each window is a browser
+    window that renders html, css, and javascript.
 
 These two parts communicate on channels using something called ipcMain and ipcRenderer.
 The ipc part stands for intra process communication. Each process is able to set listeners and send
@@ -138,67 +139,83 @@ Terminology
 Below are formal definitions of each concept. Use this to help reason about and understand them.
 
 **GRepository**
+---------------
     Our own definition of a repository. It will consist of a group of one or more TopicSpaces.
-    Each repository has a "Main" topicspace among other ones. The repository has a name that
+    Each repository has a "Main" topicspace among maybe other ones. The repository has a name that
     cannot be longer than a 100 character. Also each user in the repository must have a unique
-    name. Finally, each repository can have none or only one remote repository linked to it. The
-    name of the remote repository if it exists is "origin".
+    name. Along with all the workspace branches, each repository has a metadata branch called "GG".
+    For more information on how metadata is kept, read sectoin `How to do we keep metadata`_
+    Finally, each repository can have none or only one remote repository linked to it. If it exists,
+    the name of the remote repository is "origin".
 
 **TopicSpace**
-    A group of one or more WorkSpaces. Since each workspace can only have one user, the number
-    of users has to match the number of workspaces. The name as well has to be less than a 100
-    characters.
+--------------
+    A group of at least one or more WorkSpaces. Since each workspace can only have one user,
+    the number of users has to match the number of workspaces. The name as well has to be less
+    than a 100 characters. An in depth explanation of the structure of any topicspace can be found
+    in the protobuf_ section.
 
 **WorkSpace**
+-------------
     A single branch for one user only. Meaning that only the user is allowed to commit on this branch.
     This way we can get who the user is by reading the tip's commit author information. The name of
     the branch starts with a capital "G" letter then the first 10 characters in the first
-    commitish. The "G" is added to avoid ambiguity in Git when referencing the branch ref and
-    actual commit SHAs. This naming schema grants us unique names for quite a long time, a proof way
-    is to make the length of the SHA characters adapt to the total number of workspaces, maybe one
-    day in the future.
+    commit's SHA. The "G" is added to avoid ambiguity in Git when referencing the branch ref and
+    actual commit SHAs. This naming schema grants us unique names for quite a long time, a full proof
+    way is to make the length of the SHA characters adapt to the total number of workspaces, maybe one
+    day in the future. Choosing the first commit's SHA was deliberate as it offers us a quick way of
+    reading the first commit's information and of referencing it along with the branch's tip when
+    doing a ranged log to retrieve all the commits on the workspace for example.
 
 **Sync**
+---------
     For a user and a workspace, the operation does a commit followed by a push of the workspace then
     a fetch of all workspaces. This requires the branch checked-out to match the given workspace. It
     will also check that the given user owns the given workspace.
 
 **Dispatcher**
+--------------
     Where all the data-flow is handled along with events. It can control one or more app states. Any
     reads, writes to data should go through here. This will ensure the consistency of such operations
     and will make extending on them easier.
 
 **App-State**
+-------------
     A state that is tied to a browser window and app-data. The browser window coupling is not done
     yet. As for the app-data, this class is responsible for mutating the app-data state in a
-    consistent state. This means creating a new object with every mutation since app-data is immutable.
-    This class is also responsible for exposing any info from app-data. One might ask by now why not
-    have app-data as a part of the Dispatcher instead of doing this. The reason is for the future where
-    the app might have multiple windows in which dispatcher (or an api it will call) will be tasked
-    with keeping information between them consistent.
+    consistent way. This means creating a new object with every mutation since app-data is immutable.
+    This class is also responsible for exposing any information from app-data. One might ask by now
+    why not have app-data as a part of the Dispatcher instead of doing this. The reason is for the
+    future where the app might have multiple windows in which dispatcher (or an api it will call) will
+    be tasked with keeping information between them consistent.
 
 **FS Explorer**
+---------------
     The right bottom panel responsible for exploring the currently selected workspace. It will show
     directories/files and offer operations on them accordingly. These operations are tbd but one
     will be to show the history progression. This means show the linear line of commits that affected
     the directory or file in the selected workspace.
 
 **Header Menu**
-    Its the top panel where the app commands will reside. These commands will chang based on thei
-    context, ie. the current repo, current topicspace, and current workspace.
+---------------
+    Its the top panel where the app commands will reside. These commands will chang based on their
+    context, ie. the current repository, current topicspace, and current workspace.
 
 **TS Pane**
-    Its the left panel where the user browses the current repo's topicspaces and workspaces.
+-----------
+    Its the left panel where the user browses the current repository's topicspaces and workspaces.
     WorkSpaces are named based on their users.
 
 **App Data**
-    The metadata that will be cached in between app sessions, such as current repos, current user,
-    repos, etc. This class is coupled with a protobuf message, thus this is how it will be written
-    and read.
+------------
+    The metadata that will be cached in between app sessions, such as current repository,
+    current user, repositories, etc. This class is coupled with a protobuf message, thus this is
+    how it will be written and read.
 
 **Store**
+---------
     The Vuex store, where the controller (dispatcher) meets the view. So the Vue component tree
-    only allowsfor information to flow from parents to children using something they call props.
+    only allows for information to flow from parents to children using something they call props.
     This proves difficult if sibling components want to communicate information with each other.
     This problem can be solved by using a global data store as a single source of truth in which
     the entire component tree has access to the data in it using a defined set of interactions.
@@ -211,14 +228,14 @@ The Git Core
 ============
 This section assumes a certain level of comfort with Git commands, terminology and concepts.
 
-This consists of the core Git commands that we wrap around with the help of dugite. A lof of
-these are inspired or sometimes copied from the `GitHub Desktop`_ project, thanks to them
-for that.
+The section will consist of the core Git commands that we wrap around with the help of dugite.
+A lof of these are inspired or sometimes copied from the `GitHub Desktop`_ project, thanks
+to them for that.
 
 The list below will have commands that are exposed in multiple ways that depend on the
-options given to the command. So in reality we have 37 amount of Git commands/behaviors
-exposed. Each command will also have an explanation of the purpose from including it along
-with an explanation of why its exposed in such a way.
+options given to the command. So in reality we have 37 Git commands/behaviors
+exposed. If necessary, each command will also have an explanation of the purpose from including
+it along with an explanation of why its exposed in such a way.
 
 Also all the commands will not attempt to handle any error they encounter and will throw it
 to the caller. The errors thrown follow the structure explained under core-git below.
@@ -226,7 +243,9 @@ to the caller. The errors thrown follow the structure explained under core-git b
 Here are the commands in alphabetical order:
 
     **1.Add:**
-        This will stage everything in the working tree. All changes no matter what they are
+        There is one action from the add command.
+
+        Its staging everything in the working tree. All changes no matter what they
         will get staged. We do not expose partial staging (staging per file) since we have no
         use for it in our functionality. Partial staging is still achievable, if needed,
         using partial resets. A partial reset with the right option will effectively undo
@@ -239,8 +258,9 @@ Here are the commands in alphabetical order:
         to be explicitly specified to avoid ambiguity.
 
         The second is renaming a branch, which given a branch and a new valid name
-        will rename the branch to that name. We use rename while creating workspaces after we
-        create the first commit on them since we need the first 10 SHAs characters from it.
+        will rename the branch to that name. We use rename while creating workspaces to rename
+        temp branches after we create the first commit on them since we need the first 10
+        SHAs characters from it.
     **3.Checkout:**
         We have four actions from the checkout command.
 
@@ -248,28 +268,33 @@ Here are the commands in alphabetical order:
         in fact this command is only used to checkout branches. The reason behind accepting
         a string is because of metadata branches. It turned out its a lot of headache to keep
         track of the metadata branch in a branch object so we only keep track of its ref name
-        per repository and we used that name (string) to checkout when needed.
+        per repository and we used that name (string) to check it out when needed.
 
         The second is our beloved partial checkout. Given a list of paths and ref, the command
         will checkout the state of those paths based on the ref into the current working tree.
         This operation should be run on an empty workspace.
 
         The third is orphan checkout. Given a new branch name and a starting point, it will
-        create an orphan branch based on the point. An orphan branch points to not commits,
+        create an orphan branch based on the point. An orphan branch points to no commits,
         effectively breaking the history. This will be used when we create a new topicspace
-        to ensure their independence.
+        to ensure their independence. It is the caller's responsibility to create a commit on
+        an orphan branch before checking out any other branch since an orphan branch with no
+        commits gets discarded upon checking out anther branch.
 
         The fourth is to checkout and create a branch. Given a branch name and a start point
         it creates a branch at that point and checks it out. This is just here to save us a
-        shell-out call, its two birds one stone.
+        shell-out call, its two birds with one stone.
 
     **4.Clone:**
         We have one action from the clone command.
 
         Its your normal clone call. Given a valid url and a path, it will clone the url
-        repository into that path. There is a bit of work to be done on that command. We still
-        need to figure out authentication. We disable the use of any default authentication
-        handlers in order to implement ours. Will update the section once its done.
+        repository into that path.
+
+        :Notice:
+            There is a bit of work to be done on that command. We still
+            need to figure out authentication. We disable the use of any default authentication
+            handlers in order to implement ours. Will update the section once its done.
 
     **5.Commit:**
         We have one acton from the commit command.
@@ -281,7 +306,7 @@ Here are the commands in alphabetical order:
     **6.core-git:**
         This is just a wrapper around the dugite exec command. The wrapper is meant to be used
         to extend on the error handling and result of dugite's api. The class GitError defines
-        our errors in which each error has a human readable description of the error,
+        our errors in which each error having a human readable description of the error,
         the errored command's arguments, the error enum from dugite/errors.ts, and the
         actual text of the error. An error is triggered whenever the process returns with a none
         zero exit code. The wrapper does not attempt to handle any errors, its all left to the
@@ -292,7 +317,7 @@ Here are the commands in alphabetical order:
         `GitHub Desktop`_ project.
 
         As the name suggests, the command will return a list of of files who have changes in the
-        indexing are when compared against HEAD.
+        indexing when compared against HEAD.
 
     **8.Diff:**
         We have five actions from the diff command. The code for this was take from the
@@ -301,7 +326,7 @@ Here are the commands in alphabetical order:
         The first is for getting a commit's diff. Given a file and a commitish, it will return
         the diff of the file between the commit and the commit's parent. This could be used to
         check if a commit introduces a change to a file. This command is actually an exception in
-        the fact that it uses log instead of the diff command, it returns a diff though and that is
+        the fact that it uses log instead of the diff command, it returns a diff though and thats
         what matters.
 
         The second is for getting a diff between a file and the working tree. Given a file, the
@@ -328,7 +353,7 @@ Here are the commands in alphabetical order:
 
         The second is for fetching a specific ref. Given the name of the ref the function will fetch
         it down. Again this does fetch from origin and does not check whether the remote repository
-        exists. This also does not check the existance of the given ref.
+        exists. This also does not check the existence of the given ref.
 
         :Notice:
             The authentication is not implemented for this as well, in fact it is not
@@ -340,7 +365,7 @@ Here are the commands in alphabetical order:
         Its a getter for refs in the repository based on a namespace. So given a namespace, the
         command will return an array with all the refs under the namespace. For example, giving
         the command refs/heads will return all the local branches. Another example is giving the
-        command remotes/origin will return all the remote refs in remote repository origin. Call
+        command remotes/origin will return all the remote refs from remote repository origin. Call
         the function with just a repository to get all the refs.
 
     **11.Init:**
@@ -354,7 +379,7 @@ Here are the commands in alphabetical order:
         project.
 
         The first is a getter of commits. Given a revision range (a git defined concept), and a
-        limit the command will return an array of the commits that fall within the range.
+        limit, the command will return an array of the commits that fall within the range.
 
         The second gets the changed files per commit. Given a commitish, the command will
         return an array the files that were changed by the commit.
@@ -383,7 +408,7 @@ Here are the commands in alphabetical order:
 
         :Notice:
             None of these commands checks if origin is setup, this is left to the caller.
-               Also authentication is not implemented.
+            Also authentication is not implemented.
 
     **15.Remote:**
         There are three actions from the remote command.
@@ -392,10 +417,10 @@ Here are the commands in alphabetical order:
         only remote as an IRemote object, the object will contain the name and url.
 
         The second is to add origin. Given a url, the command will add origin with the url into the
-        remote repositories list.
+        remote repositories configs.
 
-        The third is to change the remote repo. Given new url, the command will change the url of
-        origin to the url given.
+        The third is to change the remote repository. Given a new url, the command will change the
+        url of origin to the url given.
 
     **16.Reset:**
         There are three actions from the reset command.
@@ -420,7 +445,7 @@ Here are the commands in alphabetical order:
         will return the top level absolute path of that git repository or null if it isn't a
         git repository.
 
-        The second verifies wether the path is a root of git repository. Given a path, the
+        The second verifies wether the path is a root of a git repository. Given a path, the
         function will use the one above to return whether the path is the root path in a
         repository or it isn't. This is used to determine whether we can start a repository
         at a path or not, because if its already a repository we cannot. The fact that we
@@ -445,7 +470,7 @@ Here are the commands in alphabetical order:
         There is one action from the statue command. This code was taken from the
         `GitHub Desktop`_ project.
 
-        Its a getters for the current working tree status based from the top level of the
+        Its a getter for the current working tree status based from the top level of the
         repository. When run on a repository the command will return an IStatusResult object
         that contains: The name of the current branch, the current upstream branch
         (if it exists), the current tip commit's SHA, whether the branch is ahead or
@@ -465,10 +490,199 @@ Here are the commands in alphabetical order:
 ========
 Protobuf
 ========
+So we use `Google's protobuf`_ to serialize our our metadata and store it. Our protobuf files are
+in the `static/proto-models`_ directory. The directory includes proto3 definitions of each model
+in the src/model directory and javascript generated code.
+
+The rules for protobuf messages generated code change per language. This page_ has all the
+information needed for javascript. One thing to keep in mind is if a message field is not
+available then its undefined by default. The command bellow is run from the proto-models
+directory to generate the javascript code from the proto files.
+::
+
+    rm *.js && ../protoc/bin/protoc.exe --proto_path=./ --js_out=import_style=commonjs,binary:./ committerid.proto
+    commit.proto user.proto branch.proto repo.proto topicspace.proto workspace.proto grepo.proto app-data.proto
+
+Given the generated code above, each class in the model directory uses its generated code to
+create the messages under the hood. What under the hood means is each class has only one
+public member which is the proto message object. Using the proto message object, each class has
+a set of getters to expose its members. The proto message object is always initialized in the
+constructor, and has its proto message fields set in the constructor as well. The getters use
+the proto message object to retrieve the fields, convert them into objects from messages if
+needed, then return them to the user.
+
+:Notice:
+    This conversion into object from proto message results in the following weirdish behavior:
+    The memory address of an object passed to a constructor is not the same as the one retrieved
+    from a getter. It is the same object in terms of content. So for example if we pass
+    committerID object with address x to the Commit constructor then try and retrieve it later,
+    we will get a new committerID object with address y. They will have the same content exactly
+    even though they are two different addresses underneath. They also have the same exact
+    protobuf object, in content and address.
+
+    Conclusion, two object are equal iff their content is equal or their protobuf objects are
+    the same.
+
+Each proto message object has this naming scheme "[className]ProtoBuf", with a lowercase class
+name.
+
+Along with the above, each model class has two more public methods.
+
+The first is a static class method to deserialize protobuf messages. For this to work, each
+constructor is overloaded to accept *just* a protobuf message. This way we can initialize a
+class using just the protoBuf message by setting the protobuf message object to the given proto
+message. And given the way the getters are made, all the members will be read from the message
+without us needing to read them out to set them in the constructor.
+
+The second method is a none static public serialize method. This will return the serialized
+binary array of the proto message object for it to be sent over the wire or stored on disk.
+
+How to do we keep metadata
+---------------------------
+
+For each GRepository, the metadata will be saved in a "repo.proto" file at the root of the
+repository. The file will include a serialized GRepository object.
+
+As discussed in the definitions, each GRepository has a metadata branch called "GG". The reason
+behind choosing GG is to break the workspace_ naming convention while being as short as possible.
+The main purpose of the metadata branch is to keep track of the structure changes in the repository.
+This means, keep track of the additions or removals of topicspaces or workspaces. This is not
+possible to do by just recording the metadata upon each commit like we already do. This is the case
+because of the following example:
+
+    :Disclaimer:
+        The following example is not representative of how the protobuf data is stored, its
+        simplified. Read the rest of the section for the full picture.
+
+    Let's say we have three users working on a topicspace and the commit graph looks like this:::
+
+             __[2]--[3]
+            /
+        [1]-- --[4]
+            \
+             --[5]--[6]--[7]                                            Each [x] represents a commit.
+
+    For the sake of simplicity let's assume that all the users are aware of each other's existence,
+    meaning that reading the "repo.proto" file from any commit on any workspace, ie. commits
+    {2,3,4,5,6,7}, will result in a deserialized object that has one topicspace with three workspaces.
+
+    Now lets say we have a fourth user who joins the topicspace as such:::
+
+             __[2]--[3]
+            /
+        [1]-- --[4]
+            \
+             --[5]--[6]--[7]
+                \
+                 --[8]                                                      Each [x] represents a commit.
+
+    Since we save the protobuf file with each commit, only commit [8] is aware of the existence of
+    the new workspace. Its simple for other users to become aware of the addition, since
+    they will each get a new branch once they sync with the remote repository.
+
+    The problem resides when this repository is cloned at this state. Unless the cloning algorithm
+    reads every "repo.proto" file from each workspace in the repository it might not know about the
+    last workspace existence.
+
+    The problem is solved by having a single source of truth for reading the structure of the
+    repository, the metadata branch "GG". As you might have guessed by now, having one branch
+    with multiple people committing on it means we will be dealing with merge conflicts. This is
+    true but sort of trivial. Comparing the different metadata files with removals taking precedent
+    should result in the most up to date file. The algorithm for this is yet to be implemented since
+    we don't have a merge command. I will update the section once its done.
+
+The metadata branch is only written to after running these commands: startRepo, createTopicSpace, and
+createWorkSpace.
+
+So I sort of lied in the last example. There is yet another problem when saving metadata upon committing.
+The metadata has no way of recording metadata about the commit its read from. The example below explains
+why:::
+
+    [1]--[2]
+
+    Let's assume our metadata keeps track of the commits in the history above. This information
+    would look something like the SHA of the commit, author, data, time, summary, and message.
+    Most of this information is not available before making the actual commit.
+
+    Meaning if the metadata file was written to disk before committing [1], it will only have
+    info about the author, summary and message. This metadata is incomplete. Commit [2] works
+    similarly except that it has full information about commit [1].
+
+As the example above showed, the metadata about the commit to be made is incomplete. This is why
+I chose not to save the any metadata about the commit that's about to be made. This means:
+
+    (1) Any repo.proto file state with regards to commits on workspaces is *at least* one commit
+    behind when compared to where the actual ref (branch) points.
+
+The at least part is for the fact that other users could have made several commits on their
+workspaces that the current repo.proto file has no information about. So:
+
+    (2) A repo.proto file read from a workspace is *exactly* one behind the ref (branch) pointer
+    for that workspace.
+
+All this is a headache to deal with when it comes to creating a topicspace. That is why:::
+
+         __[2]
+        /
+    [1]-- --[3]
+        \
+         --[4]                                                 Each [x] represents a commit.
+
+    Here we have commit [1] as the initial state, it can be retrieved by reading the firstCommit
+    property of the topicspace class. Given all the above, commit [2] metadata has knowledge of
+    commit [1] only. Commit [3]'s metadata has knowledge of commit [1] and [2] only. And so on.
+
+    Since we don't keep partial metadata, we don't write any "repo.proto" files in the first commits
+    of workspaces that were created using startRepo. The main reason is that throughout the execution
+    of startRepo, we don't have a GRepository object to serialize until the end of the method.
+    This is not the case for any workspace created using createWorkSpace. It is inconsistent but
+    its kept since the distinguishing information might be useful down the line.
+
+    There is another reason why metadata should not be read from first commits on workspaces, its
+    left for the reader to reason about. Hint: it has to do with adding topicspaces.
+
+Speaking of startRepo, we have another exception to a rule. The committer and author of a commit
+should match with maybe the exception of the first commits on a workspace. This happens when a user
+specifies the users for a topicspace they are about to create. Since the author of a commit can be
+set manually, we do set it accordingly for each user and their workspace. But we cannot set the
+committer field, thus the exception. This should have no effect on how the app operates since we
+rely on the author field to verify things. This is only problematic if someone tries to maliciously
+introduce commits that we believe are valid. This is fixable with enforcing GPG signing of commits.
+
+The exception is fixable if we find a way of communicating an invite to a topicspace, that way only
+when a user accepts the invite they will create their workspace. This will happen down the line, for
+now it is not necessary.
+
+
+
+
+
+
 
 =======
 The App
 =======
+
+StartRepo
+---------
+
+CreateTopicSpace
+-----------------
+
+CreateWorkSpace
+----------------
+
+download
+---------
+
+loadGRepo
+----------
+
+partialCheckouts
+-----------------
+
+Sync
+----
 
 ==============
 The Controller
@@ -491,3 +705,6 @@ The View
 .. _package.json: ../package.json
 .. _tsconfig.json: ../tsconfig.json
 .. _GitHub Desktop: https://github.com/desktop/desktop
+.. _page: https://developers.google.com/protocol-buffers/docs/reference/javascript-generated
+.. _`Google's protobuf`: https://developers.google.com/protocol-buffers/
+.. _`static/proto-models`: ../static/proto-models
