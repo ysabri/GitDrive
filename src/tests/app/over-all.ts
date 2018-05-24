@@ -1,12 +1,12 @@
 import { expect } from "chai";
 import { outputFile, remove } from "fs-extra";
 import { join } from "path";
-import { changeWS } from "../../controller/state-updater";
 import { createTopicSpace } from "../../git-drive/app/add-topicspace";
 import { createWorkSpace } from "../../git-drive/app/add-workspace";
 import { loadGRepo } from "../../git-drive/app/load-repo";
 import { startRepo } from "../../git-drive/app/start";
 import { sync } from "../../git-drive/app/sync";
+import { changeWS } from "../../git-drive/controller/state-updater";
 import { checkoutBranch, getChangedFiles, getCommit, getStatus } from "../../git-drive/git";
 import { GRepository } from "../../model/app/g-repository";
 import { User } from "../../model/app/user";
@@ -72,7 +72,7 @@ describe(("Testing overall app commands"), () => {
         const addWS = await createWorkSpace(newRepo, users[3],
             newRepo.topicSpaces[0], newRepo.topicSpaces[0].workSpaces[0]);
         // set the updated repo
-        newRepo = addWS[0];
+        newRepo = addWS.repo;
         // check a bunch of things
         expect(newRepo.topicSpaces[0].workSpaces.length).to.equal(4);
         expect(newRepo.topicSpaces[0].workSpaces[3].tip.committer.name).to.equal(
@@ -98,7 +98,7 @@ describe(("Testing overall app commands"), () => {
     it("Adds a new topicspace to the existing repo", async () => {
         const newTS = await createTopicSpace(newRepo, users.slice(4, 7),
             newRepo.topicSpaces[0].workSpaces[0].tip, "Bug Fix");
-        newRepo = newTS[0];
+        newRepo = newTS.repo;
         await verifyTwoTSRepo(newRepo);
         const metaRepo = await readRepoInfo(newRepo);
         await verifyTwoTSRepo(metaRepo);
