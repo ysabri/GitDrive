@@ -2,7 +2,14 @@ syntax = "proto3";
 import "repo.proto";
 import "user.proto";
 import "topicspace.proto";
-
+/**
+ * This protoBuf object has the following members, in order:
+ * - The parent Repository object: parent: Repository
+ * - A list of TopicSpace in the repo:
+ *  topicspaces: ReadonlyArray<TopicSpace>
+ * - The global list of users in the repo: users: ReadonlyArray<User>
+ * - The global structure meta branch name
+*/
 message GRepo {
     Repository parent = 1;
     repeated TopicSpace topicSpaces = 2;

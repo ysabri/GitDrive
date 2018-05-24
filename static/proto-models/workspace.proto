@@ -1,7 +1,16 @@
 syntax = "proto3";
 import "commit.proto";
 import "branch.proto";
-
+/**
+ * This protoBuf object has the following members, in order:
+ * - The parent Branch object: parent: Branch
+ * - The list of commits on the branch: commits: ReadonlyArray<Commit>
+ * - The origin from where this workspace was created. It is undefined if
+ *  it was created at the beginning  of the repo, ie on top of its
+ *  topicspace first commit: originCommit: string
+ * - The SHA of the files along with the file itself that is yet to be
+ * integrated into the WorkSpace: changeList: Map<string, GFile>
+*/
 message WorkSpace {
     Branch parent = 1;
     repeated Commit commits = 2;

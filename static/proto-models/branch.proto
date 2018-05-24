@@ -1,6 +1,13 @@
 syntax = "proto3";
 import "commit.proto";
-
+/**
+ * This protoBuf object has the following members, in order:
+ * - Current name of branch with no prefixes: name: string
+ * - This is prefixed with the remote name, which will always be origin
+ * since all GitDrive repos should have one remote only.
+ * This will be null when remote is not configured: remoteupstream: string
+ * - Commit object the branch is pointing to: tip: Commit
+*/
 message Branch {
     string name = 1;
     string remoteUpstream = 2;

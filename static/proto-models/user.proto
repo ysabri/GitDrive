@@ -1,6 +1,13 @@
 syntax = "proto3";
 import "workspace.proto";
-
+/**
+ * This protoBuf object has the following members, in order:
+ * - The name of the user, not a username, ie, "first last":
+ *  name: string
+ * - The email of the user, will be used in commits: email: string
+ * - The WorkSpaces that belongs to the user:
+ *  workspaces: ReadonlyArray<Workspace>
+*/
 message User {
     string name = 1;
     string email = 2;

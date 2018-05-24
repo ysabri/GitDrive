@@ -1,5 +1,12 @@
 syntax = "proto3";
-
+/**
+ * This protoBuf object has the following members, in order:
+ * - Name of the committer: name: string
+ * - Email of the committer: email: string
+ * - Date of the commit: date: string
+ * - Time offset of, if not given then the current offset is chosen:
+ *  tzoffset: string
+*/
 message CommitterID {
     string name = 1;
     string email = 2;

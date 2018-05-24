@@ -2,7 +2,16 @@ syntax = "proto3";
 import "user.proto";
 import "workspace.proto";
 import "commit.proto";
-
+/**
+ * This protoBuf object has the following members, in order:
+ * - The name of the TopicSpace: name: string
+ * - The list of users in the space: users: ReadonlyArray<User>
+ * - The WorkSpaces in the topic space, it should match users in length:
+ *  workspaces: ReadonlyArray<Workspace>
+ * - The first commit in the topicSpace: firstCommitL: Commit
+ * - The origin commit that created the space, it is undefind for the first
+ * space: originCommit: Commit
+*/
 message TopicSpace {
     string name = 1;
     repeated User users = 2;
