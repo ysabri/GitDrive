@@ -519,7 +519,7 @@ directory like the rest of the code.</p>
 Our own definition of a repository. It will consist of a group of one or more TopicSpaces.
 Each repository has a &quot;Main&quot; topicspace among maybe other ones. The repository has a name that
 cannot be longer than a 100 character. Also each user in the repository must have a unique
-name. Along with all the workspace branches, each repository has a metadata branch called &quot;GG&quot;.
+name. Along with all the workspace branches, each repository has a metadata branch called &quot;GH&quot;.
 For more information on how metadata is kept, read sectoin <a class="reference internal" href="#how-to-do-we-keep-metadata">How to do we keep metadata</a>
 Finally, each repository can have none or only one remote repository linked to it. If it exists,
 the name of the remote repository is &quot;origin&quot;.</blockquote>
@@ -610,6 +610,9 @@ that might mutate the data eventually. By doing this our state transitions are c
 follow and thus debug.</blockquote>
 </div>
 </div>
+<div class="section" id="common-errors">
+<h1>Common Errors</h1>
+</div>
 <div class="section" id="the-git-core">
 <h1>The Git Core</h1>
 <p>This section assumes a certain level of comfort with Git commands, terminology and concepts.</p>
@@ -617,7 +620,7 @@ follow and thus debug.</blockquote>
 A lof of these are inspired or sometimes copied from the <a class="reference external" href="https://github.com/desktop/desktop">GitHub Desktop</a> project, thanks
 to them for that.</p>
 <p>The list below will have commands that are exposed in multiple ways that depend on the
-options given to the command. So in reality we have 37 Git commands/behaviors
+options given to the command. So in reality we have 37 Git commands/functions
 exposed. If necessary, each command will also have an explanation of the purpose from including
 it along with an explanation of why its exposed in such a way.</p>
 <p>Also all the commands will not attempt to handle any error they encounter and will throw it
@@ -626,47 +629,53 @@ to the caller. The errors thrown follow the structure explained under core-git b
 <blockquote>
 <dl class="docutils">
 <dt><strong>1.Add:</strong></dt>
-<dd><p class="first">There is one action from the add command.</p>
-<p class="last">Its staging everything in the working tree. All changes no matter what they
+<dd><p class="first">There is one function from the add command.</p>
+<p class="last">1) <em>addAllToIndex(repo: Repository, addOptions?: IAddToIndexOtions)</em>:
+It stages everything in the working tree. All changes no matter what they
 will get staged. We do not expose partial staging (staging per file) since we have no
 use for it in our functionality. Partial staging is still achievable, if needed,
 using partial resets. A partial reset with the right option will effectively undo
 an add. The addOptions param is experimental, ie. not tested at all.</p>
 </dd>
 <dt><strong>2.Branch:</strong></dt>
-<dd><p class="first">We have two actions from the branch command.</p>
-<p>The first is to create a branch, which given a valid name with length less than a
-100 characters and a committish tip will create a branch at the committish. HEAD has
-to be explicitly specified to avoid ambiguity.</p>
-<p class="last">The second is renaming a branch, which given a branch and a new valid name
+<dd><p class="first">We have two functions from the branch command.</p>
+<p>1) <em>createBranch(repo: Repository, name: string, tip: string)</em>: Creates a branch, which
+given a valid name with length less than a 101 characters and a committish tip will
+create a branch at the committish. HEAD has to be explicitly specified to avoid ambiguity.</p>
+<p class="last">2) <em>renameBranch(repo: Repository, branch: Branch, newName: string)</em>: The second is
+renaming a branch, which given a branch and a new valid name
 will rename the branch to that name. We use rename while creating workspaces to rename
 temp branches after we create the first commit on them since we need the first 10
 SHAs characters from it.</p>
 </dd>
 <dt><strong>3.Checkout:</strong></dt>
-<dd><p class="first">We have four actions from the checkout command.</p>
-<p>The first is just a normal checkout of a ref. Usually the ref will be a branch object,
+<dd><p class="first">We have four functions from the checkout command.</p>
+<p>1) <em>checkoutBranch(repo: Repository, branch: Branch | string)</em>: Just a
+normal checkout of a ref. Usually the ref will be a branch object,
 in fact this command is only used to checkout branches. The reason behind accepting
 a string is because of metadata branches. It turned out its a lot of headache to keep
 track of the metadata branch in a branch object so we only keep track of its ref name
 per repository and we used that name (string) to check it out when needed.</p>
-<p>The second is our beloved partial checkout. Given a list of paths and ref, the command
+<p>2) <em>partialCheckout(repo: Repository, targetRef: string, paths: ReadonlyArray&lt;string&gt;)</em>:
+Our beloved partial checkout. Given a list of paths and ref, the command
 will checkout the state of those paths based on the ref into the current working tree.
 This operation should be run on an empty workspace.</p>
-<p>The third is orphan checkout. Given a new branch name and a starting point, it will
+<p>3) <em>orphanCheckout(repo: Repository, branchName: string, startPoint: string)</em>: An
+orphan checkout. Given a new branch name and a starting point, it will
 create an orphan branch based on the point. An orphan branch points to no commits,
 effectively breaking the history. This will be used when we create a new topicspace
 to ensure their independence. It is the caller's responsibility to create a commit on
 an orphan branch before checking out any other branch since an orphan branch with no
 commits gets discarded upon checking out anther branch.</p>
-<p class="last">The fourth is to checkout and create a branch. Given a branch name and a start point
+<p class="last">4) <em>checkoutAndCreateBranch(repo: Repository, branchName: string, startPoint: string)</em>:
+Create and checkout a branch. Given a branch name and a start point
 it creates a branch at that point and checks it out. This is just here to save us a
 shell-out call, its two birds with one stone.</p>
 </dd>
 <dt><strong>4.Clone:</strong></dt>
-<dd><p class="first">We have one action from the clone command.</p>
-<p>Its your normal clone call. Given a valid url and a path, it will clone the url
-repository into that path.</p>
+<dd><p class="first">We have one function from the clone command.</p>
+<p>1) <em>clone(url: string, path: string)</em>: Your normal clone call. Given a valid url and a
+path, it will clone the url repository into that path.</p>
 <table class="last docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -679,8 +688,9 @@ handlers in order to implement ours. Will update the section once its done.</td>
 </table>
 </dd>
 <dt><strong>5.Commit:</strong></dt>
-<dd><p class="first">We have one acton from the commit command.</p>
-<p class="last">Its a commit but with stuff baked in it. So given an author's name and email, a summary
+<dd><p class="first">We have one function from the commit command.</p>
+<p class="last">1) <em>commit(repo: Repository, name: string, email: string, summary: string, message:
+string)</em>: A commit but with stuff baked in it. So given an author's name and email, a summary
 and a message, it will create a commit under HEAD with author and email set. Before
 committing, it will unstage everything then stage it all again.</p>
 </dd>
@@ -693,37 +703,45 @@ actual text of the error. An error is triggered whenever the process returns wit
 zero exit code. The wrapper does not attempt to handle any errors, its all left to the
 caller.</dd>
 <dt><strong>7.Diff-index:</strong></dt>
-<dd><p class="first">We have one action from the command. The code for this was taken from the
+<dd><p class="first">We have one function from the command. The code for this was taken from the
 <a class="reference external" href="https://github.com/desktop/desktop">GitHub Desktop</a> project.</p>
-<p class="last">As the name suggests, the command will return a list of of files who have changes in the
-indexing when compared against HEAD.</p>
+<p class="last">1) <em>getIndexChanges(repository: Repository)</em>: As the name suggests, the command will
+return a list of of files who have changes in the indexing when compared against HEAD.</p>
 </dd>
 <dt><strong>8.Diff:</strong></dt>
-<dd><p class="first">We have five actions from the diff command. The code for this was take from the
+<dd><p class="first">We have five functions from the diff command. The code for this was take from the
 <a class="reference external" href="https://github.com/desktop/desktop">GitHub Desktop</a> project.</p>
-<p>The first is for getting a commit's diff. Given a file and a commitish, it will return
+<p>1) <em>getCommitDiff(repository: Repository, file: FileChange, commitish: string)</em>:
+Gets a commit's diff. Given a file and a commitish, it will return
 the diff of the file between the commit and the commit's parent. This could be used to
 check if a commit introduces a change to a file. This command is actually an exception in
 the fact that it uses log instead of the diff command, it returns a diff though and thats
 what matters.</p>
-<p>The second is for getting a diff between a file and the working tree. Given a file, the
+<p>2) <em>getWorkingDirectoryDiff(repository: Repository, file: WorkingDirectoryFileChange)</em>:
+Gets a diff between a file and the working tree. Given a file, the
 command renders the diff for a file within the repository working tree. The file
 will be compared against HEAD if it's tracked, if not it'll be compared to an empty
 file meaning that all content in the file will be treated as additions.</p>
-<p>The third for getting an image diff. This is not going to be used for now, it is there
+<p>3) <em>getImageDiff(repository: Repository, file: FileChange, commitish: string)</em>:
+Gets an image diff. This is not going to be used for now, it is there
 since I didn't write this code.</p>
-<p>The fourth is a utility function that converts rawDiff or changes to an IDiff object. This
+<p>4) <em>convertDiff(repository: Repository, file: FileChange, diff: IRawDiff, commitish:
+string, lineEndingsChange?: LineEndingsChange)</em>:
+This is a utility function that converts rawDiff or changes to an IDiff object. This
 is implementation specific, its exported since it might be useful given the type of diff
 a user posses. Explaining the command is tedious and not necessary.</p>
-<p class="last">The fifth is for getting a binary blob of an image. Again for now this is not used.</p>
+<p class="last">5) <em>getBlobImage(repository: Repository, path: string, commitish: string)</em>:
+Gets a binary blob of an image. Again for now this is not used.</p>
 </dd>
 <dt><strong>9.Fetch:</strong></dt>
-<dd><p class="first">There are two actions from the fetch command.</p>
-<p>The first is to just fetch all the refs in a repository. Given that our repositories will
+<dd><p class="first">There are two functions from the fetch command.</p>
+<p>1) <em>fetchAll(repo: Repository)</em>:
+Just a fetch of all the refs in a repository. Given that our repositories will
 only have one remote branch called origin then we fetch all the refs from it. Notice how the
 command does not check whether the remote repository exist in the given repository. This
 check if left for the caller to do as it might become redundant.</p>
-<p>The second is for fetching a specific ref. Given the name of the ref the function will fetch
+<p>2) <em>fetchRefspece(repo: Repository, refspec: string)</em>:
+Fetches a specific ref. Given the name of the ref the function will fetch
 it down. Again this does fetch from origin and does not check whether the remote repository
 exists. This also does not check the existence of the given ref.</p>
 <table class="last docutils field-list" frame="void" rules="none">
@@ -737,31 +755,38 @@ implemented for any network related command.</td>
 </table>
 </dd>
 <dt><strong>10.For-each-ref:</strong></dt>
-<dd><p class="first">There is one action from this command.</p>
-<p class="last">Its a getter for refs in the repository based on a namespace. So given a namespace, the
+<dd><p class="first">There is one function from this command.</p>
+<p class="last">3) <em>getBranches(repository: Repository, ...prefixes: string[])</em>:
+A getter for refs in the repository based on a namespace. So given a namespace, the
 command will return an array with all the refs under the namespace. For example, giving
 the command refs/heads will return all the local branches. Another example is giving the
 command remotes/origin will return all the remote refs from remote repository origin. Call
 the function with just a repository to get all the refs.</p>
 </dd>
 <dt><strong>11.Init:</strong></dt>
-<dd><p class="first">There is one action from this command.</p>
-<p class="last">Its just an init of a repo given a path that exists. Notice that the function does not
+<dd><p class="first">There is one function from this command.</p>
+<p class="last">1) <em>init(pathToRep: string)</em>:
+Just an init of a repo given a path that exists. Notice that the function does not
 check if the path exists, this is left for the caller.</p>
 </dd>
 <dt><strong>12.Log:</strong></dt>
-<dd><p class="first">There are three actions from this command. This code was taken from the <a class="reference external" href="https://github.com/desktop/desktop">GitHub Desktop</a>
+<dd><p class="first">There are three functions from this command. This code was taken from the <a class="reference external" href="https://github.com/desktop/desktop">GitHub Desktop</a>
 project.</p>
-<p>The first is a getter of commits. Given a revision range (a git defined concept), and a
+<p>1) <em>getCommits(repository: Repository, revisionRange: string, limit: number,
+additionalArgs: ReadonlyArray&lt;string&gt; = [])</em>:
+A getter for commits. Given a revision range (a git defined concept), and a
 limit, the command will return an array of the commits that fall within the range.</p>
-<p>The second gets the changed files per commit. Given a commitish, the command will
+<p>2) <em>getChangedFiles(repository: Repository, sha: string)</em>:
+Gets the changed files per commit. Given a commitish, the command will
 return an array the files that were changed by the commit.</p>
-<p class="last">The third retrieves a single commit based on a ref. Given a ref, the command will return
+<p class="last">3) <em>getCommit(repository: Repository, ref: string)</em>:
+Retrieves a single commit based on a ref. Given a ref, the command will return
 the commit the ref is pointing to or null if the ref doesn't point to a commit.</p>
 </dd>
 <dt><strong>13.Pull:</strong></dt>
-<dd><p class="first">There is one action from the pull command.</p>
-<p>Its just a normal pull of the current HEAD. This should not be used and is there only for the
+<dd><p class="first">There is one function from the pull command.</p>
+<p>1) <em>pull(repo: Repository)</em>:
+Just a normal pull of the current HEAD. This should not be used and is there only for the
 possibility of needing it. The main problem is that users can make commits through GitHub,
 commits that won't follow our rules and we have to deal with it. We will see. We maybe able to
 tolerate the owner of the branch rebasing some remote commits made on their own branch.</p>
@@ -775,10 +800,12 @@ tolerate the owner of the branch rebasing some remote commits made on their own 
 </table>
 </dd>
 <dt><strong>14.Push:</strong></dt>
-<dd><p class="first">Similar to fetch, there are two actions from the push command.</p>
-<p>The first is just a push of a branch. Given a branch name, the command will push it to its
+<dd><p class="first">Similar to fetch, there are two functions from the push command.</p>
+<p>1) <em>pushBranch(repo: Repository, localBranch: string)</em>:
+Just a push of a branch. Given a branch name, the command will push it to its
 tracked upstream branch, origin in our case.</p>
-<p>The second is a push of all refs. Again this will push to origin.</p>
+<p>2) <em>pushAll(repo: Repository)</em>:
+A push of all refs. Again this will push to origin.</p>
 <table class="last docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -790,21 +817,28 @@ Also authentication is not implemented.</td>
 </table>
 </dd>
 <dt><strong>15.Remote:</strong></dt>
-<dd><p class="first">There are three actions from the remote command.</p>
-<p>The first is a getter of a remote. Given a repository, the command will return the one and
+<dd><p class="first">There are three functions from the remote command.</p>
+<p>1) <em>getRemote(repo: Repository)</em>:
+A getter for a remote. Given a repository, the command will return the one and
 only remote as an IRemote object, the object will contain the name and url.</p>
-<p>The second is to add origin. Given a url, the command will add origin with the url into the
+<p>2) <em>addRemote(repo: Repository, url: string)</em>:
+Adds origin. Given a url, the command will add origin with the url into the
 remote repositories configs.</p>
-<p class="last">The third is to change the remote repository. Given a new url, the command will change the
+<p class="last">3) <em>changeUrl(repo: Repository, newUrl: string)</em>:
+Changes the remote repository. Given a new url, the command will change the
 url of origin to the url given.</p>
 </dd>
 <dt><strong>16.Reset:</strong></dt>
-<dd><p class="first">There are three actions from the reset command.</p>
-<p>The first is a ref based reset. Given a ref and a reset mode, the command will reset the
+<dd><p class="first">There are three funcitons from the reset command.</p>
+<p>1) <em>reset(repo: Repository, targetRef: string, mode: ResetMode)</em>:
+A ref based reset. Given a ref and a reset mode, the command will reset the
 current working tree to that ref based on the mode given.</p>
-<p>The second is a path based reset. Given a ref, a mode and a list of paths, the command will
+<p>2) <em>restPath(repo: Repository, targetRef: string, mode: ResetMode,
+paths: ReadonlyArray&lt;string&gt;)</em>:
+A path based reset. Given a ref, a mode and a list of paths, the command will
 reset the current working tree's paths to the state in the ref based on the mode.</p>
-<p>The third is a HEAD based reset. When called on a repo, the command will effectively
+<p>3) <em>slicePathsReset(repo: Repository, firstArgs: string[], paths: ReadonlyArray&lt;string&gt;)</em>:
+A HEAD based reset. When called on a repo, the command will effectively
 un-stage all the changes in the current working tree.</p>
 <table class="last docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -817,11 +851,13 @@ soft and mixed resets. Hard resets are not possible.</td>
 </table>
 </dd>
 <dt><strong>17.Rev-parse:</strong></dt>
-<dd><p class="first">There are two actions from the rev-parse command.</p>
-<p>The first is a getter of the top level path of a repository. Given a path, the function
+<dd><p class="first">There are two functions from the rev-parse command.</p>
+<p>1) <em>getTopLevelWorkingDirectory(path: string)</em>:
+A getter for the top level path of a repository. Given a path, the function
 will return the top level absolute path of that git repository or null if it isn't a
 git repository.</p>
-<p class="last">The second verifies wether the path is a root of a git repository. Given a path, the
+<p class="last">2) <em>isGitRepository(path: string)</em>:
+Verifies whether the path is a root of a git repository. Given a path, the
 function will use the one above to return whether the path is the root path in a
 repository or it isn't. This is used to determine whether we can start a repository
 at a path or not, because if its already a repository we cannot. The fact that we
@@ -830,20 +866,24 @@ repositories within each other. Nesting repositories is easy as long as the
 .gitignore files are updated correctly.</p>
 </dd>
 <dt><strong>18.Show:</strong></dt>
-<dd><p class="first">There are two closely related actions from the show command.</p>
-<p>The first gets the binary blob content of a file based on a commit. Given a commitish,
+<dd><p class="first">There are two closely related functions from the show command.</p>
+<p>1) <em>getBlobBinaryContents(repo: Repository, commitish: string, filePath: string)</em>:
+Gets the binary blob content of a file based on a commit. Given a commitish,
 and a path, the function will return a buffer that contains the contents of the file
 based on the commitish. This function is super helpful when reading from the metadata
 branch for example. Using it we are able to read the metadata protobuf file without
 having to checkout the branch.</p>
-<p class="last">The second is just like the first except that it takes a length argument. The length
+<p class="last">2) <em>getPartialBlobBinary(repo: Repository, commitish: string, filePath: string,
+length: number)</em>:
+Just like the first except that it takes a length argument. The length
 represents the maximum amount of bytes to be read from the file. This is helpful if
 its anticipated the file is going to be too big.</p>
 </dd>
-<dt><strong>19.Statue:</strong></dt>
-<dd><p class="first">There is one action from the statue command. This code was taken from the
+<dt><strong>19.Statues:</strong></dt>
+<dd><p class="first">There is one function from the statue command. This code was taken from the
 <a class="reference external" href="https://github.com/desktop/desktop">GitHub Desktop</a> project.</p>
-<p>Its a getter for the current working tree status based from the top level of the
+<p>1) <em>getStatus(repository: Repository)</em>:
+Getter for the current working tree status based from the top level of the
 repository. When run on a repository the command will return an IStatusResult object
 that contains: The name of the current branch, the current upstream branch
 (if it exists), the current tip commit's SHA, whether the branch is ahead or
@@ -867,6 +907,9 @@ output changes based on the current <em>working directory</em>.</p>
 </dd>
 </dl>
 </blockquote>
+</div>
+<div class="section" id="models">
+<h1>Models</h1>
 </div>
 <div class="section" id="protobuf">
 <h1>Protobuf</h1>
@@ -894,7 +937,7 @@ needed, then return them to the user.</p>
 <tbody valign="top">
 <tr class="field"><th class="field-name">Notice:</th><td class="field-body"><p class="first">This conversion into object from proto message results in the following weirdish behavior:
 The memory address of an object passed to a constructor is not the same as the one retrieved
-from a getter. It is the same object in terms of content. So for example if we pass
+from a getter. Its the same object in terms of content. So for example if we pass
 committerID object with address x to the Commit constructor then try and retrieve it later,
 we will get a new committerID object with address y. They will have the same content exactly
 even though they are two different addresses underneath. They also have the same exact
@@ -919,8 +962,8 @@ binary array of the proto message object for it to be sent over the wire or stor
 <h2>How to do we keep metadata</h2>
 <p>For each GRepository, the metadata will be saved in a &quot;repo.proto&quot; file at the root of the
 repository. The file will include a serialized GRepository object.</p>
-<p>As discussed in the definitions, each GRepository has a metadata branch called &quot;GG&quot;. The reason
-behind choosing GG is to break the <a class="reference internal" href="#workspace">workspace</a> naming convention while being as short as possible.
+<p>As discussed in the definitions, each GRepository has a metadata branch called &quot;GH&quot;. The reason
+behind choosing GH is to break the <a class="reference internal" href="#workspace">workspace</a> naming convention while being as short as possible.
 The main purpose of the metadata branch is to keep track of the structure changes in the repository.
 This means, keep track of the additions or removals of topicspaces or workspaces. This is not
 possible to do by just recording the metadata upon each commit like we already do. This is the case
@@ -963,7 +1006,7 @@ they will each get a new branch once they sync with the remote repository.</p>
 reads every &quot;repo.proto&quot; file from each workspace in the repository it might not know about the
 last workspace existence.</p>
 <p>The problem is solved by having a single source of truth for reading the structure of the
-repository, the metadata branch &quot;GG&quot;. As you might have guessed by now, having one branch
+repository, the metadata branch &quot;GH&quot;. As you might have guessed by now, having one branch
 with multiple people committing on it means we will be dealing with merge conflicts. This is
 true but sort of trivial. Comparing the different metadata files with removals taking precedent
 should result in the most up to date file. The algorithm for this is yet to be implemented since
@@ -1039,7 +1082,7 @@ includes the user's name and nothing else.</p>
 workspace in the default &quot;Main&quot; topicspace. A path is valid if it exists and has no repository
 initialized in it. The method also copies the default .gitignore file from the static directory.</p>
 <p>The method returns the new repository.</p>
-<p>The &quot;GG&quot; branch will be checked-out at the end of the method's execution.</p>
+<p>The &quot;GH&quot; branch will be checked-out at the end of the method's execution.</p>
 </div>
 <div class="section" id="createtopicspace">
 <h2>CreateTopicSpace</h2>
@@ -1047,7 +1090,7 @@ initialized in it. The method also copies the default .gitignore file from the s
 checkout based on the given commit's state.</p>
 <p>The method returns a pair of objects, the first is the repository with the new topicspace added
 to it, and the second is the topicspace created.</p>
-<p>The &quot;GG&quot; branch will be checked-out at the end of the method's execution.</p>
+<p>The &quot;GH&quot; branch will be checked-out at the end of the method's execution.</p>
 </div>
 <div class="section" id="createworkspace">
 <h2>CreateWorkSpace</h2>
@@ -1056,7 +1099,7 @@ the latest state of another workspace is for simplicity. In fact, I will also ad
 base the new workspace on the initial state of the topicspace or just an empty state.</p>
 <p>The method returns a pair of objects, the first is the repository with the new workspace added to
 it, and the second is the workspace created.</p>
-<p>The &quot;GG&quot; branch will be checked-out at the end of the method's execution.</p>
+<p>The &quot;GH&quot; branch will be checked-out at the end of the method's execution.</p>
 </div>
 <div class="section" id="download">
 <h2>download</h2>
@@ -1086,6 +1129,13 @@ from pulled branches is yet to be implemented.</p>
 </div>
 <div class="section" id="the-view">
 <h1>The View</h1>
+<img alt="./mockup.PNG" src="./mockup.PNG" />
+</div>
+<div class="section" id="limits">
+<h1>Limits</h1>
+</div>
+<div class="section" id="git-errors">
+<h1>Git Errors</h1>
 </div>
 </div>
 </body>

@@ -143,7 +143,7 @@ Below are formal definitions of each concept. Use this to help reason about and 
     Our own definition of a repository. It will consist of a group of one or more TopicSpaces.
     Each repository has a "Main" topicspace among maybe other ones. The repository has a name that
     cannot be longer than a 100 character. Also each user in the repository must have a unique
-    name. Along with all the workspace branches, each repository has a metadata branch called "GG".
+    name. Along with all the workspace branches, each repository has a metadata branch called "GH".
     For more information on how metadata is kept, read sectoin `How to do we keep metadata`_
     Finally, each repository can have none or only one remote repository linked to it. If it exists,
     the name of the remote repository is "origin".
@@ -223,6 +223,10 @@ Below are formal definitions of each concept. Use this to help reason about and 
     that might mutate the data eventually. By doing this our state transitions are clear to
     follow and thus debug.
 
+==============
+Common Errors
+==============
+
 ============
 The Git Core
 ============
@@ -233,7 +237,7 @@ A lof of these are inspired or sometimes copied from the `GitHub Desktop`_ proje
 to them for that.
 
 The list below will have commands that are exposed in multiple ways that depend on the
-options given to the command. So in reality we have 37 Git commands/behaviors
+options given to the command. So in reality we have 37 Git commands/functions
 exposed. If necessary, each command will also have an explanation of the purpose from including
 it along with an explanation of why its exposed in such a way.
 
@@ -243,53 +247,59 @@ to the caller. The errors thrown follow the structure explained under core-git b
 Here are the commands in alphabetical order:
 
     **1.Add:**
-        There is one action from the add command.
+        There is one function from the add command.
 
-        Its staging everything in the working tree. All changes no matter what they
+        1) *addAllToIndex(repo: Repository, addOptions?: IAddToIndexOtions)*:
+        It stages everything in the working tree. All changes no matter what they
         will get staged. We do not expose partial staging (staging per file) since we have no
         use for it in our functionality. Partial staging is still achievable, if needed,
         using partial resets. A partial reset with the right option will effectively undo
         an add. The addOptions param is experimental, ie. not tested at all.
     **2.Branch:**
-        We have two actions from the branch command.
+        We have two functions from the branch command.
 
-        The first is to create a branch, which given a valid name with length less than a
-        100 characters and a committish tip will create a branch at the committish. HEAD has
-        to be explicitly specified to avoid ambiguity.
+        1) *createBranch(repo: Repository, name: string, tip: string)*: Creates a branch, which
+        given a valid name with length less than a 101 characters and a committish tip will
+        create a branch at the committish. HEAD has to be explicitly specified to avoid ambiguity.
 
-        The second is renaming a branch, which given a branch and a new valid name
+        2) *renameBranch(repo: Repository, branch: Branch, newName: string)*: The second is
+        renaming a branch, which given a branch and a new valid name
         will rename the branch to that name. We use rename while creating workspaces to rename
         temp branches after we create the first commit on them since we need the first 10
         SHAs characters from it.
     **3.Checkout:**
-        We have four actions from the checkout command.
+        We have four functions from the checkout command.
 
-        The first is just a normal checkout of a ref. Usually the ref will be a branch object,
+        1) *checkoutBranch(repo: Repository, branch: Branch | string)*: Just a
+        normal checkout of a ref. Usually the ref will be a branch object,
         in fact this command is only used to checkout branches. The reason behind accepting
         a string is because of metadata branches. It turned out its a lot of headache to keep
         track of the metadata branch in a branch object so we only keep track of its ref name
         per repository and we used that name (string) to check it out when needed.
 
-        The second is our beloved partial checkout. Given a list of paths and ref, the command
+        2) *partialCheckout(repo: Repository, targetRef: string, paths: ReadonlyArray<string>)*:
+        Our beloved partial checkout. Given a list of paths and ref, the command
         will checkout the state of those paths based on the ref into the current working tree.
         This operation should be run on an empty workspace.
 
-        The third is orphan checkout. Given a new branch name and a starting point, it will
+        3) *orphanCheckout(repo: Repository, branchName: string, startPoint: string)*: An
+        orphan checkout. Given a new branch name and a starting point, it will
         create an orphan branch based on the point. An orphan branch points to no commits,
         effectively breaking the history. This will be used when we create a new topicspace
         to ensure their independence. It is the caller's responsibility to create a commit on
         an orphan branch before checking out any other branch since an orphan branch with no
         commits gets discarded upon checking out anther branch.
 
-        The fourth is to checkout and create a branch. Given a branch name and a start point
+        4) *checkoutAndCreateBranch(repo: Repository, branchName: string, startPoint: string)*:
+        Create and checkout a branch. Given a branch name and a start point
         it creates a branch at that point and checks it out. This is just here to save us a
         shell-out call, its two birds with one stone.
 
     **4.Clone:**
-        We have one action from the clone command.
+        We have one function from the clone command.
 
-        Its your normal clone call. Given a valid url and a path, it will clone the url
-        repository into that path.
+        1) *clone(url: string, path: string)*: Your normal clone call. Given a valid url and a
+        path, it will clone the url repository into that path.
 
         :Notice:
             There is a bit of work to be done on that command. We still
@@ -297,9 +307,10 @@ Here are the commands in alphabetical order:
             handlers in order to implement ours. Will update the section once its done.
 
     **5.Commit:**
-        We have one acton from the commit command.
+        We have one function from the commit command.
 
-        Its a commit but with stuff baked in it. So given an author's name and email, a summary
+        1) *commit(repo: Repository, name: string, email: string, summary: string, message:
+        string)*: A commit but with stuff baked in it. So given an author's name and email, a summary
         and a message, it will create a commit under HEAD with author and email set. Before
         committing, it will unstage everything then stage it all again.
 
@@ -313,45 +324,53 @@ Here are the commands in alphabetical order:
         caller.
 
     **7.Diff-index:**
-        We have one action from the command. The code for this was taken from the
+        We have one function from the command. The code for this was taken from the
         `GitHub Desktop`_ project.
 
-        As the name suggests, the command will return a list of of files who have changes in the
-        indexing when compared against HEAD.
+        1) *getIndexChanges(repository: Repository)*: As the name suggests, the command will
+        return a list of of files who have changes in the indexing when compared against HEAD.
 
     **8.Diff:**
-        We have five actions from the diff command. The code for this was take from the
+        We have five functions from the diff command. The code for this was take from the
         `GitHub Desktop`_ project.
 
-        The first is for getting a commit's diff. Given a file and a commitish, it will return
+        1) *getCommitDiff(repository: Repository, file: FileChange, commitish: string)*:
+        Gets a commit's diff. Given a file and a commitish, it will return
         the diff of the file between the commit and the commit's parent. This could be used to
         check if a commit introduces a change to a file. This command is actually an exception in
         the fact that it uses log instead of the diff command, it returns a diff though and thats
         what matters.
 
-        The second is for getting a diff between a file and the working tree. Given a file, the
+        2) *getWorkingDirectoryDiff(repository: Repository, file: WorkingDirectoryFileChange)*:
+        Gets a diff between a file and the working tree. Given a file, the
         command renders the diff for a file within the repository working tree. The file
         will be compared against HEAD if it's tracked, if not it'll be compared to an empty
         file meaning that all content in the file will be treated as additions.
 
-        The third for getting an image diff. This is not going to be used for now, it is there
+        3) *getImageDiff(repository: Repository, file: FileChange, commitish: string)*:
+        Gets an image diff. This is not going to be used for now, it is there
         since I didn't write this code.
 
-        The fourth is a utility function that converts rawDiff or changes to an IDiff object. This
+        4) *convertDiff(repository: Repository, file: FileChange, diff: IRawDiff, commitish:
+        string, lineEndingsChange?: LineEndingsChange)*:
+        This is a utility function that converts rawDiff or changes to an IDiff object. This
         is implementation specific, its exported since it might be useful given the type of diff
         a user posses. Explaining the command is tedious and not necessary.
 
-        The fifth is for getting a binary blob of an image. Again for now this is not used.
+        5) *getBlobImage(repository: Repository, path: string, commitish: string)*:
+        Gets a binary blob of an image. Again for now this is not used.
 
     **9.Fetch:**
-        There are two actions from the fetch command.
+        There are two functions from the fetch command.
 
-        The first is to just fetch all the refs in a repository. Given that our repositories will
+        1) *fetchAll(repo: Repository)*:
+        Just a fetch of all the refs in a repository. Given that our repositories will
         only have one remote branch called origin then we fetch all the refs from it. Notice how the
         command does not check whether the remote repository exist in the given repository. This
         check if left for the caller to do as it might become redundant.
 
-        The second is for fetching a specific ref. Given the name of the ref the function will fetch
+        2) *fetchRefspece(repo: Repository, refspec: string)*:
+        Fetches a specific ref. Given the name of the ref the function will fetch
         it down. Again this does fetch from origin and does not check whether the remote repository
         exists. This also does not check the existence of the given ref.
 
@@ -360,37 +379,44 @@ Here are the commands in alphabetical order:
             implemented for any network related command.
 
     **10.For-each-ref:**
-        There is one action from this command.
+        There is one function from this command.
 
-        Its a getter for refs in the repository based on a namespace. So given a namespace, the
+        3) *getBranches(repository: Repository, ...prefixes: string[])*:
+        A getter for refs in the repository based on a namespace. So given a namespace, the
         command will return an array with all the refs under the namespace. For example, giving
         the command refs/heads will return all the local branches. Another example is giving the
         command remotes/origin will return all the remote refs from remote repository origin. Call
         the function with just a repository to get all the refs.
 
     **11.Init:**
-        There is one action from this command.
+        There is one function from this command.
 
-        Its just an init of a repo given a path that exists. Notice that the function does not
+        1) *init(pathToRep: string)*:
+        Just an init of a repo given a path that exists. Notice that the function does not
         check if the path exists, this is left for the caller.
 
     **12.Log:**
-        There are three actions from this command. This code was taken from the `GitHub Desktop`_
+        There are three functions from this command. This code was taken from the `GitHub Desktop`_
         project.
 
-        The first is a getter of commits. Given a revision range (a git defined concept), and a
+        1) *getCommits(repository: Repository, revisionRange: string, limit: number,
+        additionalArgs: ReadonlyArray<string> = [])*:
+        A getter for commits. Given a revision range (a git defined concept), and a
         limit, the command will return an array of the commits that fall within the range.
 
-        The second gets the changed files per commit. Given a commitish, the command will
+        2) *getChangedFiles(repository: Repository, sha: string)*:
+        Gets the changed files per commit. Given a commitish, the command will
         return an array the files that were changed by the commit.
 
-        The third retrieves a single commit based on a ref. Given a ref, the command will return
+        3) *getCommit(repository: Repository, ref: string)*:
+        Retrieves a single commit based on a ref. Given a ref, the command will return
         the commit the ref is pointing to or null if the ref doesn't point to a commit.
 
     **13.Pull:**
-        There is one action from the pull command.
+        There is one function from the pull command.
 
-        Its just a normal pull of the current HEAD. This should not be used and is there only for the
+        1) *pull(repo: Repository)*:
+        Just a normal pull of the current HEAD. This should not be used and is there only for the
         possibility of needing it. The main problem is that users can make commits through GitHub,
         commits that won't follow our rules and we have to deal with it. We will see. We maybe able to
         tolerate the owner of the branch rebasing some remote commits made on their own branch.
@@ -399,39 +425,48 @@ Here are the commands in alphabetical order:
             Authentication is not implemented.
 
     **14.Push:**
-        Similar to fetch, there are two actions from the push command.
+        Similar to fetch, there are two functions from the push command.
 
-        The first is just a push of a branch. Given a branch name, the command will push it to its
+        1) *pushBranch(repo: Repository, localBranch: string)*:
+        Just a push of a branch. Given a branch name, the command will push it to its
         tracked upstream branch, origin in our case.
 
-        The second is a push of all refs. Again this will push to origin.
+        2) *pushAll(repo: Repository)*:
+        A push of all refs. Again this will push to origin.
 
         :Notice:
             None of these commands checks if origin is setup, this is left to the caller.
             Also authentication is not implemented.
 
     **15.Remote:**
-        There are three actions from the remote command.
+        There are three functions from the remote command.
 
-        The first is a getter of a remote. Given a repository, the command will return the one and
+        1) *getRemote(repo: Repository)*:
+        A getter for a remote. Given a repository, the command will return the one and
         only remote as an IRemote object, the object will contain the name and url.
 
-        The second is to add origin. Given a url, the command will add origin with the url into the
+        2) *addRemote(repo: Repository, url: string)*:
+        Adds origin. Given a url, the command will add origin with the url into the
         remote repositories configs.
 
-        The third is to change the remote repository. Given a new url, the command will change the
+        3) *changeUrl(repo: Repository, newUrl: string)*:
+        Changes the remote repository. Given a new url, the command will change the
         url of origin to the url given.
 
     **16.Reset:**
-        There are three actions from the reset command.
+        There are three funcitons from the reset command.
 
-        The first is a ref based reset. Given a ref and a reset mode, the command will reset the
+        1) *reset(repo: Repository, targetRef: string, mode: ResetMode)*:
+        A ref based reset. Given a ref and a reset mode, the command will reset the
         current working tree to that ref based on the mode given.
 
-        The second is a path based reset. Given a ref, a mode and a list of paths, the command will
+        2) *restPath(repo: Repository, targetRef: string, mode: ResetMode,
+        paths: ReadonlyArray<string>)*:
+        A path based reset. Given a ref, a mode and a list of paths, the command will
         reset the current working tree's paths to the state in the ref based on the mode.
 
-        The third is a HEAD based reset. When called on a repo, the command will effectively
+        3) *slicePathsReset(repo: Repository, firstArgs: string[], paths: ReadonlyArray<string>)*:
+        A HEAD based reset. When called on a repo, the command will effectively
         un-stage all the changes in the current working tree.
 
         :Notice:
@@ -439,13 +474,15 @@ Here are the commands in alphabetical order:
             soft and mixed resets. Hard resets are not possible.
 
     **17.Rev-parse:**
-        There are two actions from the rev-parse command.
+        There are two functions from the rev-parse command.
 
-        The first is a getter of the top level path of a repository. Given a path, the function
+        1) *getTopLevelWorkingDirectory(path: string)*:
+        A getter for the top level path of a repository. Given a path, the function
         will return the top level absolute path of that git repository or null if it isn't a
         git repository.
 
-        The second verifies wether the path is a root of a git repository. Given a path, the
+        2) *isGitRepository(path: string)*:
+        Verifies whether the path is a root of a git repository. Given a path, the
         function will use the one above to return whether the path is the root path in a
         repository or it isn't. This is used to determine whether we can start a repository
         at a path or not, because if its already a repository we cannot. The fact that we
@@ -454,23 +491,27 @@ Here are the commands in alphabetical order:
         .gitignore files are updated correctly.
 
     **18.Show:**
-        There are two closely related actions from the show command.
+        There are two closely related functions from the show command.
 
-        The first gets the binary blob content of a file based on a commit. Given a commitish,
+        1) *getBlobBinaryContents(repo: Repository, commitish: string, filePath: string)*:
+        Gets the binary blob content of a file based on a commit. Given a commitish,
         and a path, the function will return a buffer that contains the contents of the file
         based on the commitish. This function is super helpful when reading from the metadata
         branch for example. Using it we are able to read the metadata protobuf file without
         having to checkout the branch.
 
-        The second is just like the first except that it takes a length argument. The length
+        2) *getPartialBlobBinary(repo: Repository, commitish: string, filePath: string,
+        length: number)*:
+        Just like the first except that it takes a length argument. The length
         represents the maximum amount of bytes to be read from the file. This is helpful if
         its anticipated the file is going to be too big.
 
-    **19.Statue:**
-        There is one action from the statue command. This code was taken from the
+    **19.Statues:**
+        There is one function from the statue command. This code was taken from the
         `GitHub Desktop`_ project.
 
-        Its a getter for the current working tree status based from the top level of the
+        1) *getStatus(repository: Repository)*:
+        Getter for the current working tree status based from the top level of the
         repository. When run on a repository the command will return an IStatusResult object
         that contains: The name of the current branch, the current upstream branch
         (if it exists), the current tip commit's SHA, whether the branch is ahead or
@@ -486,6 +527,10 @@ Here are the commands in alphabetical order:
             Also the command will not have any relative paths for the files it returns
             since it is run from the top level of the repository. The status command's
             output changes based on the current *working directory*.
+
+======
+Models
+======
 
 ========
 Protobuf
@@ -514,7 +559,7 @@ needed, then return them to the user.
 :Notice:
     This conversion into object from proto message results in the following weirdish behavior:
     The memory address of an object passed to a constructor is not the same as the one retrieved
-    from a getter. It is the same object in terms of content. So for example if we pass
+    from a getter. Its the same object in terms of content. So for example if we pass
     committerID object with address x to the Commit constructor then try and retrieve it later,
     we will get a new committerID object with address y. They will have the same content exactly
     even though they are two different addresses underneath. They also have the same exact
@@ -543,8 +588,8 @@ How to do we keep metadata
 For each GRepository, the metadata will be saved in a "repo.proto" file at the root of the
 repository. The file will include a serialized GRepository object.
 
-As discussed in the definitions, each GRepository has a metadata branch called "GG". The reason
-behind choosing GG is to break the workspace_ naming convention while being as short as possible.
+As discussed in the definitions, each GRepository has a metadata branch called "GH". The reason
+behind choosing GH is to break the workspace_ naming convention while being as short as possible.
 The main purpose of the metadata branch is to keep track of the structure changes in the repository.
 This means, keep track of the additions or removals of topicspaces or workspaces. This is not
 possible to do by just recording the metadata upon each commit like we already do. This is the case
@@ -585,7 +630,7 @@ because of the following example:
     last workspace existence.
 
     The problem is solved by having a single source of truth for reading the structure of the
-    repository, the metadata branch "GG". As you might have guessed by now, having one branch
+    repository, the metadata branch "GH". As you might have guessed by now, having one branch
     with multiple people committing on it means we will be dealing with merge conflicts. This is
     true but sort of trivial. Comparing the different metadata files with removals taking precedent
     should result in the most up to date file. The algorithm for this is yet to be implemented since
@@ -595,8 +640,8 @@ The metadata branch is only written to after running these commands: startRepo, 
 createWorkSpace.
 
 So I sort of lied in the last example. There is yet another problem when saving metadata upon committing.
-The metadata has no way of recording metadata about the commit its read from. The example below explains
-why:
+The metadata has no way of recording the full metadata about the commit its read from. The example below
+explains why:
 
     ::
 
@@ -646,16 +691,16 @@ All this is a headache to deal with when it comes to creating a topicspace. This
     left for the reader to reason about. Hint: it has to do with adding topicspaces.
 
 Speaking of startRepo, we have another exception to a rule. The committer and author of a commit
-should match with maybe the exception of the first commits on a workspace. This happens when a user
+should match with, maybe, the exception of the first commit in a workspace. This happens when a user
 specifies the users for a topicspace they are about to create. Since the author of a commit can be
 set manually, we do set it accordingly for each user and their workspace. But we cannot set the
 committer field, thus the exception. This should have no effect on how the app operates since we
 rely on the author field to verify things. This is only problematic if someone tries to maliciously
 introduce commits that we believe are valid. This is fixable with enforcing GPG signing of commits.
 
-The exception is fixable if we find a way of communicating an invite to a topicspace, that way only
-when a user accepts the invite they will create their workspace. This will happen down the line, for
-now it is not necessary.
+The exception is also fixable if we find a way of communicating an invite to a topicspace,
+that way only when a user accepts the invite they will create their workspace. This will happen
+down the line, for now it is not necessary.
 
 Finally, we also keep track of the current user in a file called ".CURRENT_USER" located at the root
 of the repository. The reason behind this file's existence is mainly to introduce a change in
@@ -675,7 +720,7 @@ initialized in it. The method also copies the default .gitignore file from the s
 
 The method returns the new repository.
 
-The "GG" branch will be checked-out at the end of the method's execution.
+The "GH" branch will be checked-out at the end of the method's execution.
 
 CreateTopicSpace
 -----------------
@@ -685,7 +730,7 @@ checkout based on the given commit's state.
 The method returns a pair of objects, the first is the repository with the new topicspace added
 to it, and the second is the topicspace created.
 
-The "GG" branch will be checked-out at the end of the method's execution.
+The "GH" branch will be checked-out at the end of the method's execution.
 
 CreateWorkSpace
 ----------------
@@ -696,7 +741,7 @@ base the new workspace on the initial state of the topicspace or just an empty s
 The method returns a pair of objects, the first is the repository with the new workspace added to
 it, and the second is the workspace created.
 
-The "GG" branch will be checked-out at the end of the method's execution.
+The "GH" branch will be checked-out at the end of the method's execution.
 
 download
 ---------
@@ -728,6 +773,15 @@ The Controller
 The View
 ========
 
+.. image:: ./mockup.PNG
+
+======
+Limits
+======
+
+==========
+Git Errors
+==========
 
 .. _Electron: https://electronjs.org/docs
 .. _awesome-electron: https://github.com/sindresorhus/awesome-electron
