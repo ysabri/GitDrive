@@ -30,7 +30,12 @@ export class Repository {
         if (typeof repoPath === "string") {
             this.repositoryProtoBuf = new protoRepository.Repository();
             this.repositoryProtoBuf.setPath(repoPath);
-            this.repositoryProtoBuf.setName(basename(repoPath));
+            const pathBase = basename(repoPath);
+            if (pathBase.length > 100) {
+                throw new Error(`[Repository constructor] The base of path:`
+                    + `${repoPath} is longer than a 100 chars`);
+            }
+            this.repositoryProtoBuf.setName(pathBase);
         } else {
             this.repositoryProtoBuf = repoPath;
         }

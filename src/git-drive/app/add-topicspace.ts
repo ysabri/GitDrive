@@ -30,6 +30,10 @@ export async function createTopicSpace(
     origin: Commit,
     name: string,
 ): Promise<{repo: GRepository, topicspace: TopicSpace}> {
+    if ( name.length > 100 ) {
+        throw Error(`[createTopicSpace] The topicspace's name is longer than`
+        + ` a 100 chars: ${name}`);
+    }
     // check that the new TS name doesn't exist already in the repo
     if (repo.topicSpaces.some((value) => {
         return value.name === name;
