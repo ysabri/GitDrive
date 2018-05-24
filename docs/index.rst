@@ -141,8 +141,8 @@ Below are formal definitions of each concept. Use this to help reason about and 
 **GRepository**
 ---------------
     Our own definition of a repository. It will consist of a group of one or more TopicSpaces.
-    Each repository has a "Main" topicspace among maybe other ones. The repository has a name that
-    cannot be longer than a 100 character. Also each user in the repository must have a unique
+    Each repository has a "Main" topicspace among maybe other ones. The repository name has to be less
+    than a 101 character. Also each user in the repository must have a unique
     name. Along with all the workspace branches, each repository has a metadata branch called "GH".
     For more information on how metadata is kept, read sectoin `How to do we keep metadata`_
     Finally, each repository can have none or only one remote repository linked to it. If it exists,
@@ -152,7 +152,7 @@ Below are formal definitions of each concept. Use this to help reason about and 
 --------------
     A group of at least one or more WorkSpaces. Since each workspace can only have one user,
     the number of users has to match the number of workspaces. The name as well has to be less
-    than a 100 characters. An in depth explanation of the structure of any topicspace can be found
+    than a 101 characters. An in depth explanation of the structure of any topicspace can be found
     in the protobuf_ section.
 
 **WorkSpace**
@@ -532,6 +532,26 @@ Here are the commands in alphabetical order:
 Models
 ======
 
+Git
+---
+    - *Branch*:
+    - *Commit*:
+    - *CommitterID*:
+    - *Diff*:
+    - *Repository*:
+    - *Statuts*:
+
+Controller
+----------
+    - *AppData*:
+
+App
+----
+    - *GRepository*:
+    - *TopicSpace*:
+    - *User*:
+    - *WorkSpace*:
+
 ========
 Protobuf
 ========
@@ -782,6 +802,18 @@ Limits
 ==========
 Git Errors
 ==========
+
+This section will detail how Git handles errors and in return how we should handle them down the
+line. This is not easy to find online for some reason.
+
+============
+Useful Links
+============
+
+    - https://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html
+    - https://stackoverflow.com/questions/4044368/what-does-tree-ish-mean-in-git
+    - https://stackoverflow.com/questions/6919121/why-are-there-2-ways-to-unstage-a-file-in-git
+    -
 
 .. _Electron: https://electronjs.org/docs
 .. _awesome-electron: https://github.com/sindresorhus/awesome-electron

@@ -517,8 +517,8 @@ directory like the rest of the code.</p>
 <h2><strong>GRepository</strong></h2>
 <blockquote>
 Our own definition of a repository. It will consist of a group of one or more TopicSpaces.
-Each repository has a &quot;Main&quot; topicspace among maybe other ones. The repository has a name that
-cannot be longer than a 100 character. Also each user in the repository must have a unique
+Each repository has a &quot;Main&quot; topicspace among maybe other ones. The repository name has to be less
+than a 101 character. Also each user in the repository must have a unique
 name. Along with all the workspace branches, each repository has a metadata branch called &quot;GH&quot;.
 For more information on how metadata is kept, read sectoin <a class="reference internal" href="#how-to-do-we-keep-metadata">How to do we keep metadata</a>
 Finally, each repository can have none or only one remote repository linked to it. If it exists,
@@ -529,7 +529,7 @@ the name of the remote repository is &quot;origin&quot;.</blockquote>
 <blockquote>
 A group of at least one or more WorkSpaces. Since each workspace can only have one user,
 the number of users has to match the number of workspaces. The name as well has to be less
-than a 100 characters. An in depth explanation of the structure of any topicspace can be found
+than a 101 characters. An in depth explanation of the structure of any topicspace can be found
 in the <a class="reference internal" href="#protobuf">protobuf</a> section.</blockquote>
 </div>
 <div class="section" id="workspace">
@@ -910,6 +910,38 @@ output changes based on the current <em>working directory</em>.</p>
 </div>
 <div class="section" id="models">
 <h1>Models</h1>
+<div class="section" id="git">
+<h2>Git</h2>
+<blockquote>
+<ul class="simple">
+<li><em>Branch</em>:</li>
+<li><em>Commit</em>:</li>
+<li><em>CommitterID</em>:</li>
+<li><em>Diff</em>:</li>
+<li><em>Repository</em>:</li>
+<li><em>Statuts</em>:</li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="controller">
+<h2>Controller</h2>
+<blockquote>
+<ul class="simple">
+<li><em>AppData</em>:</li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="app">
+<h2>App</h2>
+<blockquote>
+<ul class="simple">
+<li><em>GRepository</em>:</li>
+<li><em>TopicSpace</em>:</li>
+<li><em>User</em>:</li>
+<li><em>WorkSpace</em>:</li>
+</ul>
+</blockquote>
+</div>
 </div>
 <div class="section" id="protobuf">
 <h1>Protobuf</h1>
@@ -1015,8 +1047,8 @@ we don't have a merge command. I will update the section once its done.</p>
 <p>The metadata branch is only written to after running these commands: startRepo, createTopicSpace, and
 createWorkSpace.</p>
 <p>So I sort of lied in the last example. There is yet another problem when saving metadata upon committing.
-The metadata has no way of recording metadata about the commit its read from. The example below explains
-why:</p>
+The metadata has no way of recording the full metadata about the commit its read from. The example below
+explains why:</p>
 <blockquote>
 <pre class="literal-block">
 [1]--[2]
@@ -1059,15 +1091,15 @@ its kept since the distinguishing information might be useful down the line.</p>
 left for the reader to reason about. Hint: it has to do with adding topicspaces.</p>
 </blockquote>
 <p>Speaking of startRepo, we have another exception to a rule. The committer and author of a commit
-should match with maybe the exception of the first commits on a workspace. This happens when a user
+should match with, maybe, the exception of the first commit in a workspace. This happens when a user
 specifies the users for a topicspace they are about to create. Since the author of a commit can be
 set manually, we do set it accordingly for each user and their workspace. But we cannot set the
 committer field, thus the exception. This should have no effect on how the app operates since we
 rely on the author field to verify things. This is only problematic if someone tries to maliciously
 introduce commits that we believe are valid. This is fixable with enforcing GPG signing of commits.</p>
-<p>The exception is fixable if we find a way of communicating an invite to a topicspace, that way only
-when a user accepts the invite they will create their workspace. This will happen down the line, for
-now it is not necessary.</p>
+<p>The exception is also fixable if we find a way of communicating an invite to a topicspace,
+that way only when a user accepts the invite they will create their workspace. This will happen
+down the line, for now it is not necessary.</p>
 <p>Finally, we also keep track of the current user in a file called &quot;.CURRENT_USER&quot; located at the root
 of the repository. The reason behind this file's existence is mainly to introduce a change in
 between workspaces when they are created. If we have no changes we cannot commit. The file just
@@ -1136,6 +1168,19 @@ from pulled branches is yet to be implemented.</p>
 </div>
 <div class="section" id="git-errors">
 <h1>Git Errors</h1>
+<p>This section will detail how Git handles errors and in return how we should handle them down the
+line. This is not easy to find online for some reason.</p>
+</div>
+<div class="section" id="useful-links">
+<h1>Useful Links</h1>
+<blockquote>
+<ul class="simple">
+<li><a class="reference external" href="https://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html">https://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html</a></li>
+<li><a class="reference external" href="https://stackoverflow.com/questions/4044368/what-does-tree-ish-mean-in-git">https://stackoverflow.com/questions/4044368/what-does-tree-ish-mean-in-git</a></li>
+<li><a class="reference external" href="https://stackoverflow.com/questions/6919121/why-are-there-2-ways-to-unstage-a-file-in-git">https://stackoverflow.com/questions/6919121/why-are-there-2-ways-to-unstage-a-file-in-git</a></li>
+<li></li>
+</ul>
+</blockquote>
 </div>
 </div>
 </body>
