@@ -154,6 +154,12 @@ function getDescriptionForError(error: errorsEnum): string {
         return "This is not a git repository.";
       case errorsEnum.BranchRenameFailed:
         return "The branch you tried to rename doesn't exist";
+      case errorsEnum.PathDoesNotExist:
+        return "The path to the repository does not exist";
+      case errorsEnum.InvalidObjectName:
+        return "The object name given is invalid";
+      case errorsEnum.OutsideRepository:
+        return "This is an outside repository";
       case errorsEnum.ProtectedBranchForcePush:
         return "This branch is protected from force-push operations.";
       case errorsEnum.ProtectedBranchRequiresReview:
