@@ -51,7 +51,7 @@ export async function loadGRepo(
     let topicSpaceCounter: number = 0;
     // Used to check if a branch matches our branch naming schema
     const branchNamePattern = new RegExp(`^G[0-9a-f]{10}$`);
-    const metaBranchPattern = new RegExp(`^GG$`);
+    const metaBranchPattern = new RegExp(`^GH$`);
     // filter out the meta data branch "GG"
     let refs = allRefs.filter((value) => {
         return !metaBranchPattern.test(value.name);
@@ -118,7 +118,7 @@ export async function loadGRepo(
         topicSpaceCounter++;
     }
     // checkout and read the repo structure
-    await checkoutBranch(repo, "GG");
+    await checkoutBranch(repo, "GH");
     const repoInfo = await readRepoInfo(repo);
     // This will throw if anything is not valid
     await checkTheState(repoInfo, topicSpaces);

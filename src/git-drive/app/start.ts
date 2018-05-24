@@ -92,8 +92,8 @@ export async function startRepo(
         return value;
     });
     // The tip should already be checked-out
-    await orphanCheckout(repo, "GG", workspaces[workspaces.length - 1].tip.SHA);
-    const gRepo = new GRepository(path, [mainTopicSpace], usersCopy, "GG");
+    await orphanCheckout(repo, "GH", workspaces[workspaces.length - 1].tip.SHA);
+    const gRepo = new GRepository(path, [mainTopicSpace], usersCopy, "GH");
     await writeRepoInfo(gRepo);
     await commit(gRepo, "Meta-User", "NA", "Meta Commit", "");
 
