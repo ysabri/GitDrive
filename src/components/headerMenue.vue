@@ -4,13 +4,13 @@
         <button class="left-buttons" v-on:click="addRepo">Add Repository</button>
     </div>
     <div v-else>
-        <button class="left-buttons">Add TopicSpace</button>
-        <button class="left-buttons">Add WorkSpace</button>
-        <button class="right-buttons">Sync</button>
+        <button class="left-buttons" v-on:click="addTS">Add TopicSpace</button>
+        <button class="left-buttons" v-on:click="addWS">Add WorkSpace</button>
+        <button class="right-buttons" v-on:click="sync">Sync</button>
     </div>
 </template>
 <script lang="ts">
-import Vue from 'vue'
+import Vue from "vue";
 import Component  from "vue-class-component";
 import { GRepository } from 'model/app';
 import {
@@ -25,7 +25,15 @@ export default class HeaderMenue extends Vue{
     get currRepo(): GRepository | undefined {
         return readCurrRepo(this.$store);
     }
-
+    async addTS(): Promise<void> {
+        return;
+    }
+    async addWS(): Promise<void> {
+        return;
+    }
+    async sync(): Promise<void> {
+        return;
+    }
     async addRepo(): Promise<void> {
         const repo = await dispatchloadRepo(this.$store);
         commitCurrRepo(this.$store, repo);

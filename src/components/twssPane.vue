@@ -11,7 +11,6 @@
 
 <script lang="ts">
 import Vue from 'vue'
-// import { readTSs } from "../store";
 import Component  from "vue-class-component";
 import {
     TopicSpace,
@@ -35,5 +34,6 @@ export default class TwsPane extends Vue{
 </script>
 
 <style scoped>
+
 
 </style>
