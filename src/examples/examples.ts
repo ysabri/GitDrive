@@ -20,13 +20,13 @@ import { createAuthorization, AuthorizationResponseKind, fetchUser } from "../ut
 
 export async function letsOauth(): Promise<void> {
   const endPoint = "https://api.github.com";
-  const account = await createAuthorization(endPoint,
+  const res = await createAuthorization(endPoint,
     "GitDriveTestUser", "Gitdriveisawesome", null);
-  console.log(account);
-  if (account.kind === AuthorizationResponseKind.Authorized) {
+  console.log(res);
+  if (res.kind === AuthorizationResponseKind.Authorized) {
     // const currentEndPoint = endPoint + "/user?";
-    console.log(account.token);
-    const user = await fetchUser(endPoint, account.token);
+    console.log(res.token);
+    const user = await fetchUser(endPoint, res.token);
     console.log(user);
   }
   return;
