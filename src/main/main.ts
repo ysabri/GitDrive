@@ -55,7 +55,7 @@ function createWindow() {
 // Some APIs can only be used after this event occurs.
 app.on("ready", () => {
 
-  app.setAsDefaultProtocolClient("GitDrive-app");
+  // app.setAsDefaultProtocolClient("GitDrive-app");
 
   createWindow();
   // register event listeners for the icpRenderer events

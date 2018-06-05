@@ -16,11 +16,19 @@ import {
 } from "../model/POST";
 import { removeRepo } from "../tests/helpers";
 import { measure } from "../util/git-perf";
-import { askUserToOAuth } from "../util/oauth";
+import { createAuthorization, AuthorizationResponseKind, fetchUser } from "../util/github-api";
 
 export async function letsOauth(): Promise<void> {
-  const account = askUserToOAuth("https://api.github.com");
+  const endPoint = "https://api.github.com";
+  const account = await createAuthorization(endPoint,
+    "GitDriveTestUser", "Gitdriveisawesome", null);
   console.log(account);
+  if (account.kind === AuthorizationResponseKind.Authorized) {
+    // const currentEndPoint = endPoint + "/user?";
+    console.log(account.token);
+    const user = await fetchUser(endPoint, account.token);
+    console.log(user);
+  }
   return;
 }
 
