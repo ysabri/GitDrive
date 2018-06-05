@@ -16,10 +16,19 @@ import {
 } from "../model/POST";
 import { removeRepo } from "../tests/helpers";
 import { measure } from "../util/git-perf";
+import { askUserToOAuth } from "../util/oauth";
 
+export async function letsOauth(): Promise<void> {
+  const account = askUserToOAuth("https://api.github.com");
+  console.log(account);
+  return;
+}
 
-// show an example to start repo, this might pass as a test but not quite,
-// the info to check is left for user.
+// show an example to start repo with three users, then create a new workspace,
+// then create a new topicspace with three more users, write and retrieve the
+// repo from disk. We commit three times, one in the Main topicspace, the rest
+// in the new topicspace. We do that to make sure the final load gets the most
+// recent state out to the user.
 export async function startEx(): Promise<void> {
   const users: User[] = [];
   users.push(new User("Yazeed Sabri", "ysabri@wisc.edu", []));

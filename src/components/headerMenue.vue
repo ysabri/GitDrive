@@ -2,6 +2,7 @@
     <div v-if="currRepo === undefined">
         <button class="left-buttons">New Repository</button>
         <button class="left-buttons" v-on:click="addRepo">Add Repository</button>
+        <button class="left-buttons" v-on:click="oauth">Authenticate</button>
     </div>
     <div v-else>
         <button class="left-buttons" v-on:click="addTS">Add TopicSpace</button>
@@ -18,6 +19,7 @@ import {
     readCurrRepo,
     dispatchloadRepo,
 } from "../store";
+import { letsOauth } from "../examples/examples";
 
 @Component({
 })
@@ -37,6 +39,10 @@ export default class HeaderMenue extends Vue{
     async addRepo(): Promise<void> {
         const repo = await dispatchloadRepo(this.$store);
         commitCurrRepo(this.$store, repo);
+    }
+    async oauth(): Promise<void> {
+        await letsOauth();
+        // console.log(account);
     }
 };
 </script>
