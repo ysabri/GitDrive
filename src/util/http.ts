@@ -122,7 +122,7 @@ export function request(
   };
 
   if (token) {
-    headers.Authorization = "token ${token}";
+    headers.Authorization = `token ${token}`;
   }
 
   headers = {
@@ -135,7 +135,7 @@ export function request(
     headers,
     method,
   };
-
+  console.log("feteched url: " + url);
   return fetch(url, options);
 }
 
