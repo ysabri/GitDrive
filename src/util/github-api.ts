@@ -39,7 +39,7 @@ export enum AuthenticationMode {
 export function getWelcomeMessage(type: AuthenticationMode): string {
   return type === AuthenticationMode.Sms
     ? smsMessageWelcomeText
-    : authenticatorAppWelcomeText
+    : authenticatorAppWelcomeText;
 }
 // TODO: change this, this is used for a 2 factor auth bellow.
 const username: string = "TestUser";
@@ -55,7 +55,7 @@ if (!ClientID || !ClientID.length || !ClientSecret || !ClientSecret.length) {
 }
 
 /** The OAuth scopes we need. */
-const Scopes = ['repo', 'user']
+const Scopes = ["repo", "user"]
 
 enum HttpStatusCode {
   NotModified = 304,
@@ -63,7 +63,7 @@ enum HttpStatusCode {
 }
 
 /** The note URL used for authorizations the app creates. */
-const NoteURL = 'https://desktop.github.com/'
+const NoteURL = "https://desktop.github.com/"
 
 /**
  * Information about a repository as returned by the GitHub API.
@@ -107,7 +107,7 @@ export interface IAPIUser {
    * specified a public email address in their profile.
    */
   readonly email: string | null
-  readonly type: 'User' | 'Organization'
+  readonly type: "User" | "Organization"
 }
 
 /** The users we get from the mentionables endpoint. */
@@ -130,7 +130,7 @@ export interface IAPIMentionableUser {
  * set for the primary email address currently, but in the future visibility
  * may be defined for each email address.
  */
-export type EmailVisibility = 'public' | 'private' | null
+export type EmailVisibility = "public" | "private" | null
 
 /**
  * Information about a user's email as returned by the GitHub API.
@@ -146,12 +146,12 @@ export interface IAPIEmail {
 export interface IAPIIssue {
   readonly number: number
   readonly title: string
-  readonly state: 'open' | 'closed'
+  readonly state: "open" | "closed"
   readonly updated_at: string
 }
 
 /** The combined state of a ref. */
-export type APIRefState = 'failure' | 'pending' | 'success';
+export type APIRefState = "failure" | "pending" | "success";
 
 /**
  * The API response for a combined view of a commit
@@ -232,17 +232,17 @@ interface ISearchResults<T> {
  * If no link rel next header is found this method returns null.
  */
 function getNextPagePath(response: Response): string | null {
-  const linkHeader = response.headers.get('Link')
+  const linkHeader = response.headers.get("Link")
 
   if (!linkHeader) {
     return null
   }
 
-  for (const part of linkHeader.split(',')) {
+  for (const part of linkHeader.split(",")) {
     // https://github.com/philschatz/octokat.js/blob/5658abe442e8bf405cfda1c72629526a37554613/src/plugins/pagination.js#L17
     const match = part.match(/<([^>]+)>; rel="([^"]+)"/)
 
-    if (match && match[2] === 'next') {
+    if (match && match[2] === "next") {
       const nextURL = URL.parse(match[1])
       return nextURL.path || null
     }
@@ -258,25 +258,26 @@ function getNextPagePath(response: Response): string | null {
  * so we won't send any back either.
  */
 function toGitHubIsoDateString(date: Date) {
-  return date.toISOString().replace(/\.\d{3}Z$/, 'Z')
+  return date.toISOString().replace(/\.\d{3}Z$/, "Z")
 }
 
 /**
  * An object for making authenticated requests to the GitHub API
  */
 export class API {
-  private endpoint: string
-  private token: string
-
   /** Create a new API client from the given account. */
   public static fromAccount(account: Account): API {
-    return new API(account.endpoint, account.token)
+    return new API(account.endpoint, account.token);
   }
+
+  private endpoint: string;
+  private token: string;
+
 
   /** Create a new API client for the endpoint, authenticated with the token. */
   public constructor(endpoint: string, token: string) {
-    this.endpoint = endpoint
-    this.token = token
+    this.endpoint = endpoint;
+    this.token = token;
   }
 
   /** Fetch a repo by its owner and name. */
@@ -285,7 +286,7 @@ export class API {
     name: string,
   ): Promise<IAPIRepository | null> {
     try {
-      const response = await this.request('GET', `repos/${owner}/${name}`)
+      const response = await this.request("GET", `repos/${owner}/${name}`)
       if (response.status === HttpStatusCode.NotFound) {
         // log.warn(`fetchRepository: '${owner}/${name}' returned a 404`)
         return null
@@ -302,7 +303,7 @@ export class API {
     IAPIRepository
   > | null> {
     try {
-      return await this.fetchAll<IAPIRepository>('user/repos')
+      return await this.fetchAll<IAPIRepository>("user/repos")
     } catch (error) {
     //   log.warn(`fetchRepositories: ${error}`)
       return null
@@ -312,23 +313,25 @@ export class API {
   /** Fetch the logged in account. */
   public async fetchAccount(): Promise<IAPIUser> {
     try {
-      const response = await this.request('GET', 'user')
-      const result = await parsedResponse<IAPIUser>(response)
-      return result
+      const response = await this.request("GET", "user");
+      const result = await parsedResponse<IAPIUser>(response);
+      return result;
     } catch (e) {
+      console.log("Fetch Account errored out with token: " + this.token);
     //   log.warn(`fetchAccount: failed with endpoint ${this.endpoint}`, e)
-      throw e
+      throw e;
     }
   }
 
   /** Fetch the current user's emails. */
   public async fetchEmails(): Promise<ReadonlyArray<IAPIEmail>> {
     try {
-      const response = await this.request('GET', 'user/emails')
-      const result = await parsedResponse<ReadonlyArray<IAPIEmail>>(response)
+      const response = await this.request("GET", "user/emails");
+      const result = await parsedResponse<ReadonlyArray<IAPIEmail>>(response);
 
-      return Array.isArray(result) ? result : []
+      return Array.isArray(result) ? result : [];
     } catch (e) {
+      console.log("No emails were returned");
     //   log.warn(`fetchEmails: failed with endpoint ${this.endpoint}`, e)
       return []
     }
@@ -342,7 +345,7 @@ export class API {
   ): Promise<IAPICommit | null> {
     try {
       const path = `repos/${owner}/${name}/commits/${sha}`
-      const response = await this.request('GET', path)
+      const response = await this.request("GET", path)
       if (response.status === HttpStatusCode.NotFound) {
         // log.warn(`fetchCommit: '${path}' returned a 404`)
         return null
@@ -358,8 +361,8 @@ export class API {
   public async searchForUserWithEmail(email: string): Promise<IAPIUser | null> {
     try {
       const params = { q: `${email} in:email type:user` }
-      const url = urlWithQueryString('search/users', params)
-      const response = await this.request('GET', url)
+      const url = urlWithQueryString("search/users", params)
+      const response = await this.request("GET", url)
       const result = await parsedResponse<ISearchResults<IAPIUser>>(response)
       const items = result.items
       if (items.length) {
@@ -378,7 +381,7 @@ export class API {
   /** Fetch all the orgs to which the user belongs. */
   public async fetchOrgs(): Promise<ReadonlyArray<IAPIUser>> {
     try {
-      return this.fetchAll<IAPIUser>('user/orgs')
+      return this.fetchAll<IAPIUser>("user/orgs")
     } catch (e) {
     //   log.warn(`fetchOrgs: failed with endpoint ${this.endpoint}`, e)
       return []
@@ -393,8 +396,8 @@ export class API {
     private_: boolean,
   ): Promise<IAPIRepository> {
     try {
-      const apiPath = org ? `orgs/${org.login}/repos` : 'user/repos'
-      const response = await this.request('POST', apiPath, {
+      const apiPath = org ? `orgs/${org.login}/repos` : "user/repos"
+      const response = await this.request("POST", apiPath, {
         name,
         description,
         private: private_,
@@ -420,7 +423,7 @@ export class API {
   public async fetchIssues(
     owner: string,
     name: string,
-    state: 'open' | 'closed' | 'all',
+    state: "open" | "closed" | "all",
     since: Date | null,
   ): Promise<ReadonlyArray<IAPIIssue>> {
     const params: { [key: string]: string } = {
@@ -446,7 +449,7 @@ export class API {
   public async fetchPullRequests(
     owner: string,
     name: string,
-    state: 'open' | 'closed' | 'all',
+    state: "open" | "closed" | "all",
   ): Promise<ReadonlyArray<IAPIPullRequest>> {
     const url = urlWithQueryString(`repos/${owner}/${name}/pulls`, { state })
     try {
@@ -466,9 +469,9 @@ export class API {
   ): Promise<IAPIRefStatus> {
     const path = `repos/${owner}/${name}/commits/${ref}/status`
     try {
-      const response = await this.request('GET', path)
+      const response = await this.request("GET", path)
       const status = await parsedResponse<IAPIRefStatus>(response)
-      return status
+      return status;
     } catch (e) {
     //   log.warn(
     //     `fetchCombinedRefStatus: failed for repository ${owner}/${name} on ref ${ref}`,
@@ -508,33 +511,33 @@ export class API {
   ): Promise<IAPIMentionablesResponse | null> {
     // NB: this custom `Accept` is required for the `mentionables` endpoint.
     const headers: any = {
-      Accept: 'application/vnd.github.jerry-maguire-preview',
-    }
+      Accept: "application/vnd.github.jerry-maguire-preview",
+    };
 
     if (etag) {
-      headers['If-None-Match'] = etag
+      headers["If-None-Match"] = etag;
     }
 
     try {
-      const path = `repos/${owner}/${name}/mentionables/users`
-      const response = await this.request('GET', path, undefined, headers)
+      const path = `repos/${owner}/${name}/mentionables/users`;
+      const response = await this.request("GET", path, undefined, headers);
 
       if (response.status === HttpStatusCode.NotFound) {
         // log.warn(`fetchMentionables: '${path}' returned a 404`)
-        return null
+        return null;
       }
 
       if (response.status === HttpStatusCode.NotModified) {
-        return null
+        return null;
       }
       const users = await parsedResponse<ReadonlyArray<IAPIMentionableUser>>(
         response,
-      )
-      const etag = response.headers.get('etag')
-      return { users, etag }
+      );
+      const etag = response.headers.get("etag");
+      return { users, etag };
     } catch (e) {
     //   log.warn(`fetchMentionables: failed for ${owner}/${name}`, e)
-      return null
+      return null;
     }
   }
 
@@ -545,18 +548,18 @@ export class API {
   public async fetchUser(login: string): Promise<IAPIUser | null> {
     try {
       const response = await this.request(
-        'GET',
+        "GET",
         `users/${encodeURIComponent(login)}`,
-      )
+      );
 
       if (response.status === 404) {
-        return null
+        return null;
       }
 
       return await parsedResponse<IAPIUser>(response)
     } catch (e) {
     //   log.warn(`fetchUser: failed with endpoint ${this.endpoint}`, e)
-      throw e
+      throw e;
     }
   }
   /**
@@ -567,32 +570,32 @@ export class API {
    * one array when done.
    */
   private async fetchAll<T>(path: string): Promise<ReadonlyArray<T>> {
-    const buf = new Array<T>()
+    const buf = new Array<T>();
 
     const params = {
-      per_page: '100',
-    }
-    let nextPath: string | null = urlWithQueryString(path, params)
+      per_page: "100",
+    };
+    let nextPath: string | null = urlWithQueryString(path, params);
 
     do {
-      const response = await this.request('GET', nextPath)
+      const response = await this.request("GET", nextPath);
       if (response.status === HttpStatusCode.NotFound) {
         // log.warn(`fetchAll: '${path}' returned a 404`)
-        return []
+        return [];
       }
       if (response.status === HttpStatusCode.NotModified) {
         // log.warn(`fetchAll: '${path}' returned a 304`)
-        return []
+        return [];
       }
 
-      const items = await parsedResponse<ReadonlyArray<T>>(response)
+      const items = await parsedResponse<ReadonlyArray<T>>(response);
       if (items) {
-        buf.push(...items)
+        buf.push(...items);
       }
-      nextPath = getNextPagePath(response)
-    } while (nextPath)
+      nextPath = getNextPagePath(response);
+    } while (nextPath);
 
-    return buf
+    return buf;
   }
 
   /** Make an authenticated request to the client's endpoint with its token. */
@@ -602,7 +605,7 @@ export class API {
     body?: Object,
     customHeaders?: Object,
   ): Promise<Response> {
-    return request(this.endpoint, this.token, method, path, body, customHeaders)
+    return request(this.endpoint, this.token, method, path, body, customHeaders);
   }
 
 
@@ -628,7 +631,7 @@ export type AuthorizationResponse =
   | { kind: AuthorizationResponseKind.Error; response: Response }
   | { kind: AuthorizationResponseKind.UserRequiresVerification }
   | { kind: AuthorizationResponseKind.PersonalAccessTokenBlocked }
-  | { kind: AuthorizationResponseKind.EnterpriseTooOld }
+  | { kind: AuthorizationResponseKind.EnterpriseTooOld };
 
 /**
  * Create an authorization with the given login, password, and one-time
@@ -640,24 +643,25 @@ export async function createAuthorization(
   password: string,
   oneTimePassword: string | null,
 ): Promise<AuthorizationResponse> {
-  const creds = Buffer.from(`${login}:${password}`, 'utf8').toString('base64')
-  const authorization = `Basic ${creds}`
-  const optHeader = oneTimePassword ? { 'X-GitHub-OTP': oneTimePassword } : {}
+  const creds = Buffer.from(`${login}:${password}`, "utf8").toString("base64");
+  const authorization = `Basic ${creds}`;
+  const optHeader = oneTimePassword ? { "X-GitHub-OTP": oneTimePassword } : {};
 
   const note = await getNote();
 
   const response = await request(
     endpoint,
     null,
-    'POST',
-    'authorizations',
+    "POST",
+    "authorizations",
     {
-      scopes: Scopes,
       client_id: ClientID,
       client_secret: ClientSecret,
+      fingerprint: uuid(),
+      // tslint:disable-next-line:object-literal-shorthand
       note: note,
       note_url: NoteURL,
-      fingerprint: uuid(),
+      scopes: Scopes,
     },
     {
       Authorization: authorization,
@@ -666,55 +670,55 @@ export async function createAuthorization(
   );
 
   try {
-    const result = await parsedResponse<IAPIAuthorization>(response)
+    const result = await parsedResponse<IAPIAuthorization>(response);
     if (result) {
-      const token = result.token
-      if (token && typeof token === 'string' && token.length) {
-        return { kind: AuthorizationResponseKind.Authorized, token }
+      const token = result.token;
+      if (token && typeof token === "string" && token.length) {
+        return { kind: AuthorizationResponseKind.Authorized, token };
       }
     }
   } catch (e) {
     if (response.status === 401) {
-      const otpResponse = response.headers.get('x-github-otp')
+      const otpResponse = response.headers.get("x-github-otp");
       if (otpResponse) {
-        const pieces = otpResponse.split(';')
+        const pieces = otpResponse.split(";");
         if (pieces.length === 2) {
-          const type = pieces[1].trim()
+          const type = pieces[1].trim();
           switch (type) {
-            case 'app':
+            case "app":
               return {
                 kind: AuthorizationResponseKind.TwoFactorAuthenticationRequired,
                 type: AuthenticationMode.App,
               }
-            case 'sms':
+            case "sms":
               return {
                 kind: AuthorizationResponseKind.TwoFactorAuthenticationRequired,
                 type: AuthenticationMode.Sms,
               }
             default:
-              return { kind: AuthorizationResponseKind.Failed, response }
+              return { kind: AuthorizationResponseKind.Failed, response };
           }
         }
       }
 
-      return { kind: AuthorizationResponseKind.Failed, response }
+      return { kind: AuthorizationResponseKind.Failed, response };
     }
 
-    const apiError = e instanceof APIError && e.apiError
+    const apiError = e instanceof APIError && e.apiError;
     if (apiError) {
       if (
         response.status === 403 &&
         apiError.message ===
-          'This API can only be accessed with username and password Basic Auth'
+          "This API can only be accessed with username and password Basic Auth"
       ) {
         // Authorization API does not support providing personal access tokens
-        return { kind: AuthorizationResponseKind.PersonalAccessTokenBlocked }
+        return { kind: AuthorizationResponseKind.PersonalAccessTokenBlocked };
       } else if (response.status === 422) {
         if (apiError.errors) {
           for (const error of apiError.errors) {
             const isExpectedResource =
-              error.resource.toLowerCase() === 'oauthaccess'
-            const isExpectedField = error.field.toLowerCase() === 'user'
+              error.resource.toLowerCase() === "oauthaccess";
+            const isExpectedField = error.field.toLowerCase() === "user";
             if (isExpectedField && isExpectedResource) {
               return {
                 kind: AuthorizationResponseKind.UserRequiresVerification,
@@ -722,7 +726,7 @@ export async function createAuthorization(
             }
           }
         } else if (
-          apiError.message === 'Invalid OAuth application client_id or secret.'
+          apiError.message === "Invalid OAuth application client_id or secret."
         ) {
           return { kind: AuthorizationResponseKind.EnterpriseTooOld };
         }
@@ -770,28 +774,28 @@ export async function fetchMetadata(
 //   const url = `${endpoint}/meta`;
 
   try {
-    const response = await request(endpoint, null, 'GET', 'meta', undefined, {
-      'Content-Type': 'application/json',
-    })
+    const response = await request(endpoint, null, "GET", "meta", undefined, {
+      "Content-Type": "application/json",
+    });
 
-    const result = await parsedResponse<IServerMetadata>(response)
+    const result = await parsedResponse<IServerMetadata>(response);
     if (!result || result.verifiable_password_authentication === undefined) {
-      return null
+      return null;
     }
 
-    return result
+    return result;
   } catch (e) {
     // log.error(
     //   `fetchMetadata: unable to load metadata from '${url}' as a fallback`,
     //   e
     // )
-    return null
+    return null;
   }
 }
 
 /** The note used for created authorizations. */
 async function getNote(): Promise<string> {
-  let localUsername = 'unknown'
+  let localUsername = "unknown";
   try {
     localUsername = username;
   } catch (e) {
@@ -811,11 +815,11 @@ async function getNote(): Promise<string> {
  * http://github.mycompany.com/my-team/my-project -> http://github.mycompany.com/api
  */
 export function getEndpointForRepository(url: string): string {
-  const parsed = URL.parse(url)
-  if (parsed.hostname === 'github.com') {
-    return getDotComAPIEndpoint()
+  const parsed = URL.parse(url);
+  if (parsed.hostname === "github.com") {
+    return getDotComAPIEndpoint();
   } else {
-    return `${parsed.protocol}//${parsed.hostname}/api`
+    return `${parsed.protocol}//${parsed.hostname}/api`;
   }
 }
 
@@ -835,10 +839,10 @@ export function getHTMLURL(endpoint: string): string {
   //
   // We need to normalize them.
   if (endpoint === getDotComAPIEndpoint()) {
-    return 'https://github.com'
+    return "https://github.com";
   } else {
-    const parsed = URL.parse(endpoint)
-    return `${parsed.protocol}//${parsed.hostname}`
+    const parsed = URL.parse(endpoint);
+    return `${parsed.protocol}//${parsed.hostname}`;
   }
 }
 
@@ -848,18 +852,18 @@ export function getHTMLURL(endpoint: string): string {
  * http://github.mycompany.com -> http://github.mycompany.com/api/v3
  */
 export function getEnterpriseAPIURL(endpoint: string): string {
-  const parsed = URL.parse(endpoint)
-  return `${parsed.protocol}//${parsed.hostname}/api/v3`
+  const parsed = URL.parse(endpoint);
+  return `${parsed.protocol}//${parsed.hostname}/api/v3`;
 }
 
 /** Get github.com's API endpoint. */
 export function getDotComAPIEndpoint(): string {
-  const envEndpoint = process.env['API_ENDPOINT']
+  const envEndpoint = process.env.API_ENDPOINT;
   if (envEndpoint && envEndpoint.length > 0) {
-    return envEndpoint
+    return envEndpoint;
   }
 
-  return 'https://api.github.com'
+  return "https://api.github.com";
 }
 
 /** Get the account for the endpoint. */
@@ -867,16 +871,16 @@ export function getAccountForEndpoint(
   accounts: ReadonlyArray<Account>,
   endpoint: string,
 ): Account | null {
-  return accounts.find(a => a.endpoint === endpoint) || null
+  return accounts.find((a) => a.endpoint === endpoint) || null;
 }
 
 export function getOAuthAuthorizationURL(
   endpoint: string,
   state: string,
 ): string {
-  const urlBase = getHTMLURL(endpoint)
-  const scope = encodeURIComponent(Scopes.join(' '))
-  return `${urlBase}/login/oauth/authorize?client_id=${ClientID}&scope=${scope}&state=${state}`
+  const urlBase = getHTMLURL(endpoint);
+  const scope = encodeURIComponent(Scopes.join(" "));
+  return `${urlBase}/login/oauth/authorize?client_id=${ClientID}&scope=${scope}&state=${state}`;
 }
 
 export async function requestOAuthToken(
@@ -885,23 +889,25 @@ export async function requestOAuthToken(
   code: string,
 ): Promise<string | null> {
   try {
-    const urlBase = getHTMLURL(endpoint)
+    const urlBase = getHTMLURL(endpoint);
     const response = await request(
       urlBase,
       null,
-      'POST',
-      'login/oauth/access_token',
+      "POST",
+      "login/oauth/access_token",
       {
         client_id: ClientID,
         client_secret: ClientSecret,
+        // tslint:disable-next-line:object-literal-shorthand
         code: code,
+        // tslint:disable-next-line:object-literal-shorthand
         state: state,
       },
-    )
-    const result = await parsedResponse<IAPIAccessToken>(response)
-    return result.access_token
+    );
+    const result = await parsedResponse<IAPIAccessToken>(response);
+    return result.access_token;
   } catch (e) {
     // log.warn(`requestOAuthToken: failed with endpoint ${endpoint}`, e)
-    return null
+    return null;
   }
 }
