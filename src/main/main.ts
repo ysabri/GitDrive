@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow, ipcMain, shell } from "electron";
 
 // TODO: add error handler here
 function handleUncaughtException(err: Error) {
@@ -54,13 +54,15 @@ function createWindow() {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on("ready", () => {
+
+  app.setAsDefaultProtocolClient("GitDrive-app");
+
   createWindow();
   // register event listeners for the icpRenderer events
   ipcMain.on("reload", () => {
       app.relaunch();
       app.exit(0);
     });
-
   ipcMain.on("uncaught-exception",
   (event: Electron.IpcMessageEvent, error: Error) => {
     handleUncaughtException(error);
@@ -71,6 +73,22 @@ app.on("ready", () => {
       mainWindow.setTitle(`${title} - GitDrive`);
     }
   });
+
+  ipcMain.on(
+    "open-external",
+    (event: Electron.IpcMessageEvent, { path }: { path: string }) => {
+      const pathLowerCase = path.toLowerCase();
+      if (
+        pathLowerCase.startsWith("http://") ||
+        pathLowerCase.startsWith("https://")
+      ) {
+        // log.info(`opening in browser: ${path}`)
+      }
+
+      const result = shell.openExternal(path);
+      event.sender.send("open-external-result", { result });
+    },
+  );
 });
 
 // Quit when all windows are closed.
