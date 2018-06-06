@@ -8,6 +8,7 @@ import { sync } from "../git-drive/app/sync";
 import { changeWS } from "../git-drive/controller/state-updater";
 import { checkoutBranch } from "../git-drive/git/checkout";
 import { GRepository, User } from "../model/app";
+import { Account } from "../model/app/github-account";
 import {
   EnclosedVariant,
   IPublicVariant,
@@ -16,19 +17,56 @@ import {
 } from "../model/POST";
 import { removeRepo } from "../tests/helpers";
 import { measure } from "../util/git-perf";
-import { createAuthorization, AuthorizationResponseKind, fetchUser } from "../util/github-api";
-
+import {
+  API,
+  AuthorizationResponseKind,
+  createAuthorization,
+  fetchUser,
+  IAPICommit,
+  IAPIRefStatus,
+  IAPIRepository,
+  IAPIUser,
+} from "../util/github-api";
+/**
+ * An example to show authentication and Github related commands. "github-api"
+ * file still has way more methods to show, I picked the important ones for us.
+ * This has to be run from the renderer process, since uuid in createAuthorization
+ * relies on the window object to be there.
+ */
 export async function letsOauth(): Promise<void> {
+  const username = "GitDriveTestUser";
+  const password = "Gitdriveisawesome";
+  // const email = "hacoor2@hotmail.com";
   const endPoint = "https://api.github.com";
+  const repoName = "TestRepo";
   const res = await createAuthorization(endPoint,
-    "GitDriveTestUser", "Gitdriveisawesome", null);
-  console.log(res);
+    username, password, null);
+    console.log(res);
+  let user: Account;
+  let api: API;
   if (res.kind === AuthorizationResponseKind.Authorized) {
-    // const currentEndPoint = endPoint + "/user?";
-    console.log(res.token);
-    const user = await fetchUser(endPoint, res.token);
+    user = await fetchUser(endPoint, res.token);
     console.log(user);
+    api = new API(endPoint, res.token);
+  } else {
+    throw new Error("User didn't get authorized");
   }
+  const repo: IAPIRepository | null  = await api.fetchRepository(username, repoName);
+  if (repo === null) {
+    throw new Error("failed to fetch TestRepo");
+  }
+  console.log(repo);
+  const account: IAPIUser = await api.fetchAccount();
+  console.log(account);
+  const refMaster: IAPIRefStatus = await api.fetchCombinedRefStatus(username,
+    repo.name, "master");
+  console.log(refMaster);
+  const firstCommit: IAPICommit | null  = await api.fetchCommit(username,
+    repoName, "cc4790cbfa99c9e9ce72d6198990b4830eee9b57");
+  console.log(firstCommit);
+  const pollInterval: number | null = await api.getFetchPollInterval(username, repoName);
+  console.log(pollInterval);
+
   return;
 }
 
