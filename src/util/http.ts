@@ -135,15 +135,14 @@ export function request(
     headers,
     method,
   };
-  console.log("feteched url: " + url);
   return fetch(url, options);
 }
 
 /** Get the user agent to use for all requests. */
 function getUserAgent() {
   // the code bellow is modified, YS.
-  const platform = process.platform ? "Macintosh:" : "Windows";
-  return `GitHubDesktop/${remote.app.getVersion()} (${platform})`;
+  const platform = process.platform === "darwin" ? "Macintosh:" : "Windows";
+  return `GitDrive/${remote.app.getVersion()} (${platform})`;
 }
 
 /**
