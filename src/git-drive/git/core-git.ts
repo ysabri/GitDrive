@@ -160,6 +160,9 @@ function getDescriptionForError(error: errorsEnum): string {
         return "The object name given is invalid";
       case errorsEnum.OutsideRepository:
         return "This is an outside repository";
+      case errorsEnum.LockFileAlreadyExists:
+        return "A lock file exists somewhere in the .git directory, " +
+          "make sure no other git process is operating on the repo";
       case errorsEnum.ProtectedBranchForcePush:
         return "This branch is protected from force-push operations.";
       case errorsEnum.ProtectedBranchRequiresReview:

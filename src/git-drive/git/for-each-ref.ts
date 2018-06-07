@@ -16,7 +16,7 @@ import { git } from "./core-git";
  */
 export async function getBranches(
   repository: Repository,
-  ...prefixes: string[],
+  ...prefixes: string[]
 ): Promise<ReadonlyArray<Branch>> {
   const delimiter = "1F";
   const delimiterString = String.fromCharCode(parseInt(delimiter, 16));
