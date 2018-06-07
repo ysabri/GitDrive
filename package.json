@@ -9,7 +9,7 @@
   "scripts": {
     "build": "tsc",
     "lint": "tslint -c tslint.json build/**/* -p tsconfig.json",
-    "start": "yarn clean && yarn build && yarn lint && node .electron-vue/dev-runner.js",
+    "start": "yarn clean && yarn build && node .electron-vue/dev-runner.js",
     "test": "mocha -t 10000 -r ts-node/register --full-trace --check-leaks ./src/tests/**/*.ts ./src/tests/*.ts",
     "clean": "rimraf build/*",
     "dist": "yarn dist:clean && yarn build && node .electron-vue/build.js && electron-builder",
@@ -142,6 +142,7 @@
   "dependencies": {
     "fs-extra": "^6.0.1",
     "google-protobuf": "^3.5.0",
+    "hoek": "4.2.1",
     "source-map-support": "^0.5.4",
     "vue": "^2.5.16",
     "vuex": "^3.0.1"
