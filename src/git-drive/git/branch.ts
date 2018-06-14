@@ -86,9 +86,17 @@ export async function renameBranch(
     await git(["branch", "-m", branch.name, newName], repo.path);
 }
 
-// This should get implemented later, for now it is not needed
-// Much will go into deleting the remote branch too, for that I need to know
-// how it will get implemented and the naming schema for it.
-// export async function deleteBranch(branch: Branch): Promise<void> {
-
-// }
+/**
+ * Delete the given branch reference. Will error out if branch doesn't
+ * exist.
+ * TODO: Add deletion of remote ref too.
+ * TODO: Look into the branch being deleted is the one checked-out.
+ */
+export async function deleteBranch(
+    repo: Repository,
+    branch: Branch,
+): Promise<void> {
+    // we should not use -D option since our branches will always be merged
+    const args = ["branch", "-d", branch.name];
+    await git(args, repo.path);
+}
