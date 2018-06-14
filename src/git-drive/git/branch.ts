@@ -23,7 +23,8 @@ export async function createBranch(
     tip: string,
 ): Promise<Branch | null> {
     if (name.length > 100) {
-        throw new Error("Branch name is longer than 100 chars");
+        throw new Error("[createBranch]: The branch name is longer than" +
+            " 100 chars");
     }
 
     const args = ["branch", name, tip];
@@ -48,7 +49,29 @@ export async function createBranch(
 
     return null;
 }
+/**
+ * Create the local equivalent of a remote branch. Unlike createBranch, the
+ * method doesn't return a branch object. The reason is this method will be
+ * used upon cloning or pull from a remote repo and in both cases the branch
+ * object is not needed, what matters is that the branch exists.
+ * @param repo Repo where the branch will be created
+ * @param name The name of the local counterpart
+ * @param remoteRef The remote ref name with the prefix
+ */
+export async function createBranchFromRemote(
+    repo: Repository,
+    name: string,
+    remoteRef: string,
+): Promise<void> {
+    if (name.length > 100) {
+        throw new Error("[createBranchFromRemote]: Branch name is longer" +
+            " than 100 chars");
+    }
 
+    const args = ["branch", "--track", "-l", "-f", name, remoteRef];
+
+    await git(args, repo.path);
+}
 /** Rename the branch given, git will reject and return error if it
  * doesn't exists
  */
