@@ -1,5 +1,6 @@
 import { git, overrideCredentialHelper } from "./core-git";
 
+
 /**
  * Clones a repo from url.
  * For now we will not deal with authentication.
@@ -18,5 +19,6 @@ export async function clone(
     url: string,
     path: string,
 ): Promise<void> {
-    await git([...overrideCredentialHelper, "clone", url, path], __dirname);
+    const args = [...overrideCredentialHelper, "clone", url, path];
+    await git(args, __dirname);
 }
