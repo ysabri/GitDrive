@@ -2,10 +2,12 @@ import { outputFile } from "fs-extra";
 import { join, normalize } from "path";
 import { createTopicSpace } from "../git-drive/app/add-topicspace";
 import { createWorkSpace } from "../git-drive/app/add-workspace";
+import { download } from "../git-drive/app/download";
 import { loadGRepo } from "../git-drive/app/load-repo";
 import { startRepo } from "../git-drive/app/start";
 import { sync } from "../git-drive/app/sync";
-import { changeWS } from "../git-drive/controller/state-updater";
+import { changeWS, removeWS } from "../git-drive/controller/state-updater";
+import { commit, deleteBranch } from "../git-drive/git";
 import { checkoutBranch } from "../git-drive/git/checkout";
 import { GRepository, User } from "../model/app";
 import { Account } from "../model/app/github-account";
@@ -15,7 +17,8 @@ import {
   PublicVariant,
   Variant,
 } from "../model/POST";
-import { removeRepo } from "../tests/helpers";
+// import { removeRepo } from "../tests/helpers";
+import { writeRepoInfo } from "../util";
 import { measure } from "../util/git-perf";
 import {
   API,
@@ -41,11 +44,13 @@ export async function letsOauth(): Promise<void> {
   const repoName = "TestRepo";
   const res = await createAuthorization(endPoint,
     username, password, null);
-    console.log(res);
+  // tslint:disable-next-line:no-console
+  console.log(res);
   let user: Account;
   let api: API;
   if (res.kind === AuthorizationResponseKind.Authorized) {
     user = await fetchUser(endPoint, res.token);
+    // tslint:disable-next-line:no-console
     console.log(user);
     api = new API(endPoint, res.token);
   } else {
@@ -55,16 +60,21 @@ export async function letsOauth(): Promise<void> {
   if (repo === null) {
     throw new Error("failed to fetch TestRepo");
   }
+  // tslint:disable-next-line:no-console
   console.log(repo);
   const account: IAPIUser = await api.fetchAccount();
+  // tslint:disable-next-line:no-console
   console.log(account);
   const refMaster: IAPIRefStatus = await api.fetchCombinedRefStatus(username,
     repo.name, "master");
+  // tslint:disable-next-line:no-console
   console.log(refMaster);
   const firstCommit: IAPICommit | null  = await api.fetchCommit(username,
     repoName, "cc4790cbfa99c9e9ce72d6198990b4830eee9b57");
+  // tslint:disable-next-line:no-console
   console.log(firstCommit);
   const pollInterval: number | null = await api.getFetchPollInterval(username, repoName);
+  // tslint:disable-next-line:no-console
   console.log(pollInterval);
 
   return;
@@ -152,7 +162,36 @@ export async function startEx(): Promise<void> {
       console.log(err);
     }
   }
-  await removeRepo(normalize("C:\\Users\\hacoo\\Desktop\\repo-with-files"));
+  // await removeRepo(normalize("C:\\Users\\hacoo\\Desktop\\repo-with-files"));
+}
+
+export async function cloneSecondRepo(): Promise<void> {
+  console.log("in clone second repo");
+  const path = await normalize("C:\\Users\\hacoo\\Desktop\\second-repo-with-files");
+  await download(path, "https://github.com/ysabri/repo-with-files.git");
+  console.log("donezo");
+}
+
+export async function removeWSfromSecondRepo(): Promise<void> {
+  const path = await normalize("C:\\Users\\hacoo\\Desktop\\repo-with-files");
+  const repo: GRepository = await loadGRepo(path);
+  await createWorkSpace(repo, new User("added user", "addemail@FromBob.com", []),
+    repo.topicSpaces[1], repo.topicSpaces[1].workSpaces[0]);
+  // await checkoutBranch(res.repo, repo.metaBranch);
+  // await writeRepoInfo(res.repo);
+  // await commit(res.repo, "Meta-User", "NA", "Meta Commit", "");
+  console.log("done with first repo");
+  const secondPath = await normalize("C:\\Users\\hacoo\\Desktop\\second-repo-with-files");
+  console.log(secondPath);
+  const secondRepo = await loadGRepo(secondPath);
+  const newRepo = await removeWS(secondRepo, secondRepo.topicSpaces[1],
+    secondRepo.topicSpaces[1].workSpaces[0]);
+  await deleteBranch(newRepo, newRepo.topicSpaces[1].workSpaces[0]);
+  await checkoutBranch(newRepo, newRepo.metaBranch);
+  await writeRepoInfo(newRepo);
+  await commit(newRepo, "Meta-User", "NA", "Meta Commit", "");
+  // tslint:disable-next-line:no-console
+  console.log(newRepo.id());
 }
 
 // Show an example of how to use the Variant types
