@@ -142,11 +142,11 @@ Below are formal definitions of each concept. Use this to help reason about and 
 ---------------
     Our own definition of a repository. It will consist of a group of one or more TopicSpaces.
     Each repository has a "Main" topicspace among maybe other ones. The repository name has to be less
-    than a 101 character. Also each user in the repository must have a unique
-    name. Along with all the workspace branches, each repository has a metadata branch called "GH".
-    For more information on how metadata is kept, read sectoin `How to do we keep metadata`_
-    Finally, each repository can have none or only one remote repository linked to it. If it exists,
-    the name of the remote repository is "origin".
+    than a 101 character and is the basename of the path the repository resides in.
+    Also each user in the repository must have a unique name. Along with all the workspace branches,
+    each repository has a metadata branch called "GH". For more information on how metadata is kept,
+    read sectoin `How to do we keep metadata`_ Finally, each repository can have none or only one
+    remote repository linked to it. If it exists, the name of the remote repository is "origin".
 
 **TopicSpace**
 --------------
@@ -267,6 +267,13 @@ Here are the commands in alphabetical order:
         will rename the branch to that name. We use rename while creating workspaces to rename
         temp branches after we create the first commit on them since we need the first 10
         SHAs characters from it.
+
+        3) *deleteBranch(repo: Repository, branch: Branch)*: Deletes the given branch. This does
+        not force the deletion of the branch, ie. it won't delete un-merged branches. The function
+        does not handle deleting the remote ref of the branch. In fact we don't handle pruning
+        deleted branches from the remote. The function will error out if the branch being deleted
+        is currently checked out. The function will be used to remove worksapces.
+
     **3.Checkout:**
         We have four functions from the checkout command.
 
@@ -608,6 +615,12 @@ How to do we keep metadata
 For each GRepository, the metadata will be saved in a "repo.proto" file at the root of the
 repository. The file will include a serialized GRepository object.
 
+The serialized GRepository proto object is always written with the path as "-/-" and name "-".
+This is the case because each local copy of the repository will have its unique path and name.
+Since the path is given to us so we can read and deserialize the protobuf object we use that to
+return a GRepository object with that path and basename(path) as the name of the repository.
+Notice that the basename(path) is always the name of our repositories.
+
 As discussed in the definitions, each GRepository has a metadata branch called "GH". The reason
 behind choosing GH is to break the workspace_ naming convention while being as short as possible.
 The main purpose of the metadata branch is to keep track of the structure changes in the repository.
@@ -795,16 +808,114 @@ The View
 
 .. image:: ./mockup.PNG
 
+==============
+Util functions
+==============
+
 ======
 Limits
 ======
+
+===============
+Authentication
+===============
+
+We have GitHub authentication setup and running on its own but we still need to integrate it into
+the network commands. The GitHub api for authentication protocol uses http and https. `This page`_
+has an outline of the authentication api.
+
+The abstraction over the api we are using is mostly taken from the `GitHub Desktop`_ project.
+To understand how to use the api, I would check the *letsOauth* function in examples or look at
+the GitHub desktop project.
+
+There are mainly two ways to call the oauth api. The one we don't use requires us to specify a
+callback url. This is done by registering a new protocol in the system for our app. We opted not to use
+this since we don't want to alter the system in anyway. For more information on how this is done, here
+is the electron `protocol handlers`_ documentation, also look at the GitHub Desktop project for an example.
+
+The one we use sends a POST request to the endpoint "https://api.github.com" and receives a response with a
+token. We always use the api.github endpoint, the option is available since GitHub enterprise has a
+different endpoint. The token we receive acts as a password and does not expire unless the user or us want
+to revoke its access.
+
+The GitHub api requires us to create an oauth application through their website. The application then has
+a client ID and a client secret, that the api uses these to authenticate using our app. Both of these
+should be set as environment variables upon packaging the app and should not be committed anywhere in
+the code. For now, I hard coded both of them in the util/github-api.ts (lines 48 and 49) from a test
+application under my GitHub account. I also have a dummy test user created to run the *letsOauth*
+example using one of my email accounts.
+
+Another thing that the api we use does is reduce the objects retrieved from the website. Fetch requests
+from the api return json objects that are converted to javascript objects which are defined in interfaces
+that start with "IAPI" in the util/github-api.ts. The interfaces expose only parts of the objects in
+typescript, this is important to keep in mind in case we need the none-exposed information.
+
+:Notice:
+    The entire back-end is runnable using just the command line with the exception of authentication.
+    There are several reasons why this is the case, but the main one is that the authenticate relies
+    for some parts on the existence of a browser window object. In other words, authentication will
+    not work without a browserwindow and a renderer process.
+
 
 ==========
 Git Errors
 ==========
 
-This section will detail how Git handles errors and in return how we should handle them down the
-line. This is not easy to find online for some reason.
+Based on the `api-error-handleing.txt`_ in the Git documentation, the Git process has four return states:
+
+1) `die` is for fatal application errors.  It prints a message to the user and exits with status 128.
+
+2) `usage` is for errors in command line usage.  After printing its message, it exits with status 129.
+
+3) `error` is for non-fatal library errors.  It prints a message to the user and returns -1 for convenience
+    in signaling the error to the caller.
+
+4) `warning` is for reporting situations that probably should not occur but which the user (and Git) can
+    continue to work around without running into too many problems. Like `error`, it returns -1 after reporting
+    the situation to the caller.
+
+This is important cause sometimes errors are actually reported to stdout instead of stderr. This also means
+that there should be a coupling between errors and their return values as the return value alone is not
+enough. Another consequence is that a none-zero or even -1 doesn't always mean the operation actually failed.
+
+Currently the coupling between the the return values and errors doesn't exist. As this should be handled per
+operation, I can think of two ways of doing it.
+
+The first is to wrap each call with a try and catch clause that will handle the possible return values for the
+operation accordingly.
+
+The other is to introduce an object to the dugite exec wrapper in "src/git/core-git.ts" that enables the
+caller to specify acceptable return values. This is what the `GitHub Desktop`_ project does among a few
+other tricks.
+
+What we do so far is return an error with any none zero return value.
+
+Another aspect of Git errors is common vs. specific errors discussed in  this `pull request`_ in the `dugite`_
+project. The requests discusses how there are generic errors and errors that include information specific to
+the error, for example a branch name. These are handled the same way so far, which means that some information
+is lost in the explanation of the error. The goal is to parse out the none generic information and return
+it back to the caller along with the error, that way errors can be presented more precisely. What we have now
+is a generic explanation of each error given its enum, similar to what the `GitHub Desktop`_ project does.
+
+=================
+The documentation
+=================
+
+This documentation is written in reStructuredText. The command bellow is run in the docs directory to generate
+the current index.html page you are reading. The script needs python 3.6 to run and was taken from
+"docutils/build/scripts-3.6/" directory after cloning the following repository: git://repo.or.cz/docutils.git.
+
+    ::
+        python ./rst2html.py index.rst index.html
+
+
+============
+Future steps
+============
+
+Loading repos
+file tree structure
+
 
 ============
 Useful Links
@@ -830,3 +941,7 @@ Useful Links
 .. _page: https://developers.google.com/protocol-buffers/docs/reference/javascript-generated
 .. _`Google's protobuf`: https://developers.google.com/protocol-buffers/
 .. _`static/proto-models`: ../static/proto-models
+.. _`This page`: https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/
+.. _`protocol handlers`: https://github.com/electron/electron/blob/master/docs/api/protocol.md
+.. _`api-error-handleing.txt`: https://github.com/git/git/blob/master/Documentation/technical/api-error-handling.txt
+.. _`pull request`: https://github.com/desktop/dugite/pull/144

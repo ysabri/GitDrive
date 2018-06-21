@@ -518,11 +518,11 @@ directory like the rest of the code.</p>
 <blockquote>
 Our own definition of a repository. It will consist of a group of one or more TopicSpaces.
 Each repository has a &quot;Main&quot; topicspace among maybe other ones. The repository name has to be less
-than a 101 character. Also each user in the repository must have a unique
-name. Along with all the workspace branches, each repository has a metadata branch called &quot;GH&quot;.
-For more information on how metadata is kept, read sectoin <a class="reference internal" href="#how-to-do-we-keep-metadata">How to do we keep metadata</a>
-Finally, each repository can have none or only one remote repository linked to it. If it exists,
-the name of the remote repository is &quot;origin&quot;.</blockquote>
+than a 101 character and is the basename of the path the repository resides in.
+Also each user in the repository must have a unique name. Along with all the workspace branches,
+each repository has a metadata branch called &quot;GH&quot;. For more information on how metadata is kept,
+read sectoin <a class="reference internal" href="#how-to-do-we-keep-metadata">How to do we keep metadata</a> Finally, each repository can have none or only one
+remote repository linked to it. If it exists, the name of the remote repository is &quot;origin&quot;.</blockquote>
 </div>
 <div class="section" id="topicspace">
 <h2><strong>TopicSpace</strong></h2>
@@ -642,11 +642,16 @@ an add. The addOptions param is experimental, ie. not tested at all.</p>
 <p>1) <em>createBranch(repo: Repository, name: string, tip: string)</em>: Creates a branch, which
 given a valid name with length less than a 101 characters and a committish tip will
 create a branch at the committish. HEAD has to be explicitly specified to avoid ambiguity.</p>
-<p class="last">2) <em>renameBranch(repo: Repository, branch: Branch, newName: string)</em>: The second is
+<p>2) <em>renameBranch(repo: Repository, branch: Branch, newName: string)</em>: The second is
 renaming a branch, which given a branch and a new valid name
 will rename the branch to that name. We use rename while creating workspaces to rename
 temp branches after we create the first commit on them since we need the first 10
 SHAs characters from it.</p>
+<p class="last">3) <em>deleteBranch(repo: Repository, branch: Branch)</em>: Deletes the given branch. This does
+not force the deletion of the branch, ie. it won't delete un-merged branches. The function
+does not handle deleting the remote ref of the branch. In fact we don't handle pruning
+deleted branches from the remote. The function will error out if the branch being deleted
+is currently checked out. The function will be used to remove worksapces.</p>
 </dd>
 <dt><strong>3.Checkout:</strong></dt>
 <dd><p class="first">We have four functions from the checkout command.</p>
@@ -994,6 +999,11 @@ binary array of the proto message object for it to be sent over the wire or stor
 <h2>How to do we keep metadata</h2>
 <p>For each GRepository, the metadata will be saved in a &quot;repo.proto&quot; file at the root of the
 repository. The file will include a serialized GRepository object.</p>
+<p>The serialized GRepository proto object is always written with the path as &quot;-/-&quot; and name &quot;-&quot;.
+This is the case because each local copy of the repository will have its unique path and name.
+Since the path is given to us so we can read and deserialize the protobuf object we use that to
+return a GRepository object with that path and basename(path) as the name of the repository.
+Notice that the basename(path) is always the name of our repositories.</p>
 <p>As discussed in the definitions, each GRepository has a metadata branch called &quot;GH&quot;. The reason
 behind choosing GH is to break the <a class="reference internal" href="#workspace">workspace</a> naming convention while being as short as possible.
 The main purpose of the metadata branch is to keep track of the structure changes in the repository.
@@ -1163,13 +1173,101 @@ from pulled branches is yet to be implemented.</p>
 <h1>The View</h1>
 <img alt="./mockup.PNG" src="./mockup.PNG" />
 </div>
+<div class="section" id="util-functions">
+<h1>Util functions</h1>
+</div>
 <div class="section" id="limits">
 <h1>Limits</h1>
 </div>
+<div class="section" id="authentication">
+<h1>Authentication</h1>
+<p>We have GitHub authentication setup and running on its own but we still need to integrate it into
+the network commands. The GitHub api for authentication protocol uses http and https. <a class="reference external" href="https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/">This page</a>
+has an outline of the authentication api.</p>
+<p>The abstraction over the api we are using is mostly taken from the <a class="reference external" href="https://github.com/desktop/desktop">GitHub Desktop</a> project.
+To understand how to use the api, I would check the <em>letsOauth</em> function in examples or look at
+the GitHub desktop project.</p>
+<p>There are mainly two ways to call the oauth api. The one we don't use requires us to specify a
+callback url. This is done by registering a new protocol in the system for our app. We opted not to use
+this since we don't want to alter the system in anyway. For more information on how this is done, here
+is the electron <a class="reference external" href="https://github.com/electron/electron/blob/master/docs/api/protocol.md">protocol handlers</a> documentation, also look at the GitHub Desktop project for an example.</p>
+<p>The one we use sends a POST request to the endpoint &quot;<a class="reference external" href="https://api.github.com">https://api.github.com</a>&quot; and receives a response with a
+token. We always use the api.github endpoint, the option is available since GitHub enterprise has a
+different endpoint. The token we receive acts as a password and does not expire unless the user or us want
+to revoke its access.</p>
+<p>The GitHub api requires us to create an oauth application through their website. The application then has
+a client ID and a client secret, that the api uses these to authenticate using our app. Both of these
+should be set as environment variables upon packaging the app and should not be committed anywhere in
+the code. For now, I hard coded both of them in the util/github-api.ts (lines 48 and 49) from a test
+application under my GitHub account. I also have a dummy test user created to run the <em>letsOauth</em>
+example using one of my email accounts.</p>
+<p>Another thing that the api we use does is reduce the objects retrieved from the website. Fetch requests
+from the api return json objects that are converted to javascript objects which are defined in interfaces
+that start with &quot;IAPI&quot; in the util/github-api.ts. The interfaces expose only parts of the objects in
+typescript, this is important to keep in mind in case we need the none-exposed information.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Notice:</th><td class="field-body">The entire back-end is runnable using just the command line with the exception of authentication.
+There are several reasons why this is the case, but the main one is that the authenticate relies
+for some parts on the existence of a browser window object. In other words, authentication will
+not work without a browserwindow and a renderer process.</td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="section" id="git-errors">
 <h1>Git Errors</h1>
-<p>This section will detail how Git handles errors and in return how we should handle them down the
-line. This is not easy to find online for some reason.</p>
+<p>Based on the <a class="reference external" href="https://github.com/git/git/blob/master/Documentation/technical/api-error-handling.txt">api-error-handleing.txt</a> in the Git documentation, the Git process has four return states:</p>
+<ol class="arabic simple">
+<li><cite>die</cite> is for fatal application errors.  It prints a message to the user and exits with status 128.</li>
+<li><cite>usage</cite> is for errors in command line usage.  After printing its message, it exits with status 129.</li>
+<li><dl class="first docutils">
+<dt><cite>error</cite> is for non-fatal library errors.  It prints a message to the user and returns -1 for convenience</dt>
+<dd>in signaling the error to the caller.</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><cite>warning</cite> is for reporting situations that probably should not occur but which the user (and Git) can</dt>
+<dd>continue to work around without running into too many problems. Like <cite>error</cite>, it returns -1 after reporting
+the situation to the caller.</dd>
+</dl>
+</li>
+</ol>
+<p>This is important cause sometimes errors are actually reported to stdout instead of stderr. This also means
+that there should be a coupling between errors and their return values as the return value alone is not
+enough. Another consequence is that a none-zero or even -1 doesn't always mean the operation actually failed.</p>
+<p>Currently the coupling between the the return values and errors doesn't exist. As this should be handled per
+operation, I can think of two ways of doing it.</p>
+<p>The first is to wrap each call with a try and catch clause that will handle the possible return values for the
+operation accordingly.</p>
+<p>The other is to introduce an object to the dugite exec wrapper in &quot;src/git/core-git.ts&quot; that enables the
+caller to specify acceptable return values. This is what the <a class="reference external" href="https://github.com/desktop/desktop">GitHub Desktop</a> project does among a few
+other tricks.</p>
+<p>What we do so far is return an error with any none zero return value.</p>
+<p>Another aspect of Git errors is common vs. specific errors discussed in  this <a class="reference external" href="https://github.com/desktop/dugite/pull/144">pull request</a> in the <a class="reference external" href="https://github.com/desktop/dugite">dugite</a>
+project. The requests discusses how there are generic errors and errors that include information specific to
+the error, for example a branch name. These are handled the same way so far, which means that some information
+is lost in the explanation of the error. The goal is to parse out the none generic information and return
+it back to the caller along with the error, that way errors can be presented more precisely. What we have now
+is a generic explanation of each error given its enum, similar to what the <a class="reference external" href="https://github.com/desktop/desktop">GitHub Desktop</a> project does.</p>
+</div>
+<div class="section" id="the-documentation">
+<h1>The documentation</h1>
+<p>This documentation is written in reStructuredText. The command bellow is used to get the current index.html
+page you are reading.</p>
+<blockquote>
+<dl class="docutils">
+<dt>::</dt>
+<dd>python ./rst2html.py index.rst index.html</dd>
+</dl>
+</blockquote>
+</div>
+<div class="section" id="future-steps">
+<h1>Future steps</h1>
+<p>Loading repos
+file tree structure</p>
 </div>
 <div class="section" id="useful-links">
 <h1>Useful Links</h1>
