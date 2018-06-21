@@ -90,7 +90,6 @@ export async function renameBranch(
  * Delete the given branch reference. Will error out if branch doesn't
  * exist.
  * TODO: Add deletion of remote ref too.
- * TODO: Look into the branch being deleted is the one checked-out.
  */
 export async function deleteBranch(
     repo: Repository,

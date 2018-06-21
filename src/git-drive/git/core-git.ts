@@ -7,8 +7,7 @@ import {
 import { assertNever } from "../../util/errors-util";
 /**
  * Defining our own error to include more information about the cause of
- * the errors. Not used for now, it will be once the error handlers are
- * implemented.
+ * the errors.
  */
 export class GitError extends Error {
     /** The none zero returned error code */
