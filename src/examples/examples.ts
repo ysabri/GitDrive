@@ -166,10 +166,8 @@ export async function startEx(): Promise<void> {
 }
 
 export async function cloneSecondRepo(): Promise<void> {
-  console.log("in clone second repo");
   const path = await normalize("C:\\Users\\hacoo\\Desktop\\second-repo-with-files");
   await download(path, "https://github.com/ysabri/repo-with-files.git");
-  console.log("donezo");
 }
 
 export async function removeWSfromSecondRepo(): Promise<void> {
@@ -177,12 +175,8 @@ export async function removeWSfromSecondRepo(): Promise<void> {
   const repo: GRepository = await loadGRepo(path);
   await createWorkSpace(repo, new User("added user", "addemail@FromBob.com", []),
     repo.topicSpaces[1], repo.topicSpaces[1].workSpaces[0]);
-  // await checkoutBranch(res.repo, repo.metaBranch);
-  // await writeRepoInfo(res.repo);
-  // await commit(res.repo, "Meta-User", "NA", "Meta Commit", "");
-  console.log("done with first repo");
+
   const secondPath = await normalize("C:\\Users\\hacoo\\Desktop\\second-repo-with-files");
-  console.log(secondPath);
   const secondRepo = await loadGRepo(secondPath);
   const newRepo = await removeWS(secondRepo, secondRepo.topicSpaces[1],
     secondRepo.topicSpaces[1].workSpaces[0]);
