@@ -1,5 +1,5 @@
 import { app, BrowserWindow, ipcMain, shell } from "electron";
-import { removeWSfromSecondRepo } from "../examples/examples";
+// import { removeWSfromSecondRepo } from "../examples/examples";
 // import { startEx } from "../examples/examples";
 // import { cloneSecondRepo } from "../examples/examples";
 
