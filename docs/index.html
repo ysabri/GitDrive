@@ -370,7 +370,7 @@ intended use of the different parts in the project, along with any limitations,
 issues, and missing parts/features.</p>
 <p>Each section should be stand alone as much as possible. Meaning that no knowledge
 of other sections is required to understand the functionality of a section.
-That being said knowledge of the program's structure is helpful in understanding
+That being said, knowledge of the program's structure is helpful in understanding
 the purpose behind the decisions that were made in designing the app.</p>
 </div>
 <div class="section" id="the-tech-stack">
@@ -381,8 +381,8 @@ and the <em>renderer process</em>.</p>
 <dl class="docutils">
 <dt>The main process:</dt>
 <dd>Its what the app launches first, it's where the node run environment is and
-it's responsible for launching the renderer process/s. This is usually seen as the backend
-part where the logic is kept.</dd>
+it's responsible for launching browserwindows in the renderer process. This is usually
+seen as the backend part where the logic is kept.</dd>
 <dt>The renderer process:</dt>
 <dd>Contains Chromium along with access to the node environment APIs. This is what
 user interacts with and could consist of more than one window. Each window is a browser
@@ -390,10 +390,10 @@ window that renders html, css, and javascript.</dd>
 </dl>
 <p>These two parts communicate on channels using something called ipcMain and ipcRenderer.
 The ipc part stands for intra process communication. Each process is able to set listeners and send
-messages on channels on its respective ipc object.</p>
+messages on channels using its respective ipc object.</p>
 <p>This should be enough for an overall idea, for a more in depth look, the <a class="reference external" href="https://electronjs.org/docs">Electron</a> documentation
 does a fantastic job. Also make sure to check <a class="reference external" href="https://github.com/sindresorhus/awesome-electron">awesome-electron</a> for everything Electron related.</p>
-<p>TypeScript is a structurally typed super set of javascript. This means that the app is transpiled
+<p>TypeScript is a structurally typed super set of javascript. This means that the app is compiled
 into javascript. It also means the code is type checked. This makes our code easier to refractor and
 write with an IDE that supports TypeScript. It is recommended to look at the TypeScript <a class="reference external" href="https://www.typescriptlang.org/docs/handbook/basic-types.html">handbook</a>
 before diving into reading/writing any code.</p>
@@ -414,17 +414,17 @@ before diving into reading/writing any code.</p>
 <h1>The structure</h1>
 <p>The application is a Model-View-Controller (MVC). The Model consists of the main Git commands that are
 wrapped into the app commands. The app commands are listed in <a class="reference internal" href="#the-app">The App</a>. <a class="reference internal" href="#the-controller">The controller</a> part
-consists of some state-hub logic integrated into the Vuex store then components. Then <a class="reference internal" href="#the-view">the view</a>
+consists of some state-hub logic integrated into the Vuex store then Vue components. Then <a class="reference internal" href="#the-view">the view</a>
 is specified per Vue component. This makes parts of the view (components) reuseable in whichever
 context the user desires.</p>
 <p>The file tree structure is explained below:</p>
 <ul class="simple">
 <li><strong>docs</strong>: Is where this file resides, ie. the documentation.</li>
-<li><strong>build</strong>: It is where the app gets transpiled.</li>
+<li><strong>build</strong>: Created upon compiling the code and includes everything in src except for tests/ and components/ directories.</li>
 <li><dl class="first docutils">
 <dt><strong>src</strong>: Where the app resides.</dt>
 <dd><ul class="first last">
-<li><strong>components</strong>: Where we keep the Vue components.</li>
+<li><strong>components</strong>: Where we keep the Vue components, they are not compiled like the rest of the directories in src.</li>
 <li><strong>examples</strong>: A bunch of examples for how the code should be used.</li>
 <li><dl class="first docutils">
 <dt><strong>git-drive</strong>: The logic for the app models is kept here.</dt>
@@ -450,7 +450,7 @@ context the user desires.</p>
 <li><strong>renderer</strong>: The entry point for the renderer process/s, webpack will look here.</li>
 <li><strong>store</strong>: The Vuex store lies here, all the mutations, actions, and getters logic is here.</li>
 <li><dl class="first docutils">
-<dt><strong>tests</strong>: The app tests, they are not transpiled like the rest of the dirs in src.</dt>
+<dt><strong>tests</strong>: The app tests, they are not compiled like the rest of the directories in src.</dt>
 <dd><ul class="first last">
 <li><strong>app</strong>: Tests for the app logic.</li>
 <li><strong>controller</strong>: Tests for the controller logic.</li>
@@ -460,7 +460,7 @@ context the user desires.</p>
 </dd>
 </dl>
 </li>
-<li><strong>util</strong>: Utility functions that might be useful for any other parts in the app.</li>
+<li><strong>util</strong>: Utility functions that might be useful for any other parts of the app.</li>
 </ul>
 </dd>
 </dl>
@@ -479,10 +479,10 @@ context the user desires.</p>
 scripts we notice 11 of them, most are not stand alone callable, here is the layout:</p>
 <div class="section" id="dev-build">
 <h2>Dev-Build</h2>
-<p>The start script is the one responsible this and has four steps. The first one is just cleaning the
+<p>The start script is the one responsible this and has three steps. The first one is just cleaning the
 build directory. The second step transpiles the app from TypeScript to javascript into the build
-directory. The third runs the linter, based on the rules in <a class="reference external" href="../tsconfig.json">tsconfig.json</a>. The fourth and last,
-actually launches the app using webpack from the build/main and build/renderer directories</p>
+directory. The third and last, actually launches the app using webpack from the build/main and
+build/renderer directories.</p>
 </div>
 <div class="section" id="production-build">
 <h2>Production-Build</h2>
@@ -497,17 +497,18 @@ the section once it is functional.</p>
 <div class="section" id="testing">
 <h2>Testing</h2>
 <p>The test script is the one responsible for this. The script runs any tests specified in the
-src/test directory. The test assume the ts-node npm module to be installed globally as it is
-responsible for transpiling the TypeScript tests in runtime thus it is not possible to run the
-tests without it.</p>
+src/test directory. The test uses the ts-node npm module to compile the TypeScript tests in
+runtime thus it is not possible to run the tests without it.</p>
 <hr class="docutils" />
 <p>Notice how I did not go through any of the webpack setup or build configs. They are very standard
 and self explaining to whoever knows anything about webpack. I know enough to make what is there now
 work.</p>
-<p>One thing worth mentioning is that none of the components are actually transpiled, they are compiled
+<p>None of the Vue components are compiled in the start script, they are compiled
 in runtime using vue-loader and a bunch of other modules. This means when any of these are referenced,
 ie. imported, they are referenced with respect to them existing in src/components directory not build/*
-directory like the rest of the code.</p>
+directory like the rest of the code. This is because the build directory doesn't include the components.
+An example of this can be found in <a class="reference external" href="../src/renderer/index.ts">src/renderer/index.ts</a> when importing the App component. Idly the
+components directory should get copied to build when compiling the code.</p>
 </div>
 </div>
 <div class="section" id="terminology">
@@ -521,7 +522,7 @@ Each repository has a &quot;Main&quot; topicspace among maybe other ones. The re
 than a 101 character and is the basename of the path the repository resides in.
 Also each user in the repository must have a unique name. Along with all the workspace branches,
 each repository has a metadata branch called &quot;GH&quot;. For more information on how metadata is kept,
-read sectoin <a class="reference internal" href="#how-to-do-we-keep-metadata">How to do we keep metadata</a> Finally, each repository can have none or only one
+read section <a class="reference internal" href="#how-to-do-we-keep-metadata">How to do we keep metadata</a> Finally, each repository can have none or only one
 remote repository linked to it. If it exists, the name of the remote repository is &quot;origin&quot;.</blockquote>
 </div>
 <div class="section" id="topicspace">
@@ -570,6 +571,25 @@ why not have app-data as a part of the Dispatcher instead of doing this. The rea
 future where the app might have multiple windows in which dispatcher (or an api it will call) will
 be tasked with keeping information between them consistent.</blockquote>
 </div>
+<div class="section" id="app-data">
+<h2><strong>App Data</strong></h2>
+<blockquote>
+The metadata that will be cached in between app sessions, such as current repository,
+current user, repositories, etc. This class is coupled with a protobuf message, thus this is
+how it will be written and read.</blockquote>
+</div>
+<div class="section" id="store">
+<h2><strong>Store</strong></h2>
+<blockquote>
+The Vuex store, where the controller (dispatcher) meets the view. So the Vue component tree
+only allows for information to flow from parents to children using something they call props.
+This proves difficult if sibling components want to communicate information with each other.
+This problem can be solved by using a global data store as a single source of truth in which
+the entire component tree has access to the data in it using a defined set of interactions.
+These interactions are either getting the data, mutating the data, or doing an async action
+that might mutate the data eventually. By doing this our state transitions are clear to
+follow and thus debug.</blockquote>
+</div>
 <div class="section" id="fs-explorer">
 <h2><strong>FS Explorer</strong></h2>
 <blockquote>
@@ -590,28 +610,12 @@ context, ie. the current repository, current topicspace, and current workspace.<
 Its the left panel where the user browses the current repository's topicspaces and workspaces.
 WorkSpaces are named based on their users.</blockquote>
 </div>
-<div class="section" id="app-data">
-<h2><strong>App Data</strong></h2>
-<blockquote>
-The metadata that will be cached in between app sessions, such as current repository,
-current user, repositories, etc. This class is coupled with a protobuf message, thus this is
-how it will be written and read.</blockquote>
-</div>
-<div class="section" id="store">
-<h2><strong>Store</strong></h2>
-<blockquote>
-The Vuex store, where the controller (dispatcher) meets the view. So the Vue component tree
-only allows for information to flow from parents to children using something they call props.
-This proves difficult if sibling components want to communicate information with each other.
-This problem can be solved by using a global data store as a single source of truth in which
-the entire component tree has access to the data in it using a defined set of interactions.
-These interactions are either getting the data, mutating the data, or doing an async action
-that might mutate the data eventually. By doing this our state transitions are clear to
-follow and thus debug.</blockquote>
-</div>
 </div>
 <div class="section" id="common-errors">
 <h1>Common Errors</h1>
+<p>Dugite error</p>
+<p>webpack and ts-node versions</p>
+<p>problems with package json</p>
 </div>
 <div class="section" id="the-git-core">
 <h1>The Git Core</h1>
@@ -620,7 +624,7 @@ follow and thus debug.</blockquote>
 A lof of these are inspired or sometimes copied from the <a class="reference external" href="https://github.com/desktop/desktop">GitHub Desktop</a> project, thanks
 to them for that.</p>
 <p>The list below will have commands that are exposed in multiple ways that depend on the
-options given to the command. So in reality we have 37 Git commands/functions
+options given to the command. So in reality we have 38 Git commands/functions
 exposed. If necessary, each command will also have an explanation of the purpose from including
 it along with an explanation of why its exposed in such a way.</p>
 <p>Also all the commands will not attempt to handle any error they encounter and will throw it
@@ -638,7 +642,7 @@ using partial resets. A partial reset with the right option will effectively und
 an add. The addOptions param is experimental, ie. not tested at all.</p>
 </dd>
 <dt><strong>2.Branch:</strong></dt>
-<dd><p class="first">We have two functions from the branch command.</p>
+<dd><p class="first">We have three functions from the branch command.</p>
 <p>1) <em>createBranch(repo: Repository, name: string, tip: string)</em>: Creates a branch, which
 given a valid name with length less than a 101 characters and a committish tip will
 create a branch at the committish. HEAD has to be explicitly specified to avoid ambiguity.</p>
@@ -850,7 +854,7 @@ un-stage all the changes in the current working tree.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field"><th class="field-name">Notice:</th><td class="field-body">Given the ResetMode enum, there are only two reset modes possible to use,
-soft and mixed resets. Hard resets are not possible.</td>
+soft and mixed resets. Hard resets are not exposed.</td>
 </tr>
 </tbody>
 </table>
@@ -915,38 +919,16 @@ output changes based on the current <em>working directory</em>.</p>
 </div>
 <div class="section" id="models">
 <h1>Models</h1>
-<div class="section" id="git">
-<h2>Git</h2>
-<blockquote>
-<ul class="simple">
-<li><em>Branch</em>:</li>
-<li><em>Commit</em>:</li>
-<li><em>CommitterID</em>:</li>
-<li><em>Diff</em>:</li>
-<li><em>Repository</em>:</li>
-<li><em>Statuts</em>:</li>
-</ul>
-</blockquote>
-</div>
-<div class="section" id="controller">
-<h2>Controller</h2>
-<blockquote>
-<ul class="simple">
-<li><em>AppData</em>:</li>
-</ul>
-</blockquote>
-</div>
-<div class="section" id="app">
-<h2>App</h2>
-<blockquote>
-<ul class="simple">
-<li><em>GRepository</em>:</li>
-<li><em>TopicSpace</em>:</li>
-<li><em>User</em>:</li>
-<li><em>WorkSpace</em>:</li>
-</ul>
-</blockquote>
-</div>
+<p>Each of these models can be serializable to and deserializable from protobuf message.
+Each classes members are retrieved from the protobuf object associated with the class.
+For more information on this read the <a class="reference internal" href="#protobuf">Protobuf</a> section of the documentation.</p>
+<p>The Account and GFile classes are exceptions, they don't have a protobuf implementation.</p>
+<p>Finally, the uml diagram below doesn't include the <a class="reference external" href="../src/model/git/status.ts">git/Status</a> and <a class="reference external" href="../src/model/git/diff.ts">git/Diff</a> classes.
+They are big comparing to the rest, but they mirror Git pretty well and offer a lot of
+functionality. I leave it to whoever wants to use them to go and understand them. Both of
+them were taken from the <a class="reference external" href="https://github.com/desktop/desktop">GitHub Desktop</a> project, I'm really glad I didn't need to code
+them from scratch.</p>
+<img alt="./uml-diagram.png" src="./uml-diagram.png" />
 </div>
 <div class="section" id="protobuf">
 <h1>Protobuf</h1>
@@ -954,8 +936,8 @@ output changes based on the current <em>working directory</em>.</p>
 in the <a class="reference external" href="../static/proto-models">static/proto-models</a> directory. The directory includes proto3 definitions of each model
 in the src/model directory and javascript generated code.</p>
 <p>The rules for protobuf messages generated code change per language. This <a class="reference external" href="https://developers.google.com/protocol-buffers/docs/reference/javascript-generated">page</a> has all the
-information needed for javascript. One thing to keep in mind is if a message field is not
-available then its undefined by default. The command bellow is run from the proto-models
+information needed for javascript. One thing to keep in mind, if a message field is not
+available then its undefined by default. The command below is run from the proto-models
 directory to generate the javascript code from the proto files.</p>
 <pre class="literal-block">
 rm *.js &amp;&amp; ../protoc/bin/protoc.exe --proto_path=./ --js_out=import_style=commonjs,binary:./ committerid.proto
@@ -990,9 +972,9 @@ name.</p>
 <p>Along with the above, each model class has two more public methods.</p>
 <p>The first is a static class method to deserialize protobuf messages. For this to work, each
 constructor is overloaded to accept <em>just</em> a protobuf message. This way we can initialize a
-class using just the protoBuf message by setting the protobuf message object to the given proto
-message. And given the way the getters are made, all the members will be read from the message
-without us needing to read them out to set them in the constructor.</p>
+class using just the protoBuf message by setting the the given proto message to the class's
+protobuf message object. And given the way the getters are made, all the members will be read
+from the message without us needing to read them out to set them in the constructor.</p>
 <p>The second method is a none static public serialize method. This will return the serialized
 binary array of the proto message object for it to be sent over the wire or stored on disk.</p>
 <div class="section" id="how-to-do-we-keep-metadata">
@@ -1006,7 +988,7 @@ return a GRepository object with that path and basename(path) as the name of the
 Notice that the basename(path) is always the name of our repositories.</p>
 <p>As discussed in the definitions, each GRepository has a metadata branch called &quot;GH&quot;. The reason
 behind choosing GH is to break the <a class="reference internal" href="#workspace">workspace</a> naming convention while being as short as possible.
-The main purpose of the metadata branch is to keep track of the structure changes in the repository.
+The main purpose of the metadata branch is to keep track of the structural changes in the repository.
 This means, keep track of the additions or removals of topicspaces or workspaces. This is not
 possible to do by just recording the metadata upon each commit like we already do. This is the case
 because of the following example:</p>
@@ -1051,8 +1033,8 @@ last workspace existence.</p>
 repository, the metadata branch &quot;GH&quot;. As you might have guessed by now, having one branch
 with multiple people committing on it means we will be dealing with merge conflicts. This is
 true but sort of trivial. Comparing the different metadata files with removals taking precedent
-should result in the most up to date file. The algorithm for this is yet to be implemented since
-we don't have a merge command. I will update the section once its done.</p>
+should result in the most up to date file. The algorithm for this is yet to be implemented, but
+everything leading up to it is</p>
 </blockquote>
 <p>The metadata branch is only written to after running these commands: startRepo, createTopicSpace, and
 createWorkSpace.</p>
@@ -1168,6 +1150,28 @@ from pulled branches is yet to be implemented.</p>
 </div>
 <div class="section" id="the-controller">
 <h1>The Controller</h1>
+<p>The controller is separated into three directories/parts, <a class="reference external" href="../src/renderer">renderer/</a>, <a class="reference external" href="../src/store">store/</a>,
+and <a class="reference external" href="../src/controller">controller/</a>.</p>
+<p>It is recommended to read the <a class="reference external" href="https://vuex.vuejs.org/api/">Vuex documentation</a> to better understand how to define
+and expose properties of the store.</p>
+<div class="section" id="renderer">
+<h2>Renderer</h2>
+<p>The renderer is responsible for initializing the Vuex store using the RootState interface
+and the dispaVuex object from as the model, both of these are in the <a class="reference external" href="../src/store">store/</a>. After that,
+using the App vue component and the store it creates the main and only Vue instance.</p>
+</div>
+<div class="section" id="id2">
+<h2>Store</h2>
+<p>The store is responsible for the state and defining the getters, mutations, and actions on
+the state. All of which can be found in dispaVuex object. Our state, represented in the
+DispatchState interface, includes a dispatcher object from the <a class="reference internal" href="#controller">controller</a>. Any and all
+operations done on the state will go through the dispatcher object. Thanks to vuex-typescript
+we can expose typed state operations. Given an operation exists in the dispatcher object, it
+is straight forward to</p>
+</div>
+<div class="section" id="controller">
+<h2>Controller</h2>
+</div>
 </div>
 <div class="section" id="the-view">
 <h1>The View</h1>
@@ -1255,19 +1259,26 @@ is a generic explanation of each error given its enum, similar to what the <a cl
 </div>
 <div class="section" id="the-documentation">
 <h1>The documentation</h1>
-<p>This documentation is written in reStructuredText. The command bellow is used to get the current index.html
-page you are reading.</p>
+<p>This documentation is written in reStructuredText. The command below is run in the docs directory to generate
+the current index.html page you are reading. The script needs python 3.6 to run and was taken from
+&quot;docutils/build/scripts-3.6/&quot; directory after cloning the following repository: git://repo.or.cz/docutils.git.</p>
 <blockquote>
-<dl class="docutils">
-<dt>::</dt>
-<dd>python ./rst2html.py index.rst index.html</dd>
-</dl>
+<pre class="literal-block">
+python ./rst2html.py index.rst index.html
+</pre>
 </blockquote>
+<p>The documentation is best viewed from the generated index.html file in the docs directory since there are
+relative links to files in the repository.</p>
 </div>
 <div class="section" id="future-steps">
 <h1>Future steps</h1>
-<p>Loading repos
-file tree structure</p>
+<p>Loading repos</p>
+<p>file tree structure</p>
+<p>copy the components</p>
+<p>talk about the future of front end</p>
+<p>adding authentication to network commands</p>
+<p>transaction layer</p>
+<p>dynamic tests</p>
 </div>
 <div class="section" id="useful-links">
 <h1>Useful Links</h1>

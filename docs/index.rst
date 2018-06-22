@@ -7,7 +7,7 @@ issues, and missing parts/features.
 
 Each section should be stand alone as much as possible. Meaning that no knowledge
 of other sections is required to understand the functionality of a section.
-That being said knowledge of the program's structure is helpful in understanding
+That being said, knowledge of the program's structure is helpful in understanding
 the purpose behind the decisions that were made in designing the app.
 
 ==============
@@ -19,8 +19,8 @@ and the *renderer process*.
 
 The main process:
     Its what the app launches first, it's where the node run environment is and
-    it's responsible for launching the renderer process/s. This is usually seen as the backend
-    part where the logic is kept.
+    it's responsible for launching browserwindows in the renderer process. This is usually
+    seen as the backend part where the logic is kept.
 
 The renderer process:
     Contains Chromium along with access to the node environment APIs. This is what
@@ -29,12 +29,12 @@ The renderer process:
 
 These two parts communicate on channels using something called ipcMain and ipcRenderer.
 The ipc part stands for intra process communication. Each process is able to set listeners and send
-messages on channels on its respective ipc object.
+messages on channels using its respective ipc object.
 
 This should be enough for an overall idea, for a more in depth look, the Electron_ documentation
 does a fantastic job. Also make sure to check awesome-electron_ for everything Electron related.
 
-TypeScript is a structurally typed super set of javascript. This means that the app is transpiled
+TypeScript is a structurally typed super set of javascript. This means that the app is compiled
 into javascript. It also means the code is type checked. This makes our code easier to refractor and
 write with an IDE that supports TypeScript. It is recommended to look at the TypeScript handbook_
 before diving into reading/writing any code.
@@ -52,16 +52,16 @@ The structure
 =============
 The application is a Model-View-Controller (MVC). The Model consists of the main Git commands that are
 wrapped into the app commands. The app commands are listed in `The App`_. `The controller`_ part
-consists of some state-hub logic integrated into the Vuex store then components. Then `the view`_
+consists of some state-hub logic integrated into the Vuex store then Vue components. Then `the view`_
 is specified per Vue component. This makes parts of the view (components) reuseable in whichever
 context the user desires.
 
 The file tree structure is explained below:
 
 - **docs**: Is where this file resides, ie. the documentation.
-- **build**: It is where the app gets transpiled.
+- **build**: Created upon compiling the code and includes everything in src except for tests/ and components/ directories.
 - **src**: Where the app resides.
-    + **components**: Where we keep the Vue components.
+    + **components**: Where we keep the Vue components, they are not compiled like the rest of the directories in src.
     + **examples**: A bunch of examples for how the code should be used.
     + **git-drive**: The logic for the app models is kept here.
         * **app**: The logic behind the main app commands: add-topicspace, ..., load-repo, start, ...
@@ -74,12 +74,12 @@ The file tree structure is explained below:
         * **git**: The git classes/models.
     + **renderer**: The entry point for the renderer process/s, webpack will look here.
     + **store**: The Vuex store lies here, all the mutations, actions, and getters logic is here.
-    + **tests**: The app tests, they are not transpiled like the rest of the dirs in src.
+    + **tests**: The app tests, they are not compiled like the rest of the directories in src.
         * **app**: Tests for the app logic.
         * **controller**: Tests for the controller logic.
         * **git**: Tests for the core git commands.
         * **testRepos**: Toy repos for testing stuff on.
-    + **util**: Utility functions that might be useful for any other parts in the app.
+    + **util**: Utility functions that might be useful for any other parts of the app.
 - **static**: Files that are used as is.
 - **.electron-vue**: The webpack config and run scripts are here.
 - **template**: Like static but its meant to be used by users not the app itself.
@@ -99,10 +99,10 @@ scripts we notice 11 of them, most are not stand alone callable, here is the lay
 
 Dev-Build
 ---------
-The start script is the one responsible this and has four steps. The first one is just cleaning the
+The start script is the one responsible this and has three steps. The first one is just cleaning the
 build directory. The second step transpiles the app from TypeScript to javascript into the build
-directory. The third runs the linter, based on the rules in tsconfig.json_. The fourth and last,
-actually launches the app using webpack from the build/main and build/renderer directories
+directory. The third and last, actually launches the app using webpack from the build/main and
+build/renderer directories.
 
 Production-Build
 ----------------
@@ -117,9 +117,8 @@ the section once it is functional.
 Testing
 --------
 The test script is the one responsible for this. The script runs any tests specified in the
-src/test directory. The test assume the ts-node npm module to be installed globally as it is
-responsible for transpiling the TypeScript tests in runtime thus it is not possible to run the
-tests without it.
+src/test directory. The test uses the ts-node npm module to compile the TypeScript tests in
+runtime thus it is not possible to run the tests without it.
 
 -----------------------------------
 
@@ -127,10 +126,12 @@ Notice how I did not go through any of the webpack setup or build configs. They 
 and self explaining to whoever knows anything about webpack. I know enough to make what is there now
 work.
 
-One thing worth mentioning is that none of the components are actually transpiled, they are compiled
+None of the Vue components are compiled in the start script, they are compiled
 in runtime using vue-loader and a bunch of other modules. This means when any of these are referenced,
 ie. imported, they are referenced with respect to them existing in src/components directory not build/*
-directory like the rest of the code.
+directory like the rest of the code. This is because the build directory doesn't include the components.
+An example of this can be found in `src/renderer/index.ts`_ when importing the App component. Idly the
+components directory should get copied to build when compiling the code.
 
 
 ===========
@@ -145,7 +146,7 @@ Below are formal definitions of each concept. Use this to help reason about and 
     than a 101 character and is the basename of the path the repository resides in.
     Also each user in the repository must have a unique name. Along with all the workspace branches,
     each repository has a metadata branch called "GH". For more information on how metadata is kept,
-    read sectoin `How to do we keep metadata`_ Finally, each repository can have none or only one
+    read section `How to do we keep metadata`_ Finally, each repository can have none or only one
     remote repository linked to it. If it exists, the name of the remote repository is "origin".
 
 **TopicSpace**
@@ -189,23 +190,6 @@ Below are formal definitions of each concept. Use this to help reason about and 
     future where the app might have multiple windows in which dispatcher (or an api it will call) will
     be tasked with keeping information between them consistent.
 
-**FS Explorer**
----------------
-    The right bottom panel responsible for exploring the currently selected workspace. It will show
-    directories/files and offer operations on them accordingly. These operations are tbd but one
-    will be to show the history progression. This means show the linear line of commits that affected
-    the directory or file in the selected workspace.
-
-**Header Menu**
----------------
-    Its the top panel where the app commands will reside. These commands will chang based on their
-    context, ie. the current repository, current topicspace, and current workspace.
-
-**TS Pane**
------------
-    Its the left panel where the user browses the current repository's topicspaces and workspaces.
-    WorkSpaces are named based on their users.
-
 **App Data**
 ------------
     The metadata that will be cached in between app sessions, such as current repository,
@@ -223,9 +207,33 @@ Below are formal definitions of each concept. Use this to help reason about and 
     that might mutate the data eventually. By doing this our state transitions are clear to
     follow and thus debug.
 
+**FS Explorer**
+---------------
+    The right bottom panel responsible for exploring the currently selected workspace. It will show
+    directories/files and offer operations on them accordingly. These operations are tbd but one
+    will be to show the history progression. This means show the linear line of commits that affected
+    the directory or file in the selected workspace.
+
+**Header Menu**
+---------------
+    Its the top panel where the app commands will reside. These commands will chang based on their
+    context, ie. the current repository, current topicspace, and current workspace.
+
+**TS Pane**
+-----------
+    Its the left panel where the user browses the current repository's topicspaces and workspaces.
+    WorkSpaces are named based on their users.
+
+
 ==============
 Common Errors
 ==============
+Dugite error
+
+webpack and ts-node versions
+
+problems with package json
+
 
 ============
 The Git Core
@@ -237,7 +245,7 @@ A lof of these are inspired or sometimes copied from the `GitHub Desktop`_ proje
 to them for that.
 
 The list below will have commands that are exposed in multiple ways that depend on the
-options given to the command. So in reality we have 37 Git commands/functions
+options given to the command. So in reality we have 38 Git commands/functions
 exposed. If necessary, each command will also have an explanation of the purpose from including
 it along with an explanation of why its exposed in such a way.
 
@@ -256,7 +264,7 @@ Here are the commands in alphabetical order:
         using partial resets. A partial reset with the right option will effectively undo
         an add. The addOptions param is experimental, ie. not tested at all.
     **2.Branch:**
-        We have two functions from the branch command.
+        We have three functions from the branch command.
 
         1) *createBranch(repo: Repository, name: string, tip: string)*: Creates a branch, which
         given a valid name with length less than a 101 characters and a committish tip will
@@ -478,7 +486,7 @@ Here are the commands in alphabetical order:
 
         :Notice:
             Given the ResetMode enum, there are only two reset modes possible to use,
-            soft and mixed resets. Hard resets are not possible.
+            soft and mixed resets. Hard resets are not exposed.
 
     **17.Rev-parse:**
         There are two functions from the rev-parse command.
@@ -539,25 +547,19 @@ Here are the commands in alphabetical order:
 Models
 ======
 
-Git
----
-    - *Branch*:
-    - *Commit*:
-    - *CommitterID*:
-    - *Diff*:
-    - *Repository*:
-    - *Statuts*:
+Each of these models can be serializable to and deserializable from protobuf message.
+Each classes members are retrieved from the protobuf object associated with the class.
+For more information on this read the `Protobuf`_ section of the documentation.
 
-Controller
-----------
-    - *AppData*:
+The Account and GFile classes are exceptions, they don't have a protobuf implementation.
 
-App
-----
-    - *GRepository*:
-    - *TopicSpace*:
-    - *User*:
-    - *WorkSpace*:
+Finally, the uml diagram below doesn't include the `git/Status`_ and `git/Diff`_ classes.
+They are big comparing to the rest, but they mirror Git pretty well and offer a lot of
+functionality. I leave it to whoever wants to use them to go and understand them. Both of
+them were taken from the `GitHub Desktop`_ project, I'm really glad I didn't need to code
+them from scratch.
+
+.. image:: ./uml-diagram.png
 
 ========
 Protobuf
@@ -567,8 +569,8 @@ in the `static/proto-models`_ directory. The directory includes proto3 definitio
 in the src/model directory and javascript generated code.
 
 The rules for protobuf messages generated code change per language. This page_ has all the
-information needed for javascript. One thing to keep in mind is if a message field is not
-available then its undefined by default. The command bellow is run from the proto-models
+information needed for javascript. One thing to keep in mind, if a message field is not
+available then its undefined by default. The command below is run from the proto-models
 directory to generate the javascript code from the proto files.
 ::
 
@@ -602,9 +604,9 @@ Along with the above, each model class has two more public methods.
 
 The first is a static class method to deserialize protobuf messages. For this to work, each
 constructor is overloaded to accept *just* a protobuf message. This way we can initialize a
-class using just the protoBuf message by setting the protobuf message object to the given proto
-message. And given the way the getters are made, all the members will be read from the message
-without us needing to read them out to set them in the constructor.
+class using just the protoBuf message by setting the the given proto message to the class's
+protobuf message object. And given the way the getters are made, all the members will be read
+from the message without us needing to read them out to set them in the constructor.
 
 The second method is a none static public serialize method. This will return the serialized
 binary array of the proto message object for it to be sent over the wire or stored on disk.
@@ -623,7 +625,7 @@ Notice that the basename(path) is always the name of our repositories.
 
 As discussed in the definitions, each GRepository has a metadata branch called "GH". The reason
 behind choosing GH is to break the workspace_ naming convention while being as short as possible.
-The main purpose of the metadata branch is to keep track of the structure changes in the repository.
+The main purpose of the metadata branch is to keep track of the structural changes in the repository.
 This means, keep track of the additions or removals of topicspaces or workspaces. This is not
 possible to do by just recording the metadata upon each commit like we already do. This is the case
 because of the following example:
@@ -666,8 +668,8 @@ because of the following example:
     repository, the metadata branch "GH". As you might have guessed by now, having one branch
     with multiple people committing on it means we will be dealing with merge conflicts. This is
     true but sort of trivial. Comparing the different metadata files with removals taking precedent
-    should result in the most up to date file. The algorithm for this is yet to be implemented since
-    we don't have a merge command. I will update the section once its done.
+    should result in the most up to date file. The algorithm for this is yet to be implemented, but
+    everything leading up to it is
 
 The metadata branch is only written to after running these commands: startRepo, createTopicSpace, and
 createWorkSpace.
@@ -802,6 +804,31 @@ from pulled branches is yet to be implemented.
 The Controller
 ==============
 
+The controller is separated into three directories/parts, `renderer/`_, `store/`_,
+and `controller/`_.
+
+It is recommended to read the `Vuex documentation`_ to better understand how to define
+and expose properties of the store.
+
+Renderer
+---------
+The renderer is responsible for initializing the Vuex store using the RootState interface
+and the dispaVuex object from as the model, both of these are in the `store/`_. After that,
+using the App vue component and the store it creates the main and only Vue instance.
+
+Store
+------
+The store is responsible for the state and defining the getters, mutations, and actions on
+the state. All of which can be found in dispaVuex object. Our state, represented in the
+DispatchState interface, includes a dispatcher object from the `controller`_. Any and all
+operations done on the state will go through the dispatcher object. Thanks to vuex-typescript
+we can expose typed state operations. Given an operation exists in the dispatcher object, it
+is straight forward to
+
+Controller
+----------
+
+
 ========
 The View
 ========
@@ -901,20 +928,35 @@ is a generic explanation of each error given its enum, similar to what the `GitH
 The documentation
 =================
 
-This documentation is written in reStructuredText. The command bellow is run in the docs directory to generate
+This documentation is written in reStructuredText. The command below is run in the docs directory to generate
 the current index.html page you are reading. The script needs python 3.6 to run and was taken from
 "docutils/build/scripts-3.6/" directory after cloning the following repository: git://repo.or.cz/docutils.git.
 
     ::
+
         python ./rst2html.py index.rst index.html
 
+The documentation is best viewed from the generated index.html file in the docs directory since there are
+relative links to files in the repository.
 
 ============
 Future steps
 ============
 
 Loading repos
+
 file tree structure
+
+copy the components
+
+talk about the future of front end
+
+adding authentication to network commands
+
+transaction layer
+
+dynamic tests
+
 
 
 ============
@@ -945,3 +987,10 @@ Useful Links
 .. _`protocol handlers`: https://github.com/electron/electron/blob/master/docs/api/protocol.md
 .. _`api-error-handleing.txt`: https://github.com/git/git/blob/master/Documentation/technical/api-error-handling.txt
 .. _`pull request`: https://github.com/desktop/dugite/pull/144
+.. _`git/Status`: ../src/model/git/status.ts
+.. _`git/Diff`: ../src/model/git/diff.ts
+.. _`src/renderer/index.ts`: ../src/renderer/index.ts
+.. _`renderer/`: ../src/renderer
+.. _`store/`: ../src/store
+.. _`controller/`: ../src/controller
+.. _`Vuex documentation`: https://vuex.vuejs.org/api/
