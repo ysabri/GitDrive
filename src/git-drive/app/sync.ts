@@ -65,10 +65,13 @@ export async function sync(
         " or was deleted from repository: " + repo.name +
         " right after committing");
     }
+    // this only looks at the current branch, maybe add a check for other
+    // branches as the user's branch might not have a remote but other branches
+    // do and the user wants to know what was added on them.
     if (workspace.remoteUpstream) {
         // push the changes
         await pushBranch(repo, workspace.name);
-        // pull the other branches
+        // download the other branches
         await fetchAll(repo);
     }
     return new WorkSpace(workspace.name,

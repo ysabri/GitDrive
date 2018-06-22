@@ -6,6 +6,7 @@ import {
 import { Commit } from "../../model/git";
 import {
     createWorkSpaces,
+    pushMetadata,
     writeRepoInfo,
     writeUserFile,
 } from "../../util";
@@ -86,6 +87,8 @@ export async function createTopicSpace(
     await checkoutBranch(newRepo, newRepo.metaBranch);
     await writeRepoInfo(newRepo);
     await commit(newRepo, "Meta-User", "NA", "Meta Commit", "");
+
+    await pushMetadata(newRepo);
 
     return {repo: newRepo, topicspace: newTS};
 }

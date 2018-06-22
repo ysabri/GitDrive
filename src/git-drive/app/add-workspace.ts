@@ -7,6 +7,7 @@ import {
 } from "../../model/app";
 import { Branch } from "../../model/git";
 import {
+    pushMetadata,
     writeRepoInfo,
     writeUserFile,
 } from "../../util";
@@ -75,6 +76,8 @@ export async function createWorkSpace(
     await checkoutBranch(repo, repo.metaBranch);
     await writeRepoInfo(newRepo);
     await commit(newRepo, "Meta-User", "NA", "Meta Commit", "");
+
+    await pushMetadata(newRepo);
 
     return {repo: newRepo, workspace: tempWS};
 }
